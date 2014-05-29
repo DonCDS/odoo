@@ -702,8 +702,10 @@ class view(osv.osv):
                 fields = xfields
             if node.get('name'):
                 attrs = {}
+                relation = None
                 field = Model._fields.get(node.get('name'))
                 if field:
+                    relation = self.pool.get(field.comodel_name)
                     children = False
                     views = {}
                     for f in node:
@@ -721,6 +723,9 @@ class view(osv.osv):
 
                 field = model_fields.get(node.get('name'))
                 if field:
+                    if relation and field['type'] in ('many2one', 'many2many'):
+                        node.set('can_create', "%s" % relation.check_access_rights(cr, user, 'create', raise_exception=False))
+                        node.set('can_write', "%s" % relation.check_access_rights(cr, user, 'write', raise_exception=False))
                     orm.transfer_field_to_modifiers(field, modifiers)
 
         elif node.tag in ('form', 'tree'):

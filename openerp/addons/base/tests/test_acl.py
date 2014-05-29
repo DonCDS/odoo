@@ -7,7 +7,8 @@ from openerp.tests import common
 
 # test group that demo user should not have
 GROUP_TECHNICAL_FEATURES = 'base.group_no_one'
-
+GROUP_ERP_MANAGER = 'base.group_erp_manager'
+GROUP_SYSTEM = 'base.group_system'
 
 class TestACL(common.TransactionCase):
 
@@ -16,9 +17,15 @@ class TestACL(common.TransactionCase):
         self.res_currency = self.registry('res.currency')
         self.res_partner = self.registry('res.partner')
         self.res_users = self.registry('res.users')
+        self.res_company = self.registry('res.company')
         _, self.demo_uid = self.registry('ir.model.data').get_object_reference(self.cr, self.uid, 'base', 'user_demo')
         self.tech_group = self.registry('ir.model.data').get_object(self.cr, self.uid,
                                                                     *(GROUP_TECHNICAL_FEATURES.split('.')))
+        self.erp_manager_group = self.registry('ir.model.data').get_object(self.cr, self.uid,
+                                                                    *(GROUP_ERP_MANAGER.split('.')))
+
+        self.erp_system_group = self.registry('ir.model.data').get_object(self.cr, self.uid,
+                                                                    *(GROUP_SYSTEM.split('.')))
 
     def _set_field_groups(self, model, field_name, groups):
         field = model._fields[field_name]
@@ -118,5 +125,53 @@ class TestACL(common.TransactionCase):
         #Useless because we get the title in the client side now in the chrome.js file(map_title)
         #self.assertEqual(cm.exception.args[0], 'Access Error')
 
+    def test_view_create_edit_button_visibility(self):
+        """Test form view Create, Edit, Delete button visibility based on access right of model"""
+        methods = ['create', 'edit', 'delete']
+        
+        # For demo user check Create Edit and Delete button visibility as restricted group user
+        company_view = self.res_company.fields_view_get(self.cr, self.demo_uid, False, 'form')
+        view_arch = etree.fromstring(company_view['arch'])
+        for method in methods:
+            self.assertEqual(view_arch.get(method), 'false', "for `demo` user form view %s button should not visibile" % (method.capitalize()))
+         
+        # Make demo user a member of the group_erp_manager(Access Rights) group and check button visibility
+        self.erp_manager_group.write({'users': [(4, self.demo_uid)]})
+        company_view = self.res_company.fields_view_get(self.cr, self.demo_uid, False, 'form')
+        view_arch = etree.fromstring(company_view['arch'])
+        for method in methods:
+            self.assertIsNone(view_arch.get(method), "for `demo` user form view %s button should visibile" % (method.capitalize()))
+        
+        #cleanup
+        self.erp_manager_group.write({'users': [(3, self.demo_uid)]})
+        
+    def test_m2o_field_create_edit_visibility(self):
+        """Test many2one field Create and Edit option visibility based on access rights of relation field""" 
+        methods = ['create', 'write']
+        
+        # For demo user check create & edit option visibility of many2one field as restricted group user 
+        company_view = self.res_company.fields_view_get(self.cr, self.demo_uid, False, 'form')
+        view_arch = etree.fromstring(company_view['arch'])
+        field_node = view_arch.xpath("//field[@name='currency_id']")
+        self.assertTrue(len(field_node), "currency_id field should be in company from view")
+        currency_node = field_node[0]
+        for method in methods:
+            self.assertEqual(currency_node.get('can_'+method), 'False', "for 'demo' user, company form view currency_id m2o field should not display Create & Edit.. option")
+         
+        # Make demo user a member of the system_group(Settings) group and check create & edit option visibility
+        self.erp_system_group.write({'users': [(4, self.demo_uid)]})
+        company_view = self.res_company.fields_view_get(self.cr, self.demo_uid, False, 'form')
+        view_arch = etree.fromstring(company_view['arch'])
+        field_node = view_arch.xpath("//field[@name='currency_id']")
+        self.assertTrue(len(field_node), "currency_id field should be in company from view")
+        currency_node = field_node[0]
+        for method in methods:
+            self.assertEqual(currency_node.get('can_'+method), 'True', "for 'demo' user, company form view currency_id m2o field should display Create & Edit.. option")
+        
+        #cleanup
+        self.erp_system_group.write({'users': [(3, self.demo_uid)]})
+
 if __name__ == '__main__':
     unittest2.main()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
