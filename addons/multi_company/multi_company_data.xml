@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Admin user access Multi Company -->
+        <record model="res.users" id="base.user_root">
+            <field name="groups_id" eval="[(4,ref('base.group_multi_company'))]"/>
+        </record>
+        
+    </data>
+</openerp>
