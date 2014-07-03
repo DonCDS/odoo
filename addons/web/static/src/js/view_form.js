@@ -6339,6 +6339,45 @@ instance.web.form.FieldToggleBoolean = instance.web.form.AbstractField.extend({
     },
     reload_record: function () {
         this.view.reload();
+});
+instance.web.form.ActiveWidgetButton = instance.web.form.AbstractField.extend({
+    template: 'ActiveWidgetButton',
+    start:function(){
+        this._super.apply(this, arguments);
+        var self = this;
+        $(".js_active_deactive")
+            .live("click",function(){
+                if(self.get_value()){
+                    if (!confirm(_t("Do you really want to "+ self.toggle_string + " ?"))) { return false; }
+                }
+                self.set_value($(this).hasClass("btn-danger"));
+                return self.view.recursive_save();
+        });
+        $('ul.dropdown-menu li a.js_publish_btn')
+            .live("click", function () {
+                if(self.get_value()){
+                    if (!confirm(_t("Do you really want to "+ self.toggle_string + " ?"))) { return false; }
+                }
+                self.set_value($(this).hasClass("deactive"));
+                return self.view.recursive_save();
+        });
+    },
+    render_value:function(){
+        this._super();
+        var self = this;
+        this.string = this.get_value() ? this.options['active'] : this.options['deactive'];
+        this.toggle_string = this.get_value() ? this.options['deactive'] : this.options['active'];
+        $(".js_active_deactive")
+            .live("click",function(){
+                $(".js_active_deactive").toggleClass("btn-success", self.get_value());
+                $(".js_active_deactive").toggleClass("btn-danger", !self.get_value());
+            });
+        $('ul.dropdown-menu li a.js_publish_btn')
+            .live("click", function(){
+                $("a.js_publish_btn").toggleClass("active", self.get_value());
+                $("a.js_publish_btn").toggleClass("deactive", !self.get_value());
+            });
+        return this.$el.html(QWeb.render("ActiveWidgetButton", {'widget': this}));
     },
 });
 
@@ -6386,6 +6425,7 @@ instance.web.form.widgets = new instance.web.Registry({
     'priority':'instance.web.form.Priority',
     'kanban_state_selection':'instance.web.form.KanbanSelection',
     'statinfo': 'instance.web.form.StatInfo',
+    'active_deactive_button': 'instance.web.form.ActiveWidgetButton',
 });
 
 /**

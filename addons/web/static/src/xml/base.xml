@@ -2025,4 +2025,23 @@
     <img t-attf-src="#{_s}/web/static/src/img/icons/#{widget.icon}" t-att-alt="widget.string"/>
 </button>
 
+<t t-name="ActiveWidgetButton">
+    <div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-success js_active_deactive">
+                <span><t t-esc="widget.string"/></span>
+            </button>
+            <button type="button" t-attf-class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="#" class="js_publish_btn active">
+                        <span><t t-esc="widget.toggle_string"/></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</t>
 </templates>
