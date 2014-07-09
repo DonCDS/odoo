@@ -113,7 +113,7 @@
             <field name="model">survey.survey</field>
             <field name="arch" type="xml">
                 <form string="Survey">
-                    <header groups="base.group_survey_manager">
+                    <header groups="base.group_marketing_manager">
                         <button name="action_test_survey" string="Test Survey" type="object"/>
                         <button name="action_print_survey" string="Print Survey" type="object"/>
                         <button name="action_send_survey" string="Share and invite by email" type="object" class="oe_highlight" />
@@ -516,7 +516,7 @@
         <!-- MENU ELEMENTS -->
 
         <!-- Left menu categories-->
-        <menuitem name="Surveys" id="menu_surveys" parent="base.marketing_menu" sequence="25" groups="base.group_survey_user"/>
+        <menuitem name="Surveys" id="menu_surveys" parent="base.marketing_menu" sequence="25" groups="base.group_user"/>
 
         <!-- Left menu elements: Survey -->
         <menuitem name="Surveys" id="menu_survey_form" action="action_survey_form" parent="menu_surveys" sequence="1"/>
