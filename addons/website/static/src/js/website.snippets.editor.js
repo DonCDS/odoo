@@ -1308,6 +1308,107 @@
             this.$target.find('.item.text_image, .item.image_text, .item.text_only').find('.container > .carousel-caption > div, .container > img.carousel-image').attr('contentEditable', 'true');
         },
     });
+
+    website.editor.countdown = website.editor.Dialog.extend({
+        template: 'website.countdown_configuration',
+        events : _.extend({}, website.editor.Dialog.prototype.events, {
+            'click button[data-action=set_countdown]': 'set_countdown',
+        }),
+        init: function (parent) {
+            this.$target = parent.$target;
+            return this._super();
+        },
+        start: function () {
+            var self = this;
+            this.date_input = self.$el.find("#web_countdown_date").datepicker({
+                minDate: 0,
+            });
+            return this._super();
+        },
+        set_countdown: function () {
+            var self = this;
+            var release_date = this.date_input.datepicker( 'getDate' );
+            var hour = document.getElementById("web_countdown_hour").value;
+            var minute = document.getElementById("web_countdown_min").value;
+            var second = document.getElementById("web_countdown_sec").value;
+            var local_date  = new Date(release_date.getFullYear(),release_date.getMonth(),release_date.getDate(), hour, minute, second);
+            var add_warning = function (msg){
+                self.$el.find(".alert").remove();
+                self.$el.find(".modal-body").append('<div class="alert alert-danger mt8">'+ msg +'</div>');
+            }
+            if(hour > 23 | hour < 0 ){
+                add_warning("Enter valid HOURS (Between 0 to 23)");
+            }
+            else if(minute > 59 | minute < 0 ){
+                add_warning("Enter valid MINUTES (Between 0 to 59)");
+            }
+            else if(second > 59 | second < 0 ){
+                add_warning("Enter valid SECONDS (Between 0 to 59)");
+            }
+            else if(local_date == "Invalid Date" ){
+                add_warning("Invalid date format. Valid Date format is MM/DD/YYYY");
+            }else{
+                self.$target.attr("data-release_date",local_date.getTime())
+                self.trigger('set_countdown');
+            }
+        },
+    });
+    
+    website.snippet.options.countdown = website.snippet.Option.extend({
+        start : function () {
+            var self = this;
+            this._super();
+            this.$el.find(".set_countdown").on('click', function () {self.on_set_countdown(); return false;});
+        },
+        on_set_countdown:function(){
+            var self = this;
+            var release_date = parseInt(this.$target[0].getAttribute("data-release_date"));
+            var set_dialog = new website.editor.countdown(self);
+            set_dialog.appendTo($(document.body));
+            if (release_date){
+                var date = new Date(release_date)
+                $('input#web_countdown_date').val((date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear());
+                $('input#web_countdown_hour').val(date.getHours());
+                $('input#web_countdown_min').val(date.getMinutes());
+                $('input#web_countdown_sec').val(date.getSeconds());
+            }
+            set_dialog.on('set_countdown', this, function () {
+                website.countdown(self.$target[0], false);
+                set_dialog.$el.modal('hide');
+            });
+        },
+        add_timer_element: function (type, value) {
+            var $clock_str = {"o_counter_day": "Days", "o_counter_hour": "Hours", "o_counter_min": "Minutes", "o_counter_sec": "Seconds"};
+            if (value && value.length && type == "click"){
+                if (this.$target.find("div."+value).length >= 1){
+                    alert('Countdown Timer displaying "' + $clock_str[value] + '" is already there.')
+                }
+                else{
+                    var $clock = "<div class='col-md-2 col-sm-3 col-xs-6 text-center mb16'><div class='"+value+" o_countdown-text img-circle col-xs-12 text-center'><p> <font class='o_count_val' contenteditable='false'>00</font></p><p><font>"+$clock_str[value]+"</font></p></div><div>"
+                    this.$target.find("div.col-last").first().before($clock);
+                }
+            }
+        },
+    });
+    website.EditorBar.include({
+        edit: function () {
+            var self = this;
+            this._super();
+            $('body').on('click',
+                '.o_show_counter',
+                function(){
+                    $(this).closest('.container').find(".o_countdown_start").removeClass('hidden');
+                    $(this).closest('.container').find(".o_countdown_over").addClass('hidden');
+            });
+            $('body').on('click',
+                '.o_show_release',
+                function(){
+                    $(this).closest('.container').find(".o_countdown_start").addClass('hidden');
+                    $(this).closest('.container').find(".o_countdown_over").removeClass('hidden');
+            });
+        },
+   });
+
     website.snippet.options.marginAndResize = website.snippet.Option.extend({
         start: function () {
             var self = this;

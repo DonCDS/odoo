@@ -339,5 +339,49 @@
         $('[data-target="#oe_applications"]').attr("data-target", "#oe_applications_collapse");
     });
 
+    /* ----- WEBSITE COUNT-DOWN ---- */
+    website.countdown = function(counter, loop){
+        var calculate_time = function(seconds, div, mod) {
+            var timer_digits = ((Math.floor(seconds/div))%mod).toString();
+            return (timer_digits.length < 2) ? "0" + timer_digits : timer_digits;
+        }
+        var update_visuals = function(el_hide, el_show){
+            $(counter).find(el_hide).addClass("hidden");
+            $(counter).find(el_show).removeClass("hidden");
+        }
+        var update_timer = function(seconds) {
+            if (seconds < 0) {
+                $(counter).find('.o_countdown_over').parent().slideToggle("slow" ,function(){
+                    update_visuals('.o_countdown_start','.o_countdown_over');
+                    $(this).slideToggle("slow");
+                });
+                clearTimeout(update_timer);
+                return;
+            }
+            $(counter).find('.o_counter_day font.o_count_val').text(calculate_time(seconds, 86400, 100000));
+            $(counter).find('.o_counter_hour font.o_count_val').text(calculate_time(seconds, 3600, 24));
+            $(counter).find('.o_counter_min font.o_count_val').text(calculate_time(seconds, 60, 60));
+            $(counter).find('.o_counter_sec font.o_count_val').text(calculate_time(seconds, 1, 60));
+            if (loop)
+                setTimeout(function(){ update_timer(seconds - 1); }, 1000);
+        }
+        var time_release = $(counter).attr('data-release_date');
+        var time_now = new Date().getTime()
+        var time_diff = time_release - time_now;
+        var seconds_to_release = Math.floor(time_diff / 1000);
+        if (!time_release || time_release == "Invalid Date" || seconds_to_release <= 0){
+            update_visuals('.o_countdown_start','.o_countdown_over');
+        }
+        else{
+            update_visuals('.o_countdown_over','.o_countdown_start');
+            update_timer(seconds_to_release);
+        }
+    };
+    $(document).ready(function(){
+        _.each($(".countdown"), function(counter){
+            website.countdown(counter, true);
+        });
+    });
+    
     return website;
 })();
