@@ -1422,7 +1422,25 @@ instance.web.View = instance.web.Widget.extend({
     do_search: function(domain, context, group_by) {
     },
     on_sidebar_export: function() {
-        new instance.web.DataExport(this, this.dataset).open();
+        var self= this;
+        var get_selected_ids = 0
+        if (!(get_selected_ids=self.get_selected_ids().length)) {
+            this.do_warn(_t("Warning"), _t("You must select at least one record."));
+        } else {
+            self.do_action({
+                type: 'ir.actions.client',
+                tag: 'export',
+                flags: {new_window: true},
+                params: {
+                    model: self.dataset.model,
+                    dataset: self.dataset,
+                    domain: self.get_active_domain(),
+                    selected_ids: get_selected_ids,
+                    context: self.getParent().action.context,
+                    view: self.ViewManager.action.name,
+                }
+            });
+        }
     },
     sidebar_eval_context: function () {
         return $.when({});
