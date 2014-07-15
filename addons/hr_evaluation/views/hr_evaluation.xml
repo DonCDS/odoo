@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="assets_backend" name="hr_evaluation assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/hr_evaluation/static/src/css/hr_evaluation.css"/>
+            </xpath>
+        </template>
+        <template id="survey_init_inherit" name="SurveyInit" inherit_id="survey.survey_init">
+            <xpath expr="//div/div[@name='go_back']" position="inside">
+                <t t-if="user_input and user_input.evaluation_id">
+                    <a t-attf-href="/web#id=#{user_input.evaluation_id.id}&amp;view_type=form&amp;model=hr_evaluation.evaluation&amp;action=hr_evaluation.open_view_hr_evaluation_tree" class="btn btn-default">Back to Appraisal</a>
+                </t>
+            </xpath>
+        </template>
+        <template id="survey_inherit" name="Survey" inherit_id="survey.survey">
+            <xpath expr="//div/div[@name='go_back_survey']" position="inside">
+                <t t-if="user_input and user_input.evaluation_id">
+                    <a t-attf-href="/web#id=#{user_input.evaluation_id.id}&amp;view_type=form&amp;model=hr_evaluation.evaluation&amp;action=hr_evaluation.open_view_hr_evaluation_tree" class="btn btn-default">Back to Appraisal</a>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</openerp>

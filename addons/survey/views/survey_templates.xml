@@ -38,7 +38,7 @@
                 <div class="container">
                     <div class="jumbotron mt32">
                         <h1>Login required</h1>
-                        <p>This survey is open only to registered people. Please <a t-attf-href="/web/login?redirect=%2Fsurvey%2Fstart%2F#{ slug(survey) }">log in</a>.</p>
+                        <p>This survey is open only to registered people. Please <a t-attf-href="/web/login?redirect=%2Fsurvey%2Fstart%2F#{ slug(survey) }%2F#{token}">log in</a>.</p>
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
             <div class="wrap">
                 <div class="oe_structure" />
                 <div class="container">
-                    <div groups="base.group_website_publisher" t-ignore="true" class="text-right">
+                    <div groups="base.group_website_publisher" t-ignore="true" class="text-right" name="go_back">
                         <a href="/web#action=survey.action_survey_form" class="btn btn-default">Go back to surveys</a>
                     </div>
                     <div class='jumbotron mt32'>
@@ -92,7 +92,7 @@
             <div class="wrap">
                 <div class="oe_structure"/>
                 <div class="container">
-                    <div groups="base.group_website_publisher" t-ignore="true" class="text-right">
+                    <div groups="base.group_website_publisher" t-ignore="true" class="text-right" name="go_back_survey">
                         <a href="/web#action=survey.action_survey_form" class="btn btn-default">Go back to surveys</a>
                     </div>
                     <t t-call="survey.page" />

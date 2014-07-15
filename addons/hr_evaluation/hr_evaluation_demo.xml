@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="1">
-
-        <record id="hr.employee_fp" model="hr.employee">
-            <field name="evaluation_plan_id" ref="hr_evaluation_plan_managersevaluationplan0"/>
-        </record>
-
-        <record id="hr.employee_qdp" model="hr.employee">
-            <field name="evaluation_plan_id" ref="hr_evaluation_plan_managersevaluationplan0"/>
-        </record>
-
-        <record id="hr.employee_al" model="hr.employee">
-            <field name="evaluation_plan_id" ref="hr_evaluation_plan_managersevaluationplan0"/>
-        </record>
-
         <record id="hr_evaluation_evaluation_0" model="hr_evaluation.evaluation">
-            <field name="date">2011-12-24</field>
             <field name="employee_id" ref="hr.employee_fp"/>
-            <field name="plan_id" ref="hr_evaluation.hr_evaluation_plan_managersevaluationplan0"/>
+            <field name="state">new</field>
+            <field name="date_close" eval="time.strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="mail_template" ref="email_template_appraisal"/>
+            <field name="appraisal_manager_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="appraisal_colleagues">True</field>
+            <field name="appraisal_colleagues_ids" eval="[(6,0,[ref('hr.employee_al')])]"/>
+            <field name="appraisal_colleagues_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="appraisal_self">True</field>
+            <field name="appraisal_employee">Pieter Parker</field>
+            <field name="appraisal_self_survey_id" ref="hr_evaluation.appraisal_form"/>
+            <field name="appraisal_subordinates">True</field>
+            <field name="appraisal_subordinates_ids" eval="[(6,0,[ref('hr.employee_qdp')])]"/>
+            <field name="appraisal_subordinates_survey_id" ref="hr_evaluation.opinion_form"/>
         </record>
-
     </data>
 </openerp>

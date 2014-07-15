@@ -920,16 +920,6 @@ class survey_user_input(osv.Model):
         return self.pool.get('survey.survey').action_send_survey(cr, uid,
             [record.survey_id.id], context=context)
 
-    def action_view_answers(self, cr, uid, ids, context=None):
-        ''' Open the website page with the survey form '''
-        user_input = self.read(cr, uid, ids, ['print_url', 'token'], context=context)[0]
-        return {
-            'type': 'ir.actions.act_url',
-            'name': "View Answers",
-            'target': 'self',
-            'url': '%s/%s' % (user_input['print_url'], user_input['token'])
-        }
-
     def action_survey_results(self, cr, uid, ids, context=None):
         ''' Open the website page with the survey results '''
         return {
