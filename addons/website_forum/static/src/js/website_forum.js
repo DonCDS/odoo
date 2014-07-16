@@ -15,6 +15,14 @@
             }
         });
 
+    $('.tag_follow').hover(
+        function(event) {
+            $(this).find('.follow_box').stop().fadeIn().css('display','block');
+        },
+        function(event) {
+            $(this).find('.follow_box').stop().fadeOut().css('display','none');
+    });
+
         $('.vote_up,.vote_down').not('.karma_required').on('click', function (ev) {
             ev.preventDefault();
             var $link = $(ev.currentTarget);
@@ -155,7 +163,7 @@
             createSearchChoice: function (term) {
                 if ($(lastsearch).filter(function () { return this.text.localeCompare(term) === 0;}).length === 0) {
                     //check Karma
-                    if (parseInt($("#karma").val()) >= parseInt($("#karma_retag").val())) {
+                    if (parseInt($("#karma").val()) >= parseInt($("#karma_tag_create").val())) {
                         return {
                             id: "_" + $.trim(term),
                             text: $.trim(term) + ' *',

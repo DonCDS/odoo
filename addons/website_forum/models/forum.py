@@ -110,6 +110,7 @@ class Forum(models.Model):
     karma_retag = fields.Integer(string='Change question tags', default=75)
     karma_flag = fields.Integer(string='Flag a post as offensive', default=500)
     karma_dofollow = fields.Integer(string='Disabled links', help='If the author has not enough karma, a nofollow attribute is added to links', default=500)
+    karma_tag_create = fields.Integer(string='Create new tags', default=30)
 
     @api.model
     def create(self, values):
@@ -117,10 +118,10 @@ class Forum(models.Model):
 
     @api.model
     def _tag_to_write_vals(self, tags=''):
-        User = self.env['res.users']
         Tag = self.env['forum.tag']
         post_tags = []
         existing_keep = []
+        user = self.env.user
         for tag in filter(None, tags.split(',')):
             if tag.startswith('_'):  # it's a new tag
                 # check that not arleady created meanwhile or maybe excluded by the limit on the search
@@ -129,8 +130,7 @@ class Forum(models.Model):
                     existing_keep.append(int(tag_ids[0]))
                 else:
                     # check if user have Karma needed to create need tag
-                    user = User.sudo().browse(self._uid)
-                    if user.exists() and user.karma >= self.karma_retag:
+                    if user.exists() and user.karma >= self.karma_tag_create:
                         post_tags.append((0, 0, {'name': tag[1:], 'forum_id': self.id}))
             else:
                 existing_keep.append(int(tag))
@@ -318,6 +318,14 @@ class Post(models.Model):
                 content = re.sub(match, match[:3] + 'rel="nofollow" ' + match[3:], content)
         return content
 
+    @api.multi
+    def _add_tag_followers(self):
+        tags = set([tag for forum_post in self for tag in forum_post.tag_ids])
+        post_followers = set([partner.id for post in self if post.message_follower_ids for partner in post.message_follower_ids])
+        tag_followers = set([partner.id for tag in tags if tag.message_follower_ids for partner in tag.message_follower_ids])
+        remaining_followers = [follower_id for follower_id in list(tag_followers - post_followers)]
+        return self.message_subscribe(remaining_followers)
+
     @api.model
     def create(self, vals):
         if 'content' in vals and vals.get('forum_id'):
@@ -332,6 +340,10 @@ class Post(models.Model):
             raise KarmaError('Not enough karma to create a new question')
         elif post.parent_id and not post.can_answer:
             raise KarmaError('Not enough karma to answer to a question')
+
+        #add tag follower to question follower
+        post._add_tag_followers()
+
         # messaging and chatter
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
         if post.parent_id:
@@ -364,6 +376,8 @@ class Post(models.Model):
     def write(self, vals):
         if 'content' in vals:
             vals['content'] = self._update_content(vals['content'], self.forum_id.id)
+        user = self.env.user
+
         if 'state' in vals:
             if vals['state'] in ['active', 'close'] and any(not post.can_close for post in self):
                 raise KarmaError('Not enough karma to close or reopen a post.')
@@ -382,7 +396,14 @@ class Post(models.Model):
         if any(key not in ['state', 'active', 'is_correct', 'closed_uid', 'closed_date', 'closed_reason_id'] for key in vals.keys()) and any(not post.can_edit for post in self):
             raise KarmaError('Not enough karma to edit a post.')
 
+        #add tag follower to question follower
+        if vals.get('tag_ids'):
+            if user.exists() and user.karma < self.forum_id.karma_retag:
+                vals['tag_ids'] = False
+            self._add_tag_followers()
+
         res = super(Post, self).write(vals)
+
         # if post content modify, notify followers
         if 'content' in vals or 'name' in vals:
             for post in self:
@@ -653,7 +674,7 @@ class Vote(models.Model):
 class Tags(models.Model):
     _name = "forum.tag"
     _description = "Forum Tag"
-    _inherit = ['website.seo.metadata']
+    _inherit = ['mail.thread', 'website.seo.metadata']
 
     name = fields.Char('Name', required=True)
     create_uid = fields.Many2one('res.users', string='Created by', readonly=True)
@@ -666,3 +687,18 @@ class Tags(models.Model):
     def _get_posts_count(self):
         for tag in self:
             tag.posts_count = len(tag.post_ids)
+
+    @api.model
+    def create(self, vals):
+        tag = super(Tags, self).create(vals)
+        user = self.env.user
+        if user.karma < tag.forum_id.karma_tag_create and not user.id == self.sudo().env.user.id:
+            raise Warning(_('Not enough karma to create a new Tag'))
+        return tag
+
+    @api.multi
+    def write(self, values):
+        user = self.env.user
+        if user.karma < self.forum_id.karma_tag_create and not user.id == self.sudo().env.user.id:
+            raise Warning(_('Not enough karma to create a new Tag'))
+        return super(Tags, self).write(values)
