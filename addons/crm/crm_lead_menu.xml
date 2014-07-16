@@ -15,6 +15,7 @@
                 'empty_list_help_model': 'crm.team',
                 'needaction_menu_ref': 'crm.menu_crm_opportunities',
                 'search_default_to_process':1,
+                'search_default_my_leads':1,
             }
         </field>
         <field name="help" type="html">
