@@ -217,7 +217,7 @@
                                                     <t t-if="record.has_image.raw_value === true">
                                                         <img t-att-src="kanban_image('res.partner', 'image_small', record.id.value)" class="oe_avatar oe_kanban_avatar_smallbox"/>
                                                     </t>
-                                                    <t t-if="record.image and record.image.raw_value !== false">
+                                                    <t t-if="record.has_image.raw_value === false and record.image and record.image.raw_value !== false">
                                                         <img t-att-src="'data:image/png;base64,'+record.image.raw_value" class="oe_avatar oe_kanban_avatar_smallbox"/>
                                                     </t>
                                                     <t t-if="record.has_image.raw_value === false and (!record.image or record.image.raw_value === false)">
