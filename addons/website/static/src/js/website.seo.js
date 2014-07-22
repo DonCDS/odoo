@@ -30,6 +30,7 @@
         init: function (parent, options) {
             this.root = options.root;
             this.keyword = options.keyword;
+            this.language = options.language;
             this.htmlPage = options.page;
             this._super(parent);
         },
@@ -47,7 +48,7 @@
             return this.analyze().description;
         },
         select: function () {
-            this.trigger('selected', this.keyword);
+            this.trigger('selected', this.keyword, this.language);
         },
     });
 
@@ -55,6 +56,7 @@
         template: 'website.seo_suggestion_list',
         init: function (parent, options) {
             this.root = options.root;
+            this.language = options.language;
             this.htmlPage = options.page;
             this._super(parent);
         },
@@ -64,29 +66,38 @@
         refresh: function () {
             var self = this;
             self.$el.append("Loading...");
-            function addSuggestions (list) {
-                self.$el.empty();
-                // TODO Improve algorithm + Ajust based on custom user keywords
-                var regex = new RegExp(self.root, "gi");
-                var cleanList = _.map(list, function (word) {
-                    return word.replace(regex, "").trim();
-                });
-                // TODO Order properly ?
-                _.each(_.uniq(cleanList), function (keyword) {
-                    if (keyword) {
-                        var suggestion = new website.seo.Suggestion(self, {
-                            root: self.root,
-                            keyword: keyword,
-                            page: self.htmlPage,
-                        });
-                        suggestion.on('selected', self, function (word) {
-                            self.trigger('selected', word);
-                        });
-                        suggestion.appendTo(self.$el);
-                    }
-                });
-            }
-            $.getJSON("/website/seo_suggest/" + encodeURIComponent(this.root + " "), addSuggestions);
+            var language = self.language || website.get_context().lang.toLowerCase();
+            openerp.jsonRpc('/website/seo_suggest', 'call', {
+                'keywords': self.root,
+                'lang': language,
+            }).then(function(list){
+                self.addSuggestions(list);
+            });
+        },
+        addSuggestions: function(list) {
+            list  = JSON.parse(list);
+            var self = this;
+            self.$el.empty();
+            // TODO Improve algorithm + Ajust based on custom user keywords
+            var regex = new RegExp(self.root, "gi");
+            var cleanList = _.map(list, function (word) {
+                return word.replace(regex, "").trim();
+            });
+            // TODO Order properly ?
+            _.each(_.uniq(cleanList), function (keyword) {
+                if (keyword) {
+                    var suggestion = new website.seo.Suggestion(self, {
+                        root: self.root,
+                        language: self.language,
+                        keyword: keyword,
+                        page: self.htmlPage,
+                    });
+                    suggestion.on('selected', self, function (word, language) {
+                        self.trigger('selected', word, language);
+                    });
+                    suggestion.appendTo(self.$el);
+                }
+            });
         },
     });
 
@@ -99,6 +110,7 @@
         init: function (parent, options) {
             this.keyword = options.word;
             this.htmlPage = options.page;
+            this.language = options.language;
             this._super(parent);
         },
         start: function () {
@@ -106,10 +118,11 @@
             this.htmlPage.on('description-changed', this, this.updateLabel);
             this.suggestionList = new website.seo.SuggestionList(this, {
                 root: this.keyword,
+                language: this.language,
                 page: this.htmlPage,
             });
-            this.suggestionList.on('selected', this, function (word) {
-                this.trigger('selected', word);
+            this.suggestionList.on('selected', this, function (word, language) {
+                this.trigger('selected', word, language);
             });
             this.suggestionList.appendTo(this.$('.js_seo_keyword_suggestion'));
         },
@@ -147,11 +160,6 @@
                 _.each(existingKeywords, function (word) {
                     self.add.call(self, word);
                 });
-            } else {
-                var companyName = self.htmlPage.company().toLowerCase();
-                if (companyName != 'yourcompany') {
-                    self.add(companyName);
-                }
             }
         },
         keywords: function () {
@@ -167,21 +175,22 @@
         exists: function (word) {
             return _.contains(this.keywords(), word);
         },
-        add: function (candidate) {
+        add: function (candidate, language) {
             var self = this;
             // TODO Refine
             var word = candidate ? candidate.replace(/[,;.:<>]+/g, " ").replace(/ +/g, " ").trim().toLowerCase() : "";
             if (word && !self.isFull() && !self.exists(word)) {
                 var keyword = new website.seo.Keyword(self, {
                     word: word,
+                    language: language,
                     page: this.htmlPage,
                 });
                 keyword.on('removed', self, function () {
                    self.trigger('list-not-full');
                    self.trigger('removed', word);
                 });
-                keyword.on('selected', self, function (word) {
-                    self.trigger('selected', word);
+                keyword.on('selected', self, function (word, language) {
+                    self.trigger('selected', word, language);
                 });
                 keyword.appendTo(self.$el);
             }
@@ -330,6 +339,7 @@
         canEditTitle: false,
         canEditDescription: false,
         canEditKeywords: false,
+        canEditLanguage: false,
         maxTitleSize: 65,
         maxDescriptionSize: 150,
         start: function () {
@@ -360,13 +370,22 @@
                 $modal.find('button[data-action=add]')
                     .prop('disabled', false).removeClass('disabled');
             });
-            self.keywordList.on('selected', self, function (word) {
-                self.keywordList.add(word);
+            self.keywordList.on('selected', self, function (word, language) {
+                self.keywordList.add(word, language);
             });
             self.keywordList.appendTo($modal.find('.js_seo_keywords_list'));
             self.disableUnsavableFields();
             self.renderPreview();
             $modal.modal();
+            self.getLanguages();
+        },
+        getLanguages: function(){
+            var self = this;
+            var model = website.session.model('website');
+            model.call('get_languages', [[website.id]]).then(function (data) {
+                self.$('#language-box').html(openerp.qweb.render('website.seo_configuration.language_promot', {'language': data}));
+                $('#language-box').val(website.get_context().lang);
+            });
         },
         disableUnsavableFields: function () {
             var self = this;
@@ -419,8 +438,10 @@
         },
         addKeyword: function (word) {
             var $input = this.$('input[name=seo_page_keywords]');
+            var $language = this.$('select[name=seo_page_language]');
             var keyword = _.isString(word) ? word : $input.val();
-            this.keywordList.add(keyword);
+            var language = $language.val().toLowerCase();
+            this.keywordList.add(keyword,language);
             $input.val("");
         },
         update: function () {
@@ -495,7 +516,7 @@
         descriptionChanged: function () {
             var self = this;
             setTimeout(function () {
-                var description = self.$('textarea[name=seo_page_description]').attr('value');
+                var description = self.$('textarea[name=seo_page_description]').val();
                 self.htmlPage.changeDescription(description);
                 self.renderPreview();
             }, 0);
