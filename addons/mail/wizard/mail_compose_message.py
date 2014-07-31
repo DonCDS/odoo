@@ -138,6 +138,14 @@ class mail_compose_message(osv.TransientModel):
                 ('mass_mail', 'Email Mass Mailing'),
                 ('mass_post', 'Post on Multiple Documents')]
 
+    def _get_model_id(self, cr, uid, ids, name, args, context):
+        res = {}
+        model_obj = self.pool['ir.model']
+        for message in self.browse(cr, uid, ids, context=context):
+            model_ids = model_obj.search(cr, uid, [('model', '=', message.model)], context=context)
+            res[message.id] = model_ids and model_ids[0] or False
+        return res
+
     _columns = {
         'composition_mode': fields.selection(
             lambda s, *a, **k: s._get_composition_mode_selection(*a, **k),
@@ -156,6 +164,9 @@ class mail_compose_message(osv.TransientModel):
         'notify': fields.boolean('Notify followers',
             help='Notify followers of the document (mass post only)'),
         'template_id': fields.many2one('mail.template', 'Use template', select=True),
+        'model_id': fields.function(_get_model_id, string='Application',
+            type='many2one', relation='ir.model',
+            select=True, readonly=True),
     }
     _defaults = {
         'composition_mode': 'comment',

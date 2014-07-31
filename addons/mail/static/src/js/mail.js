@@ -35,6 +35,20 @@ openerp.mail = function (session) {
             return [text, false];
         },
 
+        /* If there is unread message in thread, displays Mark all read button, else hide it.
+        */
+        show_mark_all_read : false,
+
+        check_message_read: function(){
+            if ($(".oe_read").length && this.show_mark_all_read) {
+                $(".oe_compact_inbox").css('width', '84%');
+                $(".mark_all_read").css('display', 'inline-block');
+            } else {
+                $(".mark_all_read").css('display', 'none');
+                $(".oe_compact_inbox").css('width', '100%');
+            }
+         },
+
         /* Get an image in /web/binary/image?... */
         get_image: function (session, model, field, id, resize) {
             var r = resize ? encodeURIComponent(resize) : '';
@@ -482,6 +496,7 @@ openerp.mail = function (session) {
             this.$('.oe_compact_inbox').on('click', self.on_toggle_quick_composer);
             this.$('.oe_compose_post').on('click', self.on_toggle_quick_composer);
             this.$('.oe_compose_log').on('click', self.on_toggle_quick_composer);
+            this.$('.mark_all_read').on('click', _.bind(self.mark_all_read, this));
             this.$('input.oe_form_binary_file').on('change', _.bind( this.on_attachment_change, this));
             this.$('.oe_cancel').on('click', _.bind( this.on_cancel, this));
             this.$('.oe_post').on('click', self.on_message_post);
@@ -501,6 +516,14 @@ openerp.mail = function (session) {
             this.$(".oe_msg_attachment_list").on('click', '.oe_delete', this.on_attachment_delete);
 
             this.$(".oe_recipients").on('change', 'input', this.on_checked_recipient);
+        },
+
+        mark_all_read: function(){
+            if (confirm(_t('Are you sure you want to mark all unread messages as read?'))) {
+                _.each(this.parent_thread.messages, function (thread) {
+                    thread.on_message_read_unread(true);
+                });
+            }
         },
 
         on_compose_fullmail: function (default_composition_mode) {
@@ -556,6 +579,7 @@ openerp.mail = function (session) {
 
             this.display_attachments();
             this.bind_events();
+            mail.ChatterUtils.check_message_read();
         },
 
         on_cancel: function (event) {
@@ -916,6 +940,7 @@ openerp.mail = function (session) {
 
             this.ds_notification = new session.web.DataSetSearch(this, 'mail.notification');
             this.ds_message = new session.web.DataSetSearch(this, 'mail.message');
+            mail.ChatterUtils.check_message_read();
         },
 
         /**
@@ -1061,6 +1086,7 @@ openerp.mail = function (session) {
             );
             /*insert thread in parent message*/
             this.thread.insertAfter(this.$el);
+            mail.ChatterUtils.check_message_read();
         },
         
         /**
@@ -1602,6 +1628,7 @@ openerp.mail = function (session) {
             if (this.options.root_thread == this && !this.messages.length) {
                 this.no_message();
             }
+            mail.ChatterUtils.check_message_read();
             return false;
 
         },
@@ -2018,6 +2045,7 @@ openerp.mail = function (session) {
          * Create the root thread widget and display this object in the DOM
          */
         message_render: function (search) {
+            mail.ChatterUtils.show_mark_all_read = search && search['domain'].length ? true : false;
             var domain = this.domain.concat(search && search['domain'] ? search['domain'] : []);
             var context = _.extend(this.context, search && search['context'] ? search['context'] : {});
 

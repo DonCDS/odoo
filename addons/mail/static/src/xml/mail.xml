@@ -46,6 +46,7 @@
                     <t t-if="widget.options.compose_placeholder" t-raw="widget.options.compose_placeholder"/>
                     <t t-if="!widget.options.compose_placeholder and widget.options.view_mailbox">Share with my followers...</t>
                 </div>
+                <div class="mark_all_read btn btn-default btn-sm pull-right">Mark all read</div>
             </t>
             <t t-if="!widget.options.view_mailbox">
                 <div class="field_text oe_compact oe_compact_record">
