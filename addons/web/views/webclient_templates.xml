@@ -26,6 +26,7 @@
 
             <link rel="stylesheet" href="/web/static/lib/fontawesome/css/font-awesome.css"/>
             <link rel="stylesheet" href="/web/static/src/font/lato/stylesheet.css" />
+            <link type="text/less" rel="stylesheet" href="/web/static/src/less/base_common.less"/>
         </template>
 
         <template id="jqueryui_conflict" name="jquery.ui.conflict">

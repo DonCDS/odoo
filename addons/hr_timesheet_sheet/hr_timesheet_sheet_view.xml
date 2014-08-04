@@ -183,10 +183,10 @@
                     <filter name="to_approve" string="To Approve" domain="[('state','=','confirm')]" help="Confirmed Timesheets"/>
                     <filter string="New Mail" name="message_unread" domain="[('message_unread','=',True)]"/>
                     <field name="employee_id"/>
-                    <field name="department_id"/>
+                    <field name="department_id" groups="hr.group_multi_departments"/>
                     <group expand="0" string="Group By">
                         <filter string="Employees" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}"/>
-                        <filter string="Department" icon="terp-personal+" domain="[]" context="{'group_by':'department_id'}"/>
+                        <filter string="Department" domain="[]" context="{'group_by':'department_id'}" groups="hr.group_multi_departments"/>
                     </group>
                 </search>
             </field>
@@ -379,6 +379,41 @@
                         <field name="timesheet_count" widget="statinfo" string="Timesheets"/>
                     </button>
                 </xpath>
+            </field>
+        </record>
+
+        <record id="link_timesheet_to_approve" model="ir.actions.act_window">
+            <field name="res_model">hr_timesheet_sheet.sheet</field>
+            <field name="view_type">form</field>
+            <field name="name">Timesheets to Approve</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                'search_default_department_id': [active_id],
+                'default_department_id': active_id,
+                'search_default_to_approve': 1}
+            </field>
+        </record>
+        <!--Hr Department Inherit Kanban view-->
+        <record model="ir.ui.view" id="view_timesheet_department_kanban">
+            <field name="name">view.timesheet.department.kanban</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_kanban"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//templates" position="before">
+                        <field name="timesheet_to_approve_count"/>
+                    </xpath>
+                    <xpath expr="//div[@name='to_approve']" position="attributes">
+                        <attribute name="class">col-md-6 col-xs-6</attribute>
+                    </xpath>
+                    <xpath expr="//div[@name='to_approve']" position="inside">
+                        <div class="mb4">
+                            <a name="%(link_timesheet_to_approve)d" type="action">
+                                <t t-esc="record.timesheet_to_approve_count.raw_value or 0"/> Timesheet
+                            </a>
+                        </div>
+                    </xpath>
+                </data>
             </field>
         </record>
 

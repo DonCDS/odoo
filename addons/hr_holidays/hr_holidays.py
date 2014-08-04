@@ -25,14 +25,21 @@
 import calendar
 import datetime
 from datetime import date
+import logging
 import math
 import time
 from operator import attrgetter
 
+from dateutil.relativedelta import relativedelta
+import pytz
+
 from openerp.exceptions import UserError, AccessError
+from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+
+_logger = logging.getLogger(__name__)
 
 
 class hr_holidays_status(osv.osv):
@@ -584,6 +591,42 @@ class hr_employee(osv.Model):
             res[employee_id] = {'leaves_count': leaves, 'approved_leaves_count': approved_leaves}
         return res
 
+    def _subtract_timezone(self, cr, uid, timestamp, context=None):
+        """
+        senario: Consider the case, you are in timezone UTC+5:30, you create holiday record at 1AM on 03/12/2014,
+        now notice that it is going to store in previous day at 02/12/2014 19:30:00 PM(In UTC)
+        so as per the timezone our today start must be 02/12/2014 18:30:00PM.
+        this method will subtract/add the timezone difference in UTC value.
+        """
+        utc = pytz.timezone('UTC')
+        tz_name = context and context.get('tz') or self.pool['res.users'].browse(cr, SUPERUSER_ID, uid).tz
+        if tz_name:
+            try:
+                context_tz = pytz.timezone(tz_name)
+                context_timestamp = context_tz.localize(timestamp, is_dst=False)
+                return context_timestamp.astimezone(utc)
+            except Exception:
+                _logger.debug("Failed to subtract/add timzone difference in UTC value", exc_info=True)
+        return timestamp
+
+    def _absent_employee(self, cr, uid, ids, field_name, arg, context=None):
+        return {}
+
+    def _search_absent_employee(self, cr, uid, obj, name, args, context=None):
+        today_date = datetime.date.today().strftime(
+            tools.DEFAULT_SERVER_DATETIME_FORMAT)
+        today_start = self._subtract_timezone(cr, uid, datetime.datetime.strptime(today_date, tools.DEFAULT_SERVER_DATETIME_FORMAT), context=context)
+        today_end = (today_start + relativedelta(
+            hours=23, minutes=59, seconds=59)).strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
+        today_start = today_start.strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
+        holiday_ids = self.pool['hr.holidays'].search_read(cr, uid, [
+            ('state', 'not in', ['cancel', 'refuse']),
+            ('date_from', '<=', today_end),
+            ('date_to', '>=', today_start),
+            ('type', '=', 'remove')], ['employee_id'], context=context)
+        absent_emp_ids = [holiday['employee_id'][0] for holiday in holiday_ids if holiday['employee_id']]
+        return [('id', 'in', absent_emp_ids)]
+
     _columns = {
         'remaining_leaves': fields.function(_get_remaining_days, string='Remaining Legal Leaves', fnct_inv=_set_remaining_days, type="float", help='Total number of legal leaves allocated to this employee, change this value to create allocation/leave request. Total based on all the leave types without overriding limit.'),
         'current_leave_state': fields.function(
@@ -595,4 +638,5 @@ class hr_employee(osv.Model):
         'leave_date_to': fields.function(_get_leave_status, multi='leave_status', type='date', string='To Date'),
         'leaves_count': fields.function(_leaves_count, multi='_leaves_count', type='integer', string='Number of Leaves (current month)'),
         'approved_leaves_count': fields.function(_leaves_count, multi='_leaves_count', type='integer', string='Approved Leaves not in Payslip', help="These leaves are approved but not taken into account for payslip"),
+        'absent_of_today': fields.function(_absent_employee, fnct_search=_search_absent_employee, type="boolean", string="Absent Today")
     }
