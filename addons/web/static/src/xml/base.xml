@@ -1217,6 +1217,11 @@
             </t>
     </select>
 </t>
+<t t-name="FieldLabelSelection">
+    <t t-if="value">
+        <span t-attf-class="label label-#{widget.classes[value[0]] or 'success'}"><t t-esc="value[1]"/></span>
+    </t>
+</t>
 <t t-name="FieldRadio">
     <span t-attf-class="oe_form_field oe_form_field_radio #{widget.options.horizontal ? 'oe_horizontal' : 'oe_vertical'}" t-att-style="widget.node.attrs.style">
         <span t-if="!widget.get('effective_readonly')">

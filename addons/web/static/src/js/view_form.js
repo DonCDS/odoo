@@ -3234,6 +3234,27 @@ instance.web.form.FieldSelection = instance.web.form.AbstractField.extend(instan
     }
 });
 
+instance.web.form.LabelSelection = instance.web.form.AbstractField.extend(instance.web.form.ReinitializeFieldMixin, {
+    template: 'FieldSelection',
+    init: function(field_manager, node) {
+        this._super(field_manager, node);
+        this.selection = _.clone(this.field.selection) || [];
+        this.classes = this.options && this.options.classes  || {};
+    },
+    initialize_content: function () {
+        this.on("change:effective_readonly", this, this.render_value);
+    },
+    set_value: function(value_) {
+        value_ = value_ === null ? false : value_;
+        value_ = value_ instanceof Array ? value_[0] : value_;
+        this._super(value_);
+    },
+    render_value: function() {
+        var found = _.find(this.selection, function(el) { return el[0] === this.get("value"); }, this);
+        this.$el.html(QWeb.render("FieldLabelSelection", {widget: this, value: found}));
+    },
+});
+
 instance.web.form.FieldRadio = instance.web.form.AbstractField.extend(instance.web.form.ReinitializeFieldMixin, {
     template: 'FieldRadio',
     events: {
@@ -6406,6 +6427,7 @@ instance.web.form.widgets = new instance.web.Registry({
     'priority':'instance.web.form.Priority',
     'kanban_state_selection':'instance.web.form.KanbanSelection',
     'statinfo': 'instance.web.form.StatInfo',
+    'label_selection': 'openerp.web.form.LabelSelection',
 });
 
 /**
