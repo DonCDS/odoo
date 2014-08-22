@@ -420,7 +420,7 @@
   <template id="optional_products">
     <div class="container mt32" t-if="option">
         <section>
-            <h1 class="page-header">Options</h1>
+            <h1 class="page-header">Suggested Products</h1>
         </section>
         <section id="options">
             <table class="table table-hover">
@@ -430,6 +430,7 @@
                         <th>Description</th>
                         <th></th>
                         <th class="text-right">Price</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -457,9 +458,9 @@
                                     </div>
                                 </strong>
                             </td>
-                            <td class="pull-right">
+                            <td class="text-right">
                                 <a t-attf-href="/quote/add_line/#{ option.id }/#{ quotation.id }/#{ quotation.access_token }" class="mb8 hidden-print">
-                                    <span class="fa fa-shopping-cart"/>
+                                    <span class="fa fa-shopping-cart fa-2x"/>
                                 </a>
                             </td>
                         </t>
