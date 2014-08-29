@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import re
+import locale
+from feedgen.feed import FeedGenerator
 import datetime
 import urllib
+import pytz
 import werkzeug
 
 from openerp import tools
@@ -90,8 +94,9 @@ class WebsiteBlog(http.Controller):
         '/blog/<model("blog.blog"):blog>/page/<int:page>',
         '/blog/<model("blog.blog"):blog>/tag/<string:tag>',
         '/blog/<model("blog.blog"):blog>/tag/<string:tag>/page/<int:page>',
+        '/blog/<model("blog.blog"):blog>/<any("atom","rss"):feed_type>',
     ], type='http', auth="public", website=True)
-    def blog(self, blog=None, tag=None, page=1, **opt):
+    def blog(self, blog=None, tag=None, page=1, feed_type=None, **opt):
         """ Prepare all values to display the blog.
 
         :return dict values: values for the templates, containing
@@ -164,7 +169,101 @@ class WebsiteBlog(http.Controller):
             'blog_url': blog_url,
             'date': date_begin,
         }
-        response = request.website.render("website_blog.blog_post_short", values)
+
+        if feed_type in ['atom','rss']:
+            response = self._blog_feed(blog, domain, feed_type)
+        else:
+            response = request.website.render("website_blog.blog_post_short", values)
+        return response
+
+    def _blog_feed(self, blog, domain, feed_type):
+        """ RSS/ATOM
+        
+        Blog Detail : fg = FeedGenerator()
+
+        - Id : Blog id (URL)
+        - Title : Blog name
+        - Link : Blog LINK (URL)
+        - Description : Blog Description
+        - Lastbuilddate : Update date (last modification date in the blog) "This will set both ATOM:updated and RSS:lastBuildDate."
+        - Language : blog language
+            ------
+            Blog Post Detail : fe = fg.add_entry()
+            ------
+            - Id : Blog Post id (URL)
+            - Title : Blog Post Name
+            - Link : Blog Post Link (URL) OR Rss Link OR Atom Link
+            - Author : Blog Post Name(Name, Email)
+            - Description : Blog Post Subtitle
+            - Update : last modification date in the Blog Post for use ATOM
+            - Published : Create Date of Blog Post for use ATOM
+            - Pubdate : Create Date of Blog Post for use RSS
+            - Content : Blog Post Content (Diasplay Content In ATOM) "The content MUST be suitable for presentation as HTML"
+        """
+        limit = 15
+        cr, uid, context = request.cr, request.uid, request.context
+        user = request.registry['res.users'].browse(cr, uid, uid, context=context)
+        base_url = request.registry['ir.config_parameter'].get_param(cr, uid, 'web.base.url')
+        blog_post_obj = request.registry['blog.post']
+
+        timezone_format = '%a, %d %b %Y %H:%M:%S %z'
+        blog_url = '%s/blog/%s' % (base_url,slug(blog))
+        fg = FeedGenerator()
+        fg.id(blog_url)
+        fg.title(blog.name)
+        fg.link(href='%s/blog/%s/atom' % (base_url,slug(blog)), type='application/atom+xml', rel='self')
+        fg.link(href='%s/blog/%s/rss' % (base_url,slug(blog)), type='application/rss+xml', rel='self')
+        fg.link(href=blog_url ,rel='alternate')
+        fg.description(blog.name)
+        fg.language(user.lang)
+
+        timezone = pytz.timezone(context.get('tz') or 'UTC')
+        blog_write_date = datetime.datetime.strptime(blog.write_date,tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(tzinfo=pytz.utc).astimezone(timezone)
+
+        locale.setlocale(locale.LC_TIME, "en_US.utf8")
+        #This will set both atom:updated and rss:lastBuildDate.
+        fg.lastBuildDate(blog_write_date.strftime(timezone_format))
+
+        #Latest updated blogposts
+        blog_post_ids = blog_post_obj.search(cr, uid, domain, order="write_date desc", context=context)
+        for post in blog_post_obj.browse(cr, SUPERUSER_ID, blog_post_ids, context=context)[:limit]:
+            fe = fg.add_entry()
+            blog_post_url = '%s/blog/%s/post/%s' % (base_url,slug(blog),slug(post))
+
+            fe.id(blog_post_url),
+            fe.title(post.name),
+            fe.link(href=blog_post_url),
+            fe.author({'name':post.author_id.name ,'email':post.author_id.email}),
+            fe.description(post.subtitle),
+
+            post_create_date = datetime.datetime.strptime(post.create_date,tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(tzinfo=pytz.utc).astimezone(timezone)
+            post_write_date = datetime.datetime.strptime(post.write_date,tools.DEFAULT_SERVER_DATETIME_FORMAT).replace(tzinfo=pytz.utc).astimezone(timezone)
+
+            fe.updated(post_write_date.strftime(timezone_format)), #atom
+            fe.pubdate(post_create_date.strftime(timezone_format)), #rss
+            fe.published(post_create_date.strftime(timezone_format)), #atom
+
+            post_content=""
+            if post.content:
+                # Find pattern in post.content and replace
+                content = re.compile(' src="/')
+                post_content = content.sub(' src="%s/' % base_url , post.content)
+
+                content = re.compile('href="')
+                post_content = content.sub('href="%s' % base_url , post_content)
+
+                regex_url_find = re.compile('[^<div*?](?#\S)data-src=\"?\'?([^\\"\'>]*)',re.M|re.U)
+                get_urls = regex_url_find.findall(post_content)
+                content = re.compile('<div class="media_iframe_video"(.*?)>')
+
+                for url in get_urls:
+                    post_content = re.sub(content, '<iframe src="%s"></iframe>' % url, post_content, 1)
+            fe.content(post_content or u' '),
+
+        if feed_type == 'rss':
+            response = request.make_response(fg.rss_str(pretty=True),[('Content-Type', 'text/xml')])
+        else:
+            response = request.make_response(fg.atom_str(pretty=True),[('Content-Type', 'text/xml')])
         return response
 
     @http.route([
