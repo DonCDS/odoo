@@ -133,7 +133,8 @@ class sale_quote(http.Controller):
 
     @http.route(["/quote/template/<model('sale.quote.template'):quote>"], type='http', auth="user", website=True)
     def template_view(self, quote, **post):
-        values = { 'template': quote }
+        dummy, action = request.registry.get('ir.model.data').get_object_reference(request.cr, request.uid, 'website_quote', 'action_sale_quotation_template')
+        values = { 'template': quote, 'action': action}
         return request.website.render('website_quote.so_template', values)
 
     @http.route(["/quote/add_line/<int:option_id>/<int:order_id>/<token>"], type='http', auth="public", website=True)

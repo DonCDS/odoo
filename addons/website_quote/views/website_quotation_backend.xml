@@ -70,6 +70,16 @@
                                <div id="number_of_days">
                                    <field name="number_of_days" class="oe_inline"/> days
                                </div>
+                               <label for="add_lines_in_quotes"/>
+                               <div id="add_lines_in_quotes">
+                                   <field name="add_lines_in_quotes" class="oe_inline"/>
+                                   <p class="oe_grey">
+                                        In order to describe all order lines in the template, 
+                                        add all possible products here below. 
+                                        Those products will be automatically added to quote linked to this template. 
+                                        To create empty quote, unselect this box.
+                                     </p>
+                               </div>
                             </group>
                         </group>
                         <notebook>

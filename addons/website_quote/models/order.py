@@ -25,6 +25,7 @@ import time
 import datetime
 
 import openerp.addons.decimal_precision as dp
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
 class sale_quote_template(osv.osv):
     _name = "sale.quote.template"
@@ -36,6 +37,10 @@ class sale_quote_template(osv.osv):
         'note': fields.text('Terms and conditions'),
         'options': fields.one2many('sale.quote.option', 'template_id', 'Optional Products Lines', copy=True),
         'number_of_days': fields.integer('Quotation Duration', help='Number of days for the validity date computation of the quotation'),
+        'add_lines_in_quotes': fields.boolean('Add lines in Quotes')
+    }
+    _defaults = {
+        'add_lines_in_quotes': True,
     }
     def open_template(self, cr, uid, quote_id, context=None):
         return {
@@ -175,15 +180,34 @@ class sale_order(osv.osv):
 
         if context is None:
             context = {}
+
         if partner:
             context['lang'] = self.pool['res.partner'].browse(cr, uid, partner, context).lang
 
         lines = [(5,)]
+        options = []
         quote_template = self.pool.get('sale.quote.template').browse(cr, uid, template_id, context=context)
+        date = False
+        if quote_template.number_of_days > 0:
+            date = (datetime.datetime.now() + datetime.timedelta(quote_template.number_of_days)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+        for option in quote_template.options:
+            options.append((0, 0, {
+                'product_id': option.product_id.id,
+                'name': option.name,
+                'quantity': option.quantity,
+                'uom_id': option.uom_id.id,
+                'price_unit': option.price_unit,
+                'discount': option.discount,
+                'website_description': option.website_description,
+            }))
+        order_data = {'order_line': lines, 'website_description': quote_template.website_description, 'note': quote_template.note, 'options': options, 'validity_date': date}
+        if not quote_template.add_lines_in_quotes:
+            return {'value': order_data}
         for line in quote_template.quote_line:
             res = self.pool.get('sale.order.line').product_id_change(cr, uid, False,
                 False, line.product_id.id, line.product_uom_qty, line.product_uom_id.id, line.product_uom_qty,
-                line.product_uom_id.id, line.name, partner, False, True, time.strftime('%Y-%m-%d'),
+                line.product_uom_id.id, line.name, partner, False, True, time.strftime(DEFAULT_SERVER_DATE_FORMAT),
                 False, fiscal_position, True, context)
             data = res.get('value', {})
             if 'tax_id' in data:
@@ -199,22 +223,9 @@ class sale_order(osv.osv):
                 'state': 'draft',
             })
             lines.append((0, 0, data))
-        options = []
-        for option in quote_template.options:
-            options.append((0, 0, {
-                'product_id': option.product_id.id,
-                'name': option.name,
-                'quantity': option.quantity,
-                'uom_id': option.uom_id.id,
-                'price_unit': option.price_unit,
-                'discount': option.discount,
-                'website_description': option.website_description,
-            }))
-        date = False
-        if quote_template.number_of_days > 0:
-            date = (datetime.datetime.now() + datetime.timedelta(quote_template.number_of_days)).strftime("%Y-%m-%d")
-        data = {'order_line': lines, 'website_description': quote_template.website_description, 'note': quote_template.note, 'options': options, 'validity_date': date}
-        return {'value': data}
+
+        order_data['order_line'] = lines
+        return {'value': order_data}
 
     def recommended_products(self, cr, uid, ids, context=None):
         order_line = self.browse(cr, uid, ids[0], context=context).order_line
