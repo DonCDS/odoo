@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Add assets -->
+        <template id="assets_editor" inherit_id="website.assets_editor" name="Twitter wall Editor">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.editor.js"></script>
+            </xpath>
+        </template>
+        
+        <!-- Add menuitem under connect to us -->
+        <template id="twitter_wall_footer_custom" inherit_id="website.footer_default" name="Footer Twitter Wall Link">
+            <xpath expr="//div[@id='info']/ul" position="inside">
+                <li><a href="/twitter_walls">Twitter Wall</a></li>
+            </xpath>
+        </template>
+        
+        <!-- Page that display all walls -->
+        <template id="twitter_walls">
+            <t t-call="website.layout">
+                <t t-set="head">
+                    <link rel="stylesheet"
+                        href="/website_twitter_wall/static/src/css/website_twitter_wall.css"
+                        type="text/css" />
+                    <script type="text/javascript"
+                        src="/website_twitter_wall/static/src/js/website_twitter_wall.js"></script>
+                </t>
+                
+                <div class="container">
+                    <div class="modal fade" id="APIConf" t-if="not api_conf or not api_token_conf">
+                      <div class="modal-dialog modal-content">
+                        <div t-att-class="not api_conf and 'modal-header alert alert-danger' or 'modal-header alert alert-warning'">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span></button>
+                            <h4 class="modal-title" t-esc="not api_conf and 'Error Configuration!' or 'Authorize Required!'"/>
+                          </div>
+                          <div class="modal-body">
+                             <t t-if="not api_conf">
+                                <strong>Error!</strong> Contact System Administration for Configure Twitter API KEY and ACCESS TOKEN.
+                                <a href="/web#action=website.action_website_configuration">Click Here</a>
+                                <br/>
+                             </t>
+                             <t t-if="not api_token_conf">
+                                <strong>Warning!</strong> Authorize the account for start streaming.
+                                <a t-attf-href="/twitter_wall/authenticate">Click Here</a>
+                             </t>
+                          </div>
+                      </div>
+                    </div>
+                    
+                    <div class="text-center text-muted" t-if="not walls">
+                        <h1>No Twitter Wall found</h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="container-fluid">
+                            <div class="row" t-if="walls" name="tweets_for_admin">
+                                <t t-foreach="walls" t-as="wall">
+                                    <div class="wall_box" t-att-wall_id="wall.id">
+                                        <div class="row-fulid">
+                                            <div class="col-md-1 pull-right oe_auto_hide">
+                                                <div class="dropdown">
+                                                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-download"></span></a>
+                                                  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                                    <li><a href="#">Edit</a></li>
+                                                      <li><a t-attf-href="/twitter_wall/#{ slug(wall) }/delete">Delete</a></li>
+                                                      <li><a t-attf-href="/twitter_wall/#{ slug(wall) }/archieve">Display Tweet</a></li>
+                                                  </ul>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <t t-set="list_mode" t-value="'active' if wall.view_mode == 'list_mode' else ''" />
+                                                <label t-attf-class="control-label btn btn-sm btn-default navbar-btn #{list_mode}" t-att-wall_id="wall.id">
+                                                    <input type="radio" name="view_mode" value="list_mode" />
+                                                    <strong>List Mode</strong>
+                                                </label>
+                                                <t t-set="box_mode" t-value="'active' if wall.view_mode == 'box_mode' else ''" />
+                                                <label id="box_id" t-attf-class="control-label btn btn-sm btn-default navbar-btn #{box_mode}" t-att-wall_id="wall.id">
+                                                    <input type="radio" name="view_mode" value="box_mode" />
+                                                    <strong>Box Mode</strong>
+                                                </label>
+                                            </div>
+
+                                            <div class="btn-group pull-right">
+                                                <t t-if="wall.state == 'not_streaming'">
+                                                    <button type="submit"
+                                                        class="btn btn-success navbar-btn start_streaming"
+                                                        t-att-wall_id="wall.id" value="startstreaming"><i class="fa fa-refresh"></i></button>
+                                                </t>
+                                                <t t-if="not wall.state == 'not_streaming'">
+                                                    <button type="submit"
+                                                        class="btn btn-danger navbar-btn stop_streaming"
+                                                        t-att-wall_id="wall.id" value="stopstreaming"><i class="fa fa-refresh"></i></button>
+                                                </t>
+                                            </div>
+                                            
+                                            <div class="col-md-8 oe_padding">
+                                                <h2 class="oe_margin">
+                                                    <a itemprop="url" t-att-class="wall.website_published"
+                                                        t-attf-href="/twitter_wall/#{ slug(wall) }">
+                                                        <span t-esc="wall.name"></span>
+                                                    </a>
+                                                </h2>
+                                                <div t-if="wall.screen_name" class="clearfloat">
+                                                    <span t-foreach="wall.screen_name" t-as="screen_name" class="tagcloud">
+                                                    @ <t t-esc="screen_name.name" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clearfloat"><br /></div>
+                                        <div class="row-fulid oe_description">
+                                            <p><t t-esc="wall.note" /></p>
+                                        </div>
+                                        <div class="clearfloat"><br /></div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Page that display archieved walls -->
+        <template id="twitter_wall_archieve" name="Archieved Wall">
+            <t t-call="website.layout">
+                <t t-set="head">
+                    <script type="text/javascript">
+                        openerp.qweb.add_template('/website_twitter_wall/static/src/xml/website_twitter_wall.xml');
+                    </script>
+                    <link rel="stylesheet"
+                        href="/website_twitter_wall/static/src/css/website_twitter_wall.css"
+                        type="text/css" />
+                    <script type="text/javascript"
+                        src="/website_twitter_wall/static/src/js/website_twitter_wall.js"></script>
+                </t>
+                <div name="tweets_for_archieve" t-att-wall_id="wall.id">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-10" id="approve_tweet_wall" t-att-view_mode="wall.view_mode">
+
+                            </div>
+                            <div class="col-sm-2 pull-right">
+                                <div class="pos_fix">
+                                    <h3>
+                                        Tweet us :<br />
+                                        <label class="label label-danger"># opendays</label>
+                                    </h3> &amp;nbsp;
+                                    Twitter wall powered by Odoo.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Page that display walls -->
+        <template id="twitter_wall" name="Twitter Wall Tweet">
+            <t t-call="website.layout">
+                <t t-set="head">
+                    <script type="text/javascript">
+                        openerp.qweb.add_template('/website_twitter_wall/static/src/xml/website_twitter_wall.xml');
+                    </script>
+                    <link rel="stylesheet"
+                        href="/website_twitter_wall/static/src/css/website_twitter_wall.css"
+                        type="text/css" />
+                    <script type="text/javascript"
+                        src="/website_twitter_wall/static/src/js/website_twitter_wall.js"></script>
+                </t>
+                <div class="full_screen" name="tweets_for_client"
+                    t-attf-style="background-image: url('data:image/jpg;base64, #{back_image}')">
+                    <div class="container" t-att-wall_id="wall_id">
+                        <div class="col-md-offset-11 pull-right">
+                            <form method="POST" action="/twitter_wall/upload_image"
+                                enctype="multipart/form-data" class="form-inline" id="back_img">
+                                <div class="form-group pull-left oe_auto_hide">
+                                    <input t-if="uid" type="file" name="upload" data-type="wall"
+                                        t-att-data-id="wall_id" class="upload_bg_image" accept="image/*"
+                                        style="position: absolute; opacity: 0; width: 1px; height: 1px;" />
+                                    <a t-if="uid" href="#">
+                                        <span class="glyphicon glyphicon-upload upload_img"></span>
+                                    </a>
+                                    <a href="#" id="max_window">
+                                        <span class="glyphicon glyphicon-fullscreen"></span>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-10" id="tweet_wall_div" t-att-view_mode="view_mode">
+
+                            </div>
+                            <div class="col-sm-2 pull-right">
+                                <h3>
+                                    Tweet us :
+                                    <label class="label label-danger"># opendays</label>
+                                </h3>
+                                Twitter wall powered by Odoo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</openerp>

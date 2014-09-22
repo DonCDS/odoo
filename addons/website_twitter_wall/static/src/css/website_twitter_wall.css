@@ -1,0 +1,133 @@
+.full_screen {
+	background: no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	top: auto;
+	position: absolute;
+}
+
+.oe_auto_hide {
+	opacity: 0;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+}
+.oe_auto_hide:hover {
+	opacity: 1;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+}
+
+.oe_formated_date {
+	width: 150px;
+	text-align: right;
+}
+
+.oe_tweets {
+	background-color: rgba(240, 248, 255, 0.8);
+	margin-bottom: 5px;
+	padding: 10px;
+	border-radius: 15px;
+}
+.oe_profile_image {
+	width: 70px;
+}
+
+.oe_padding {
+	padding: 0px;
+}
+.oe_margin {
+    margin: 0px;
+}
+
+.oe_description {
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    /* number of lines to show */
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.oe_description:hover { overflow-y:scroll; }
+.oe_description p {
+    position: relative;
+    line-height: 1.4em;
+    /* 4 times the line-height to show 4 lines */
+    max-height: 5.6em;
+    /* 3 times the line-height to show 3 lines */
+    /*max-height:4.2em;*/
+}
+.oe_description p::after {
+    font-weight: bold;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0 20px 1px 45px;
+}
+
+.oe_tweet_text {
+    font-size: 20px;
+    word-wrap: break-word;
+}
+
+.oe_box_mode {
+    background-color: rgba(240, 248, 255, 0.8);
+    padding: 5px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    min-height: 250px !important;
+    margin: 5px;
+    width: 0%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.oe_profile_image_box{
+    width: 60px;
+    margin: 0px 0px 5px 0px;
+}
+
+div.pos_fix{
+    position: fixed;
+    top: 100px;
+    right:30px;
+}
+
+.wall_box {
+	padding: 10px 15px 10px 15px;
+	border: 1px solid #000000 !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	min-height: 250px !important;
+	margin: 5px;
+	width: 32.1%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+div span.tagcloud {
+	font-size: 11px;
+	/*text-transform: uppercase;*/
+	position: relative;
+	float: left;
+	padding: 2px 5px 2px 5px;
+	margin-right: 10px;
+	margin-top: 10px;
+	border: 1px solid #000000 !important;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.clearfloat {
+	clear: both;
+}
+
+.tweet_url_hash_highlight {
+	color: #4099FF;
+	font-style: italic;
+}

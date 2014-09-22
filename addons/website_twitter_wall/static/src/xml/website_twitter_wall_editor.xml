@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-extend="website.editorbar">
+        <t t-jquery="ul.oe_content_menu" t-operation="append">
+            <li><a id="create-new-twitter-wall" href="#" data-action="new_twitter_wall">New Twitter Wall</a></li>
+        </t>
+    </t>
+    
+    <t t-name="create_twitter_wall">
+        <div class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button title="Close" type="button" class="close" data-dismiss="modal">×</button>
+                        <div class="h2">Create New Twitter Wall</div>
+                        <div class="text-muted">
+                            Get this wall to start/stop streaming to get live Tweet.
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="error_msg" />
+                        <section class="js_screen_names_list">
+                            <div class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="wall_name" class="col-xs-6 col-sm-3 control-label">Wall Name:</label>
+                                    <div class="col-xs-6 col-sm-6">
+                                      <input type="text" name="wall_name" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="screen_name" class="col-xs-6 col-sm-3 control-label">Screen Name:</label>
+                                    <div class="col-xs-6 col-sm-6">
+                                        <input type="text" name="screen_name" class="form-control" placeholder="@ScreenName" multiple="multiple"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-offset-3">
+                                <span class="text-muted">Streaming Tweet with Authorise User. If you want to add more user for moderate then add screen name of user.</span>
+                            </div>
+                        </section>
+                        <div class="form-horizontal mt16" role="form">
+                            <div class="form-group">
+                                <div class="col-xs-offset-6 col-sm-offset-3 checkbox">
+                                    <label>
+                                        <input type="checkbox" name="include_retweet" class="form-control" />Include ReTweet?
+                                    </label>
+                                </div>
+                                <span class="text-muted col-sm-offset-3">Tick mark if you Don't want to stream ReTweet.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="wall_description" class="col-xs-6 col-sm-3 control-label">Description:</label>
+                                <div class="col-xs-6 col-sm-6">
+                                    <textarea name="wall_description" class="form-control" rows="3" cols="70"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-action="save" class="btn btn-primary">Save</button>
+                        or
+                        <a data-action="discard" data-dismiss="modal" href="#" >Discard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

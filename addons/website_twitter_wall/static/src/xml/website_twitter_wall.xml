@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+    <t t-name="twitter_tweets_list_mode" name="res">
+        <div class="col-md-12 oe_tweets">
+            <div class="col-md-1 oe_padding">
+                <img class="img-rounded oe_profile_image" t-att-src="res.user_image_url"></img>
+            </div>
+            <div class="col-md-11">
+                <div>
+                    <b>
+                        <t t-raw="res.name" />
+                    </b>
+                    <small>
+                        @
+                        <t t-raw="res.screen_name" />
+                    </small>
+                    <span class="oe_formated_date pull-right">
+                        <t t-raw="res.created_at_formated_date"></t>
+                    </span>
+                </div>
+                <div>
+                    <p class="oe_tweet_text">
+                        <t t-raw="res.tweet"></t>
+                    </p>
+                </div>
+                <div t-if="res.tweet_media_ids">
+                    <t t-foreach="res.tweet_media_ids" t-as="res_media">
+                        <img t-attf-src="#{res_media.media_url}:medium" height="{res_media.media_height}"
+                            width="{res_media.media_width}"></img>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="twitter_tweets_box_mode" name="res">
+        <div class="oe_box_mode">
+            <div class="col-md-3">
+                <img class="img-rounded oe_profile_image_box" t-att-src="res.user_image_url"></img>
+            </div>
+            <div class="col-md-9">
+                    <b><t t-raw="res.name" /></b><br />
+                    <small>@<t t-raw="res.screen_name" /></small><br />
+                    <t t-raw="res.created_at_formated_date"></t>
+            </div>
+            <div class="col-md-12">
+                <p class="oe_tweet_text">
+                    <t t-raw="res.tweet"></t>
+                </p>
+            </div>
+        </div>
+    </t>
+</template>

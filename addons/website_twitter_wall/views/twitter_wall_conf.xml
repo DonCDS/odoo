@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_website_config_settings" model="ir.ui.view">
+            <field name="name">Twitter settings</field>
+            <field name="model">website.config.settings</field>
+            <field name="inherit_id" ref="website.view_website_config_settings"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='social_twitter']" position="after">
+                	<label for="id"/>
+                      <div>
+                          <div>
+                              <label for="twitter_api_key"/>
+                              <field name="twitter_api_key" class="oe_inline"/>
+                          </div>
+                          <div>
+                              <label for="twitter_api_secret"/>
+                              <field name="twitter_api_secret" class="oe_inline"/>
+                          </div>
+                          <div>
+                              <label for="twitter_access_token"/>
+                              <field name="twitter_access_token" class="oe_inline"/>
+                          </div>
+                          <div>
+                              <label for="twitter_access_token_secret"/>
+                              <field name="twitter_access_token_secret" class="oe_inline"/>
+                          </div>
+                      </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

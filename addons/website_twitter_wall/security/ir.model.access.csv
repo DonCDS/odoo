@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+website_twitter_screen_name,website.twitter.screen.name,model_website_twitter_screen_name,,1,0,0,0
+website_twitter_wall,website.twitter.wall,model_website_twitter_wall,,1,0,0,0
+website_twitter_wall_tweet,website.twitter.wall.tweet,model_website_twitter_wall_tweet,,1,0,0,0
+website_twitter_tweet_media,website.twitter.tweet.media,model_website_twitter_tweet_media,,1,0,0,0
