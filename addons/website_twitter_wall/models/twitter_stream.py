@@ -1,21 +1,15 @@
+import ssl
 import json
+import hmac
 import thread
 
-import random
-import hmac
-# import time
-
-import ssl
-# import base64
 import httplib
-
-# import lxml.html
-# from hashlib import sha1
 
 from time import sleep
 from socket import timeout
 from threading import Thread
 
+import openerp
 import openerp.modules.registry
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
@@ -251,109 +245,39 @@ class Stream(object):
         self.listener.on_disconnect(None)
         self.running = False
 
-class WallManager(object):
-
-    def __init__(self, dbname, ids, wall):
-        self.registry = openerp.modules.registry.RegistryManager.get(dbname)
-        self.wall = wall
-        self.ids = ids
-    
-    def start(self):
-        def func(user_ids):
-            return stream.filter(follow=user_ids)
-        
-        if (self.wall.state != 'not_streaming'):
-            return False
-        if (self.check_api_token()):
-            listner = WallListener(self.registry, self.wall.id, self.wall.name)
-            auth = oauth(self.wall.website_id.twitter_api_key, self.wall.website_id.twitter_api_secret)
-            #OAuthHandler oauth
-            if(self.check_access_token()):
-                auth.set_access_token(self.wall.website_id.twitter_access_token, self.wall.website_id.twitter_access_token_secret)
-                stream = Stream(auth, listner)
-                if self.wall.id not in stream_obj:
-                    stream_obj.update({self.wall.id : []})
-                stream_obj[self.wall.id].append(stream)
-                user_ids = [auth.get_user_id(screen_name.name) for screen_name in self.wall.screen_name]
-                user_ids.append(auth.get_authorise_user_id())
-                thread.start_new_thread(func, (user_ids, ))
-                return True
-        else:
-            _logger.error('Contact System Administration for Configure Twitter API KEY and ACCESS TOKEN.')
-            raise osv.except_osv(_('Error Configuration!'), _('Contact System Administration for Configure Twitter API KEY and ACCESS TOKEN.')) 
-            return False
-    
-    def check_api_token(self):
-        website = self.wall.website_id
-        if(website.twitter_api_key and website.twitter_api_secret):
-            return True
-        else:
-            return False
-    
-    def check_access_token(self):
-        website = self.wall.website_id
-        if(website.twitter_access_token and website.twitter_access_token_secret):
-            return True
-        else:
-            o_auth = oauth(self.wall.website_id.twitter_api_key, self.wall.website_id.twitter_api_secret)
-            with self.registry.cursor() as cr:
-                base_url = self.registry.get('ir.config_parameter').get_param(cr, openerp.SUPERUSER_ID, 'web.base.url')
-                return o_auth._request_token(base_url, cr.dbname, self.wall.website_id.id)
-
 class WallListener(StreamListener):
     
-    def __init__(self, registry, wall_id, wall_name):
+    def __init__(self, base_url, wall):
         super(WallListener, self).__init__()
-        self.wall_id = wall_id
-        self.registry = registry
-        self.wall_name = wall_name
-        
+        self.wall = wall
+        self.base_url = base_url
+
     def on_connect(self):
-        _logger.info('StreamListener Connect to Twitter API for wall: %s - %s ', self.wall_name, self.wall_id)
+        _logger.info('StreamListener Connect to Twitter API for wall: %s', self.wall.name)
         return True
 
     def on_data(self, data):
-        wall_obj = self.registry.get('website.twitter.wall')
-        with self.registry.cursor() as cr:
-            stream_state = wall_obj.browse(cr, openerp.SUPERUSER_ID, self.wall_id, context=None)['state']
-            if stream_state != 'streaming':
-                return False
-            tweet = self._process_tweet(json.loads(data))
-            if tweet:
-            	wall_obj._set_tweets(cr, openerp.SUPERUSER_ID, self.wall_id, tweet, context=None)
+        import urllib2
+        import urllib
+        tweet = json.loads(data)
+        params = {
+            'params':tweet
+        }
+        url = "%s/%s/%s" % (self.base_url, 'twitter_wall/push_tweet', self.wall.id)
+        req = urllib2.Request(url, json.dumps(params), {'Content-Type': 'application/json'})
+        response = urllib2.urlopen(req)
         return True
     
     def on_status(self, status):
-        _logger.info('StreamListener status for wall: %s - %s', self.wall_name, self.wall_id)
         return 
 
     def on_error(self, status):
-        _logger.error('StreamListener has error :%s to connect with wall: %s - %s', status, self.wall_name, self.wall_id)
         raise osv.except_osv(_('Error!'), _('StreamListener has error :%s.') % (status))
         return False
 
     def on_timeout(self):
-        _logger.warning('StreamListener timeout to connect with wall: %s - %s', self.wall_name, self.wall_id)
         return
 
     def on_disconnect(self, notice):
-        _logger.info('StreamListener disconnect with wall: %s - %s', self.wall_name, self.wall_id)
         return False
     
-    def _process_tweet(self, tweet):
-        if not tweet.has_key('user'):
-            return None
-
-        wall_obj = self.registry.get('website.twitter.wall')
-        with self.registry.cursor() as cr:
-            walls = wall_obj.search_read(cr, openerp.SUPERUSER_ID, [('id', '=', self.wall_id)], ["re_tweet"])
-            for wall in walls:
-                re_tweet = wall["re_tweet"]
-
-        if not re_tweet:
-            if tweet.has_key('retweeted_status'):
-                return None
-
-        if tweet.has_key('retweeted_status'):
-            tweet = tweet.get('retweeted_status')
-        return tweet

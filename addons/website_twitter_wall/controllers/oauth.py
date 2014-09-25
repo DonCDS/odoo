@@ -7,17 +7,8 @@ import time
 
 import ssl
 import base64
-# import httplib
 
-# import lxml.html
 from hashlib import sha1
-
-# from time import sleep
-# from socket import timeout
-# from threading import Thread
-
-# import openerp.modules.registry
-# from openerp.osv import fields, osv
 from openerp.tools.translate import _
 
 from urllib2 import urlopen, Request, HTTPError, quote
@@ -32,14 +23,12 @@ stream_obj={}
 class oauth(object):
     
     def __init__(self, API_key, API_secret):
-        # Server Links
         self.REQUEST_URL = "https://api.twitter.com/oauth/request_token";
         self.AUTHORIZE_URL = "https://api.twitter.com/oauth/authorize";
         self.ACCESS_URL = "https://api.twitter.com/oauth/access_token";
         
-        # Consumer keys
-        self.API_key = API_key  # "Xcf3Sq3PiONQjX0pg560vI28m"
-        self.API_secret = API_secret  # "s3gbksdBkI8Ou9FOkYhurwgejyrPEGHJfosPuqJjsgrtv1yFOO"
+        self.API_key = API_key
+        self.API_secret = API_secret
         self.Oauth_Token = None
         self.Oauth_Token_Secret = None
         self.parameters = {}
@@ -108,32 +97,6 @@ class oauth(object):
     
     def _string_to_dict(self, request_response):
         return dict(item.split("=") for item in request_response.split("&"))
-    
-    def _request_token(self, base_url, dbname, website_id):
-        # oauth_credintial = base64.standard_b64encode("db=" + dbname + "&website_id=" + str(website_id) + "&oauth_token ="+self.API_key + "&oauth_secret ="+ self.API_secret)
-        # callback_url = base_url + "/web/login?db=" + dbname + "&redirect=/twitter_callback#oauth_credintial=" + oauth_credintial   # "http://127.0.0.1:8069/"
-        callback_url = base_url + "/twitter_callback?db=" + dbname + "&website_id=" + str(website_id)  # "http://127.0.0.1:8069/"
-        HEADER = self._generate_header(self.REQUEST_URL, 'HMAC-SHA1', '1.0', callback_url = callback_url)
-        
-        HTTP_REQUEST = Request(self.REQUEST_URL)
-        HTTP_REQUEST.add_header('Authorization', HEADER)
-        request_response = urlopen(HTTP_REQUEST, '').read()
-        request_response = self._string_to_dict(request_response)
-
-        #Call authorize token method
-        if request_response['oauth_token'] and request_response['oauth_callback_confirmed']:
-            return self._authorize_token(request_response['oauth_token'])
-        return False
-    
-    def _authorize_token(self, request_token):
-        url = self.AUTHORIZE_URL + "?oauth_token=" + request_token
-        import webbrowser
-        import sys
-        if sys.platform == 'win32':
-            res = webbrowser.open(url.decode('utf-8'))
-        else:
-            res = webbrowser.open(url, new=0, autoraise=True)
-        return True
     
     def _access_token(self, request_token, oauth_verifier):
         HEADER = self._generate_header(self.ACCESS_URL, 'HMAC-SHA1', '1.0', request_token = request_token, oauth_verifier = oauth_verifier)

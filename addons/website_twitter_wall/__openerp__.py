@@ -11,7 +11,6 @@ You can create and display as multiple walls for your concurrent sessions, manag
     'author': 'OpenERP SA',
     'depends': ['website'],
     'data': [
-        'views/twitter_wall_conf.xml',
         'views/twitter_wall.xml',
         'security/ir.model.access.csv'
      ],
