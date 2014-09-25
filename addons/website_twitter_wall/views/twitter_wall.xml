@@ -130,42 +130,22 @@
                 <div class="container">
                     <div class="row">
                         <center>
-                            <t t-set="counter" t-value="True"/>
                             <ul class="timeline">
                                 <t t-foreach="tweets" t-as="tweet">
-                                    <t t-if="counter">
-                                        <li>
-                                            <div class="timeline-badge primary">
-                                                <a>
-                                                    <i class="glyphicon glyphicon-record" rel="tooltip" title="11 hours ago via Twitter">
-                                                        
-                                                    </i>
-                                                </a>
+                                    <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'}">
+                                        <div class="timeline-badge primary">
+                                            <a>
+                                                <i class="glyphicon glyphicon-record" rel="tooltip" title="11 hours ago via Twitter">
+
+                                                </i>
+                                            </a>
+                                        </div>
+                                        <div class="timeline-panel">
+                                            <div t-attf-class="#{tweet_index % 2 and 'right-item' or 'left-item'}">
+                                                <t t-raw="tweet.html_description"/>
                                             </div>
-                                            <div class="timeline-panel">
-                                                <div class="left-item">
-                                                    <t t-raw="tweet.html_description"/>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </t>
-                                    <t t-if="not counter">
-                                        <li class="timeline-inverted">
-                                            <div class="timeline-badge primary">
-                                                <a>
-                                                    <i class="glyphicon glyphicon-record invert" rel="tooltip" title="11 hours ago via Twitter" id="">
-                                                        
-                                                    </i>
-                                                </a>
-                                            </div>
-                                            <div class="timeline-panel">
-                                                <div class="right-item">
-                                                    <t t-raw="tweet.html_description"/>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </t>
-                                    <t t-set="counter" t-value="wall.check(counter)"/>
+                                        </div>
+                                    </li>
                                 </t>
                             </ul>
                         </center>

@@ -64,10 +64,6 @@ class TwitterWall(osv.osv):
         'user_id': lambda obj, cr, uid, ctx=None: uid,
     }
 
-    def check(self, counter):
-        result = not counter
-        return result
-
     def get_api_keys(self):
         twitter_api_key = 'mQP4B4GIFo0bjGW4VB1wMxNJ3'
         twitter_api_secret = 'XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf'
