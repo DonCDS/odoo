@@ -140,7 +140,7 @@ openerp.website.tweet_wall = openerp.Class.extend({
     
     get_data: function(){
         var self = this;
-        return openerp.jsonRpc("/twitter_wall/tweet_data/"+ self.wall_id, 'call', {'last_tweet' : self.last_tweet_id}).done(function(data) {
+        return openerp.jsonRpc("/twitter_wall/pull_tweet/"+ self.wall_id, 'call', {'last_tweet' : self.last_tweet_id}).done(function(data) {
             if (data){
                 self.last_tweet_id = data.id;
                 self.show_tweet = self.show_tweet.concat(data);

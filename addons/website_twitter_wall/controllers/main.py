@@ -142,7 +142,7 @@ class website_twitter_wall(http.Controller):
         return request.website.render("website_twitter_wall.twitter_wall_archieve", vals)
 
 
-    @http.route('/twitter_wall/tweet_data/<model("website.twitter.wall"):wall>', type='json', auth="public", website=True)
+    @http.route('/twitter_wall/pull_tweet/<model("website.twitter.wall"):wall>', type='json', auth="public", website=True)
     def tweet_data(self, wall, last_tweet=None):
         tweet = False
 
@@ -158,38 +158,3 @@ class website_twitter_wall(http.Controller):
             tweet = tweets[-1]
 
         return tweet
-
-
-        # if not fetch_all and published_date:
-        #     search_filter.append(('published_date', '>', published_date))
-        # if last_tweet:
-        #     search_filter.append(('id', '<', last_tweet))
-        # if limit:
-        #     order="id desc"
-        
-        # data = []
-        # for tweet in tweets:
-        #     created_at_date = datetime.strptime(tweet['created_at'], "%Y-%m-%d %H:%M:%S")
-        #     tweet.update({"created_at_formated_date" : created_at_date.strftime("%d %b %Y %H:%M:%S")})
-        #     media_list = []
-        #     for media_ids in tweet['tweet_media_ids']:
-        #         tweet_medias = request.registry.get('website.twitter.tweet.media').search_read(request.cr, SUPERUSER_ID, [('id', '=', media_ids)], context=request.context)
-        #         media_list += [tweet_media for tweet_media in tweet_medias]
-        #     tweet['tweet_media_ids'] = media_list
-        #     data.append(tweet)
-        # return data
-
-    @http.route('/tweet_moderate/streaming', type='json')
-    def twitter_moderate_streaming(self, wall_id, state):
-        registry, cr, context = request.registry, request.cr, request.context
-        wall_obj = registry.get('website.twitter.wall')
-        if state == 'startstreaming': wall_obj.start_incoming_tweets(cr, SUPERUSER_ID, [wall_id], context=context)
-        if state == 'stopstreaming': wall_obj.stop_incoming_tweets(cr, SUPERUSER_ID, [wall_id], context=context)
-        return state
-
-
-    @http.route('/tweet_moderate/view_mode', type='json')
-    def twitter_moderate_view_mode(self, wall_id, view_mode):
-        registry, cr, context = request.registry, request.cr, request.context
-        wall_obj = registry.get('website.twitter.wall')
-        wall_obj.write(request.cr, SUPERUSER_ID, [wall_id], { 'view_mode': view_mode }, request.context)
