@@ -31,6 +31,9 @@ from openerp.osv import osv
 from openerp.osv import fields
 from twitter_stream import WallListener, Stream
 from openerp.addons.website_twitter_wall.controllers.oauth import oauth
+from PIL import *
+import cStringIO
+import io
 
 stream_pool = {
     
@@ -151,9 +154,11 @@ class TwitterWall(osv.osv):
                 'image_thumb': image_thumb,
                 'image': image
             })
-
         wall_id = super(TwitterWall, self).create(cr, uid, values, context)
         return wall_id
+
+    def get_thumb_image(self):
+        return 'data:image/jpeg;base64,' + str(self.image_thumb)
 
     def stop_incoming_tweets(self, cr, uid, ids, context=None):
         for wall in ids:

@@ -26,7 +26,7 @@
                 <div t-attf-class="wall-dislay-box mt16 mb16">
                     <span class="wall-image-box">
                         <a t-attf-href="/twitter_wall/#{wall.id}">
-                            <img src="/website/image/ir.attachment/81/datas" class="img-responsive" style="width: 100%;"/>
+                            <img t-att-src="wall.get_thumb_image()" class="img-responsive" style="width: 100%;"/>
                         </a>
                     </span>
                     <div style="padding: 10px;">

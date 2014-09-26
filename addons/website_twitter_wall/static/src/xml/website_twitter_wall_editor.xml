@@ -6,23 +6,40 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 class="modal-title">Twitter Wall</h3>
-                    </div>
-                    <div class="load-category text-center error_msg" style="display:none"><h4><i class='fa fa-spinner fa-spin'></i> Fetching Category...</h4></div>
+                        <h2 class="modal-title">Twitter Wall</h2>
+                    </div><br/>
+                    <div class="error_msg"/>
+                    
                     <div class="modal-body">
                         <form class="clearfix form-horizontal">
+
+                            <div class="form-group">
+                                <div class="control-group" style="padding-left:10px">
+                                    <div class="thumbnail col-sm-3">
+                                        <img src="/website/image/ir.attachment/81/datas" alt="" id="image" class="img-responsive img-thumbnail" style="width: 100%;" />
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="file" id="image_upload" />
+                                        <br/>
+                                        <h4>OR</h4><br/>
+                                        <input type="text" id="image_url" name="url" class="form-control" placeholder="http://openerp.com/logo.png"/>
+                                        <input type="hidden" id="h_ele" />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <div class="control-group">
                                     <label for="wall_name" class="pr0 control-label col-sm-3">
                                         Name:
                                     </label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="wall_name" name="wall_name" class="form-control" placeholder="Title" required="required" />
+                                        <input type="text" id="wall_name" name="wall_name" class="form-control" placeholder="Wall Name" required="required" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <!--<div class="form-group">
                                 <div class="control-group">
                                     <label for="include_retweet" class="pr0 control-label col-sm-3">
                                         Re-Tweet?
@@ -32,7 +49,7 @@
                                         <span class="text-muted">Tick mark if you Don't want to stream ReTweet.</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
 
                             <div class="form-group">
                                 <div class="control-group">
@@ -40,7 +57,7 @@
                                         Description:
                                     </label>
                                     <div class="controls col-sm-9">
-                                        <textarea id="wall_description" rows="4" placeholder="Description" class="form-control"  maxlength="150"></textarea>
+                                        <textarea id="wall_description" rows="4" placeholder="Description" class="form-control"  maxlength="3000"></textarea>
                                     </div>
                                 </div>
                             </div>

@@ -16,11 +16,12 @@ class website_twitter_wall(http.Controller):
     _tweet_per_page = 10
 
     @http.route('/create_twitter_wall', type='http', auth='user', website=True)
-    def create_twitter_wall(self, wall_name= None, screen_name=None, include_retweet=False, wall_description=None, **kw):
+    def create_twitter_wall(self, image=None, wall_name= None, screen_name=None, include_retweet=False, wall_description=None, **kw):
         values = {
             'name': wall_name,
             'description': wall_description,
-            're_tweet': include_retweet
+            're_tweet': include_retweet,
+            'image': image
         }
         wall_id = request.registry.get('website.twitter.wall').create(request.cr, SUPERUSER_ID, values, request.context)
         return http.local_redirect("/twitter_walls")
