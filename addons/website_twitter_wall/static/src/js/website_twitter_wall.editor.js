@@ -21,22 +21,44 @@
             var $modal = self.$el;
             // $("#myTags").tagit();
             $modal.modal();
+            $("#h_ele").val("");
         },
         image_upload: function(e){
-            $("#image_url").val("");
+            $("#h_ele").val("");
+            
+            $('input[name="url"]').val("");
             var fileName = e.target.files[0];
             var fr = new FileReader();
             fr.onload = function(ev){
-                $("#image").attr('src',ev.target.result);
+                $('.show_image img').remove();
+                $('.show_image').html("<img src='"+ev.target.result+"' id='image' class='img-responsive img-thumbnail' style='width: 100%;'/>");
+                //$("#image").removeAttr("src").attr("src",ev.target.result)
                 $("#h_ele").val(ev.target.result.split(',')[1]);
             }
             fr.readAsDataURL(fileName);
         },
         image_url:function(e){
+            
+            $("#h_ele").val("");
             $("#image_upload").val("");
-            var url = $('#image_url').val();
-            $("#image").attr('src',url);
-            $("#h_ele").val(url.split(',')[1]);
+            var url = $('input[name="url"]').val();
+            if(url.startsWith("http")){
+                var img_ele = $("#image")[0]
+                var canvas = document.createElement("canvas");
+                canvas.width = img_ele.clientWidth;
+                canvas.height = img_ele.clientHeight;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img_ele,0,0);
+                var dataURL = canvas.toDataURL("image/*");
+                $('.show_image').html("<img src='"+dataURL+"' id='image' class='img-responsive img-thumbnail' style='width: 100%;'/>");
+                $('#h_ele').val(dataURL.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""));    
+            }else{                   
+                $('.show_image img').remove();
+                $('.show_image').html("<img src='"+url+"' id='image' class='img-responsive img-thumbnail' style='width: 100%;'/>");
+                $("#h_ele").val(url.split(',')[1]);    
+            }
+            
+            
         },
         save: function () {
             var self = this;

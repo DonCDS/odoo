@@ -158,7 +158,7 @@ class TwitterWall(osv.osv):
         return wall_id
 
     def get_thumb_image(self):
-        return 'data:image/jpeg;base64,' + str(self.image_thumb)
+        return 'data:image/jpeg;base64,' + str(self.image)
 
     def stop_incoming_tweets(self, cr, uid, ids, context=None):
         for wall in ids:
