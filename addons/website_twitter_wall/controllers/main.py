@@ -1,4 +1,6 @@
 import ast, base64
+import urllib2
+import mimetypes
 from urllib2 import urlopen
 from datetime import datetime
 from urllib2 import Request as URLRequest
@@ -15,14 +17,27 @@ class website_twitter_wall(http.Controller):
 
     _tweet_per_page = 10
 
+        
     @http.route('/create_twitter_wall', type='http', auth='user', website=True)
     def create_twitter_wall(self, image=None, wall_name= None, screen_name=None, include_retweet=False, wall_description=None, **kw):
+        
         values = {
             'name': wall_name,
             'description': wall_description,
-            're_tweet': include_retweet,
-            'image': image
+            're_tweet': include_retweet
         }
+        if 'http' in image or 'https' in image:
+            mmtp = mimetypes.guess_type(image,strict=True)
+            if not mmtp[0]:
+                return False
+            ext = mimetypes.guess_extension(mmtp[0])
+            f= open("tmp"+ext,'wb')
+            f.write(urllib2.urlopen(image).read())
+            f.close()
+            img = open("tmp"+ext,"rb").read().encode("base64").replace("\n","")
+            values['image'] = img
+        else:
+            values['image'] = image
         wall_id = request.registry.get('website.twitter.wall').create(request.cr, SUPERUSER_ID, values, request.context)
         return http.local_redirect("/twitter_walls")
     

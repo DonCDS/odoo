@@ -22,6 +22,7 @@
             // $("#myTags").tagit();
             $modal.modal();
             $("#h_ele").val("");
+            $('#image').attr('src','/website/image/ir.attachment/81/datas');
         },
         image_upload: function(e){
             $("#h_ele").val("");
@@ -38,26 +39,16 @@
             fr.readAsDataURL(fileName);
         },
         image_url:function(e){
-            
             $("#h_ele").val("");
             $("#image_upload").val("");
-            var url = $('input[name="url"]').val();
-            if(url.startsWith("http")){
-                var img_ele = $("#image")[0]
-                var canvas = document.createElement("canvas");
-                canvas.width = img_ele.clientWidth;
-                canvas.height = img_ele.clientHeight;
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(img_ele,0,0);
-                var dataURL = canvas.toDataURL("image/*");
-                $('.show_image').html("<img src='"+dataURL+"' id='image' class='img-responsive img-thumbnail' style='width: 100%;'/>");
-                $('#h_ele').val(dataURL.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""));    
-            }else{                   
+            var url = e.target.value;
+            if (url.contains(".jpg") || url.contains(".png") || url.contains(".jpeg")){
                 $('.show_image img').remove();
                 $('.show_image').html("<img src='"+url+"' id='image' class='img-responsive img-thumbnail' style='width: 100%;'/>");
-                $("#h_ele").val(url.split(',')[1]);    
+                $("#h_ele").val(url);                 
+            }else{
+                return;
             }
-            
             
         },
         save: function () {
