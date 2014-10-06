@@ -13,28 +13,36 @@
                     <div class="modal-body">
                         <form class="clearfix form-horizontal">
 
-                            <div class="form-group">
+                            <div class="form-group row">
                                 <div class="control-group" style="padding-left:10px">
-                                    <div class="thumbnail col-sm-3 show_image">
-                                        <img src="/website/image/ir.attachment/81/datas" alt="" id="image" class="img-responsive img-thumbnail" style="width: 100%;" />
+                                    <div class="thumbnail col-sm-3 show_image col-md-4">
+                                        <img src="/website/image/ir.attachment/81/datas" alt="" id="image" class="img-responsive img-thumbnail" style="width:100%;height:100%;" />
                                     </div>
-                                    <div class="col-sm-9">
-                                        <input type="file" id="image_upload" />
-                                        <br/>
-                                        <h4>OR</h4><br/>
-                                        <input type="text" id="image_url" name="url" class="form-control" placeholder="http://openerp.com/logo.png"/>
+                                    <div class="col-sm-9 col-md-8">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body bg-primary upload_body">
+                                                <input type="file" id="image_upload" />
+                                            </div>
+                                        </div>
+                                        <br/><br/>
+                                        
+                                        <div class="panel panel-default">
+                                            <div class="panel-body image_url_body">
+                                                <input type="text" id="image_url" name="url" class="form-control" placeholder="http://openerp.com/logo.png"/>
+                                            </div>
+                                        </div>
                                         <input type="hidden" id="h_ele" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group row">
                                 <div class="control-group">
                                     <label for="wall_name" class="pr0 control-label col-sm-3">
                                         Name:
                                     </label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="wall_name" name="wall_name" class="form-control" placeholder="Wall Name" required="required" />
+                                        <input type="text" id="wall_name" name="wall_name" class="form-control text-wallname" placeholder="Wall Name" required="required" />
                                     </div>
                                 </div>
                             </div>
@@ -57,7 +65,7 @@
                                         Description:
                                     </label>
                                     <div class="controls col-sm-9">
-                                        <textarea id="wall_description" rows="4" placeholder="Description" class="form-control"  maxlength="3000"></textarea>
+                                        <textarea id="wall_description" rows="4" placeholder="Description" class="form-control text-description"  maxlength="3000"></textarea>
                                     </div>
                                 </div>
                             </div>
