@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import json
 import urllib
 import werkzeug
 
@@ -61,6 +62,9 @@ class WebsiteBlog(http.Controller):
             group['date_begin'] = '%s' % datetime.date.strftime(begin_date, tools.DEFAULT_SERVER_DATE_FORMAT)
             group['date_end'] = '%s' % datetime.date.strftime(end_date, tools.DEFAULT_SERVER_DATE_FORMAT)
         return groups
+
+    def has_author_avatar(self, author_id):
+        return bool(request.registry['res.partner'].search_count(request.cr, SUPERUSER_ID, [('id', '=', author_id), ('image', '!=', False)]))
 
     @http.route([
         '/blog',
@@ -163,6 +167,7 @@ class WebsiteBlog(http.Controller):
             'nav_list': self.nav_list(blog),
             'blog_url': blog_url,
             'date': date_begin,
+            'has_author_avatar': self.has_author_avatar,
         }
         response = request.website.render("website_blog.blog_post_short", values)
         return response
@@ -225,14 +230,17 @@ class WebsiteBlog(http.Controller):
             'tag': tag,
             'blog': blog,
             'blog_post': blog_post,
+            'blog_post_cover_properties': json.loads(blog_post.cover_properties),
             'main_object': blog_post,
             'nav_list': self.nav_list(blog),
             'enable_editor': enable_editor,
             'next_post': next_post,
+            'next_post_cover_properties': json.loads(next_post.cover_properties) if next_post else None,
             'date': date_begin,
             'blog_url': blog_url,
             'pager': pager,
             'comments': comments,
+            'has_author_avatar': self.has_author_avatar,
         }
         response = request.website.render("website_blog.blog_post_complete", values)
 
@@ -312,11 +320,15 @@ class WebsiteBlog(http.Controller):
     @http.route('/blog/<int:blog_id>/post/new', type='http', auth="public", website=True)
     def blog_post_create(self, blog_id, **post):
         cr, uid, context = request.cr, request.uid, request.context
+        content = """<div class="container">
+                <section class="mt16 mb16 para_large">
+                    <p class="o_default_snippet_text">Start writing here...</p>
+                </section>
+            </div>"""
         new_blog_post_id = request.registry['blog.post'].create(cr, uid, {
             'blog_id': blog_id,
-            'name': _("Blog Post Title"),
-            'subtitle': _("Subtitle"),
-            'content': '',
+            'name': "",
+            'content': content,
             'website_published': False,
         }, context=context)
         new_blog_post = request.registry['blog.post'].browse(cr, uid, new_blog_post_id, context=context)
@@ -360,10 +372,10 @@ class WebsiteBlog(http.Controller):
         return ret
 
     @http.route('/blog/post_change_background', type='json', auth="public", website=True)
-    def change_bg(self, post_id=0, image=None, **post):
+    def change_bg(self, post_id=0, cover_properties={}, **post):
         if not post_id:
             return False
-        return request.registry['blog.post'].write(request.cr, request.uid, [int(post_id)], {'background_image': image}, request.context)
+        return request.registry['blog.post'].write(request.cr, request.uid, [int(post_id)], {'cover_properties': cover_properties}, request.context)
 
     @http.route('/blog/get_user/', type='json', auth="public", website=True)
     def get_user(self, **post):

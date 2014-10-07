@@ -85,7 +85,7 @@ class BlogPost(osv.Model):
         'name': fields.char('Title', required=True, translate=True),
         'subtitle': fields.char('Sub Title', translate=True),
         'author_id': fields.many2one('res.partner', 'Author'),
-        'background_image': fields.binary('Background Image', oldname='content_image'),
+        'cover_properties': fields.text('Cover Properties'),
         'blog_id': fields.many2one(
             'blog.blog', 'Blog',
             required=True, ondelete='cascade',
@@ -127,8 +127,7 @@ class BlogPost(osv.Model):
     }
 
     _defaults = {
-        'name': _('Blog Post Title'),
-        'subtitle': _('Subtitle'),
+        'cover_properties': '{"background-image": "none", "background-color": "o_none", "opacity": "0.6", "resize_class": ""}',
         'author_id': lambda self, cr, uid, ctx=None: self.pool['res.users'].browse(cr, uid, uid, context=ctx).partner_id.id,
     }
 
@@ -163,7 +162,7 @@ class BlogPost(osv.Model):
 
             old_attribute = node.get(attribute)
             new_attribute = old_attribute
-            if old_attribute in existing_attributes:
+            if not new_attribute or (old_attribute in existing_attributes):
                 if ancestor_tags:
                     ancestor_tags.pop()
                 counter = random.randint(10000, 99999)

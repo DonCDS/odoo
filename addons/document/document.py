@@ -97,8 +97,8 @@ class document_file(osv.osv):
         # Filter out documents that are in directories that the user is not allowed to read.
         # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
         # not fail), and the records have been filtered in parent's search() anyway.
-        cr.execute('SELECT id, parent_id from ir_attachment WHERE id in %s', (tuple(ids),))
-
+        query_str = """SELECT id, parent_id from ir_attachment WHERE id in %%s ORDER BY %s""" % (self._order if not order else order)
+        cr.execute(query_str, (tuple(ids), ))
         # cont a dict of parent -> attach
         parents = {}
         for attach_id, attach_parent in cr.fetchall():

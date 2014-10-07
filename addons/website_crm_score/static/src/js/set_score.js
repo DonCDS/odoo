@@ -25,10 +25,10 @@
         },
         is_tracked: function(val) {
             var obj = website.seo.Configurator.prototype.getMainObject();
-            if (!obj) {
-                return $.Deferred().reject();
-            } else {
+            if (obj && obj.model == 'ir.ui.view') {
                 return website.session.model(obj.model).call('read', [[obj.id], ['track'], website.get_context()]);
+            } else {
+                return $.Deferred().reject();
             }
         },
         update: function () {
@@ -46,10 +46,10 @@
         },
         trackPage: function(val) {
             var obj = website.seo.Configurator.prototype.getMainObject();
-            if (!obj) {
-                return $.Deferred().reject();
-            } else {
+            if (obj && obj.model == 'ir.ui.view') {
                 return website.session.model(obj.model).call('write', [[obj.id], { track: val }, website.get_context()]);
+            } else {
+                return $.Deferred().reject();
             }
         },
     });
