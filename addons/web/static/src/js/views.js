@@ -524,6 +524,9 @@ instance.web.ViewManager =  instance.web.Widget.extend({
      */
     init: function(parent, dataset, views, flags, action) {
         if (action) {
+            if (_.isString(action.flags)) {
+                action.flags = new instance.web.CompoundContext(action.flags).eval() || {};
+            }
             var flags = action.flags || {};
             if (!('auto_search' in flags)) {
                 flags.auto_search = action.auto_search !== false;

@@ -304,6 +304,7 @@ class ir_actions_act_window(osv.osv):
         'auto_search':fields.boolean('Auto Search'),
         'search_view' : fields.function(_search_view, type='text', string='Search View'),
         'multi': fields.boolean('Restrict to lists', help="If checked and the action is bound to a model, it will only appear in the More menu on list views"),
+        'flags': fields.char(string='Flags', help='Flags dictionary as Python expression.'),
     }
 
     _defaults = {
@@ -341,6 +342,8 @@ class ir_actions_act_window(osv.osv):
                     with tools.mute_logger("openerp.tools.safe_eval"):
                         eval_context = eval(res['context'] or "{}", eval_dict) or {}
                         res['context'] = str(eval_context)
+                        if res.get('flags'):
+                            res['flags'] = str(eval(res['flags']))
                 except Exception:
                     continue
                 if not fields or 'help' in fields:
