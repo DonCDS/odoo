@@ -105,7 +105,8 @@ class website_twitter_wall(http.Controller):
             'pager':pager,
             'is_public_user': request.env.user.id == request.website.user_id.id
         }
-
+        wall_obj.write(cr, uid, wall.id, {'number_view':wall.number_view + 1})
+        cr.commit()
         return request.website.render("website_twitter_wall.twitter_wall_archieve", values)
 
 

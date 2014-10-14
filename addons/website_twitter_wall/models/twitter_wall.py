@@ -48,6 +48,7 @@ class TwitterWall(osv.osv):
         'tweet_ids': fields.one2many('website.twitter.wall.tweet', 'wall_id', 'Tweets'),
         'website_id': fields.many2one('website', 'Website'),
         're_tweet': fields.boolean('Include Re-Tweet ?'),
+        'number_view': fields.integer('# of Views'),
         'state': fields.selection([('not_streaming', 'Draft'), ('streaming', 'In Progress'), ('story', 'Story')], string="State"),
         'website_published': fields.boolean('Visible in Website'),
 
@@ -72,6 +73,7 @@ class TwitterWall(osv.osv):
         twitter_api_secret = 'XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf'
         return twitter_api_key, twitter_api_secret
 
+    
     def start_incoming_tweets(self, cr, uid, ids, context=None):
         base_url = self.pool.get('ir.config_parameter').get_param(cr, uid, 'web.base.url')
         for wall in self.browse(cr, uid, ids, context=context):
@@ -98,7 +100,7 @@ class TwitterWall(osv.osv):
 
         self.write(cr, uid, ids, {'state': 'streaming'}, context=context)
         return True
-
+    
     #TODO: to check, may be useful to place this image in to website module
     def crop_image(self, data, type='top', ratio=False, thumbnail_ratio=None, image_format="PNG"):
         """ Used for cropping image and create thumbnail
@@ -175,6 +177,7 @@ class TwitterWall(osv.osv):
         tweet_id = tweet.create(cr, uid, tweet_val)
         return tweet_id
 
+
     def unlink(self, cr, uid, ids, context=None):
         twitter_obj = self.pool.get('website.twitter.wall.tweet')
         for id in ids:
@@ -197,6 +200,7 @@ class WebsiteTwitterTweet(osv.osv):
         ('tweet_uniq', 'unique (wall_id, tweet_id)', 'Duplicate tweet in wall is not allowed !')
     ]
 
+    
     def _process_tweet(self, cr, uid, wall_id, tweet, context=None):
         card_url = "https://api.twitter.com/1/statuses/oembed.json?id=%s&omit_script=true" % (tweet.get('id'))
         req = urllib2.Request(card_url, None, {'Content-Type': 'application/json'})
@@ -212,3 +216,4 @@ class WebsiteTwitterTweet(osv.osv):
             'wall_id': wall_id
         }
         return vals
+    

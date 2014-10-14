@@ -92,9 +92,9 @@
         save: function () {
             var self = this;
             var image = $("#h_ele").val();
-            var wall_name = $('#wall_name').val();
+            var wall_name = $('.text-wallname').val();
             var include_retweet = ($('#include_retweet').attr('checked'))?'TRUE':'FALSE';
-            var wall_description = $('#wall_description').val();
+            var wall_description = $('.text-description').val();
             if(!image){
                 self.error("");
                 self.error("Upload Image.");

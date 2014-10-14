@@ -26,7 +26,7 @@
                 <div t-attf-class="wall-dislay-box mt16 mb16">
                     <span class="wall-image-box">
                         <a t-attf-href="/twitter_wall/#{wall.id}">
-                            <img t-att-src="wall.get_thumb_image()" class="img-responsive" style="width: 100%;"/>
+                            <img t-att-src="wall.get_image()" class="img-responsive" style="width: 100%;"/>
                         </a>
                     </span>
                     <div style="padding: 10px;">
@@ -97,7 +97,7 @@
                 <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </t>
             <t t-call="website.layout">
-                <div style="height: 500px; background-image: url(/website/image/ir.attachment/81/datas);">
+                <div t-attf-style="background-image: url(#{wall.get_image()})">
                     <div style="height: 500px; background-color: rgba(47,52,64,0.3);">
                         <div class="container">
                             <h1 class="mt32 wall-arch-title"><t t-esc="wall.name"/></h1>
@@ -116,7 +116,7 @@
                                     <p class="navbar-text mb0">3 Months ago</p>
                                 </li>
                                 <li>
-                                    <p class="navbar-text mb0">1000 total views</p>
+                                    <p class="navbar-text mb0"><t t-esc="wall.number_view"/> total views</p>
                                 </li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">

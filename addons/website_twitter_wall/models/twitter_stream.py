@@ -14,7 +14,7 @@ import openerp.modules.registry
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp.addons.website_twitter_wall.controllers.oauth import oauth
-
+from openerp import api
 from urllib2 import urlopen, Request, HTTPError, quote
 
 import logging
