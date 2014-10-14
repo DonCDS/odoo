@@ -12,9 +12,9 @@
                         <h1>
                             <field name="name"/>
                         </h1>
-                        <label for="brand_id" class="oe_edit_only"/>
+                        <label for="make_id" class="oe_edit_only"/>
                         <h2>
-                            <field name="brand_id" on_change="on_change_brand(brand_id)"/>
+                            <field name="make_id" />
                         </h2>
                     </div>
                     <notebook>
@@ -47,7 +47,7 @@
             <field name="model">fleet.vehicle.model</field>
             <field name="arch" type="xml">
                 <tree string="Models">
-                    <field name="brand_id" />
+                    <field name="make_id" />
                     <field name="name" />
                 </tree>
             </field>
@@ -58,9 +58,9 @@
             <field name="model">fleet.vehicle.model</field>
             <field name="arch" type="xml">
                 <search string="Vehicles costs" >
-                    <field name="brand_id" />
+                    <field name="make_id" />
                     <group expand="1" string="Group By">
-                        <filter name="groupby_brand" context="{'group_by' : 'brand_id'}" string="Make"/>
+                        <filter name="groupby_brand" context="{'group_by' : 'make_id'}" string="Make"/>
                     </group>
                 </search>
             </field>
@@ -81,9 +81,9 @@
             </field>
         </record>
 
-        <record model='ir.ui.view' id='fleet_vehicle_model_brand_tree'>
-            <field name="name">fleet.vehicle.model.brand.tree</field>
-            <field name="model">fleet.vehicle.model.brand</field>
+        <record model='ir.ui.view' id='fleet_make_tree'>
+            <field name="name">fleet.make.tree</field>
+            <field name="model">fleet.make</field>
             <field name="arch" type="xml">
                 <tree string="Model Make">
                     <field name="name" />
@@ -91,9 +91,9 @@
             </field>
         </record>
 
-        <record model='ir.ui.view' id='fleet_vehicle_model_brand_form'>
-            <field name="name">fleet.vehicle.model.brand.form</field>
-            <field name="model">fleet.vehicle.model.brand</field>
+        <record model='ir.ui.view' id='fleet_make_form'>
+            <field name="name">fleet.make.form</field>
+            <field name="model">fleet.make</field>
             <field name="arch" type="xml">
                 <form string="Model Make">
                     <group>
@@ -109,9 +109,9 @@
             </field>
         </record>
 
-        <record model='ir.ui.view' id='fleet_vehicle_model_brand_kanban'>
-            <field name="name">fleet.vehicle.model.brandkanban</field>
-            <field name="model">fleet.vehicle.model.brand</field>
+        <record model='ir.ui.view' id='fleet_make_kanban'>
+            <field name="name">fleet.make.kanban</field>
+            <field name="model">fleet.make</field>
             <field name="arch" type="xml">
                 <kanban>
                     <field name="name" />
@@ -119,8 +119,8 @@
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_vignette oe_semantic_html_override">
-                                <a type="open" href="#" class="oe_kanban_action">
-                                    <img t-att-src="kanban_image('fleet.vehicle.model.brand', 'image_small', record.id.value)" class="img-responsive" style="width:100px;"/>
+                                <a type="open" href="#" class="oe_kanban_action oe_kanban_action_a">
+                                    <img t-att-src="kanban_image('fleet.make', 'image_small', record.id.value)" class="oe_employee_picture img-responsive" style="width:100px;"/>
                                 </a>
                                 <div class="text-center">
                                     <h4 class="oe_partner_heading">
@@ -136,9 +136,9 @@
             </field>
         </record>
 
-        <record model='ir.actions.act_window' id='fleet_vehicle_model_brand_act'>
+        <record model='ir.actions.act_window' id='fleet_make_act'>
             <field name="name">Model make of Vehicle</field>
-            <field name="res_model">fleet.vehicle.model.brand</field>
+            <field name="res_model">fleet.make</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="help" type="html">
@@ -148,9 +148,9 @@
             </field>
         </record>
 
-        <record model='ir.ui.view' id='fleet_vehicle_state_tree'>
-            <field name="name">fleet.vehicle.state.tree</field>
-            <field name="model">fleet.vehicle.state</field>
+        <record model='ir.ui.view' id='fleet_vehicle_stage_tree'>
+            <field name="name">fleet.vehicle.stage.tree</field>
+            <field name="model">fleet.vehicle.stage</field>
             <field name="arch" type="xml">
                 <tree string="State" editable="bottom">
                     <field name="sequence" widget="handler" invisible="1"/>
@@ -160,9 +160,9 @@
             </field>
         </record>
 
-        <record model='ir.actions.act_window' id='fleet_vehicle_state_act'>
+        <record model='ir.actions.act_window' id='fleet_vehicle_stage_act'>
             <field name="name">Vehicle Status</field>
-            <field name="res_model">fleet.vehicle.state</field>
+            <field name="res_model">fleet.vehicle.stage</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
@@ -178,8 +178,8 @@
         <menuitem name="Fleet" id="menu_root" sequence="110" groups="group_fleet_user"/>
         <menuitem name="Configuration" parent="menu_root" id="fleet_configuration" sequence="3" groups="group_fleet_manager"/>
         <menuitem action="fleet_vehicle_model_act" parent="fleet_configuration" id="fleet_vehicle_model_menu" groups="base.group_no_one"/>
-        <menuitem action="fleet_vehicle_model_brand_act" parent="fleet_configuration" id="fleet_vehicle_model_brand_menu" groups="base.group_no_one"/>
-        <menuitem action="fleet_vehicle_state_act" parent="fleet_configuration" id="fleet_vehicle_state_menu" groups="group_fleet_manager"/>
+        <menuitem action="fleet_make_act" parent="fleet_configuration" id="fleet_make_menu" groups="base.group_no_one"/>
+        <menuitem action="fleet_vehicle_stage_act" parent="fleet_configuration" id="fleet_vehicle_stage_menu" groups="group_fleet_manager"/>
 
         <record model='ir.ui.view' id='fleet_vehicle_form'>
             <field name="name">fleet.vehicle.form</field>
@@ -187,14 +187,14 @@
             <field name="arch" type="xml">
                 <form string="Vehicle">
                     <header>
-                        <field name="state_id"  widget="statusbar" clickable="True" />
+                        <field name="stage_id"  widget="statusbar" clickable="True" />
                     </header>
                     <sheet>
                         <field name="image_medium" widget='image' class="oe_left oe_avatar"/>
                         <div class="oe_title">
                             <label for="model_id" class="oe_edit_only"/>
                             <h1>
-                                <field name="model_id" class="oe_inline" on_change="on_change_model(model_id)"/>
+                                <field name="model_id" class="oe_inline" />
                             </h1>
                             <label for="license_plate" class="oe_edit_only"/>
                             <h2>
@@ -301,7 +301,7 @@
                     <field name="driver_id" />
                     <field name="vin_sn" />
                     <field name="acquisition_date" />
-                    <field name="state_id"/>
+                    <field name="stage_id"/>
                     <field name="odometer" />
                     <field name="odometer_unit" />
                     <field name="contract_renewal_due_soon" invisible="1"/>
@@ -320,10 +320,10 @@
                     <field name="driver_id"/>
                     <field name="tag_ids"/>
                     <field name="location"/>
-                    <field name="state_id" />
+                    <field name="stage_id" />
                     <filter name="alert_true" domain="['|',('contract_renewal_due_soon','=',True),('contract_renewal_overdue','=',True)]" string="Has Alert(s)"/>
                     <group expand="1" string="Group By">
-                        <filter name="groupby_status" context="{'group_by' : 'state_id'}" string="Status"/>
+                        <filter name="groupby_status" context="{'group_by' : 'stage_id'}" string="Status"/>
                         <filter name="groupby_model" context="{'group_by' : 'model_id'}" string="Model"/>
                     </group>
                </search>
@@ -340,7 +340,7 @@
                     <field name="model_id" />
                     <field name="driver_id" />
                     <field name="location" />
-                    <field name="state_id" />
+                    <field name="stage_id" />
 
                     <field name="image" />
                     <field name="tag_ids" />
@@ -437,7 +437,7 @@
                     <sheet>
                         <group col="2">
                             <group string="Contract details">
-                                <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)"/>
+                                <field name="vehicle_id" />
                                 <field name="cost_subtype_id" required="1" domain="['|',('category','=','contract'),('category','=','both')]"/>
                                 <field name="amount" string="Activation Cost" help="Cost that is paid only once at the creation of the contract"/>
                                 <label for="cost_generated"/>
@@ -463,13 +463,13 @@
                             <group>
                                 <field name="insurer_id" context="{'default_supplier': True}"/>
                                 <field name="purchaser_id" />
-                                <field name="ins_ref" />
+                                <field name="contract_reference" />
                             </group>
                         </group>
                         <notebook>
                             <page string="Included Services">
                                 <group>
-                                    <field name="cost_ids" context="{'vehicle_id': vehicle_id}" nolabel="1" on_change="on_change_indic_cost(cost_ids)">
+                                    <field name="cost_ids" context="{'vehicle_id': vehicle_id}" nolabel="1" >
                                         <tree editable="bottom">
                                             <field name="cost_subtype_id" string="Service" domain="[('category','=','service')]"/>
                                             <field name="amount" sum="Price" string="Indicative Cost" />
@@ -569,7 +569,7 @@
                 <form string="Odometer Logs">
                     <sheet>
                         <group>
-                            <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)"/>
+                            <field name="vehicle_id" />
                                 <div>
                                     <field name="value" class="oe_inline"/>
                                     <field name="unit" class="oe_inline"/>
@@ -587,7 +587,7 @@
             <field name="arch" type="xml">
                 <tree string="Odometer Logs" editable="top">
                     <field name="date" />
-                    <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)"/>
+                    <field name="vehicle_id" />
                     <field name="value" />
                     <field name="unit" />
                 </tree>
@@ -649,12 +649,12 @@
                     <sheet>
                         <group col="2">
                             <group string="Vehicle Details">
-                                <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)"/>
+                                <field name="vehicle_id" />
                             </group>
                             <group string="Refueling Details">
-                                <field name="liter" on_change="on_change_liter(liter,price_per_liter,amount)"/>
-                                <field name="price_per_liter" on_change="on_change_price_per_liter(liter,price_per_liter,amount)" />
-                                <field name="amount" on_change="on_change_amount(liter,price_per_liter,amount)"/>
+                                <field name="liter" />
+                                <field name="price_per_liter" />
+                                <field name="amount" />
                             </group>
                         </group>
                         <group col="2">
@@ -668,7 +668,7 @@
                             <group string="Additional Details">
                                 <field name="date" />
                                 <field name="purchaser_id" />
-                                <field name="inv_ref" />
+                                <field name="invoice_reference" />
                                 <field name="vendor_id" context="{'default_supplier': True}"/>
                             </group>
                         </group>
@@ -690,7 +690,7 @@
                     <field name="odometer" invisible="1"/>
                     <field name="odometer_unit" invisible="1"/>
                     <field name="purchaser_id" />
-                    <field name="inv_ref" invisible="1"/>
+                    <field name="invoice_reference" invisible="1"/>
                     <field name="vendor_id" invisible="1"/>
                     <field name="liter" />
                     <field name="price_per_liter" invisible="1"/>
@@ -755,7 +755,7 @@
                     <sheet>
                         <group col="2">
                             <group string="Services Details">
-                                <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)"/>
+                                <field name="vehicle_id" />
                                 <field name="cost_subtype_id" string="Service Type" domain="['|',('category','=','service'),('category','=','both')]" required="1"/>
                                 <field name="amount"/>
                             </group>
@@ -772,7 +772,7 @@
                                 <field name="date" />
                                 <field name="purchaser_id" />
                                 <field name="vendor_id" context="{'default_supplier': True}"/>
-                                <field name="inv_ref" />
+                                <field name="invoice_reference" />
                             </group>
                         </group>
                         <group string="Included Services">
@@ -801,7 +801,7 @@
                     <field name="cost_subtype_id"/>
                     <field name="purchaser_id"/>
                     <field name="vendor_id" />
-                    <field name="inv_ref" />
+                    <field name="invoice_reference" />
                     <field name="notes" />
                     <field name="amount" sum="Total"/>
                 </tree>
