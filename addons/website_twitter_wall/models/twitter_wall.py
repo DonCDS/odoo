@@ -19,11 +19,14 @@
 #
 ##############################################################################
 
+import io
 import json
 import urllib
 import thread
 import urllib2
 import datetime
+import cStringIO
+from PIL import *
 
 import openerp
 from openerp import api
@@ -31,9 +34,6 @@ from openerp.osv import osv
 from openerp.osv import fields
 from twitter_stream import WallListener, Stream
 from openerp.addons.website_twitter_wall.controllers.oauth import oauth
-from PIL import *
-import cStringIO
-import io
 
 stream_pool = {
     
@@ -200,7 +200,6 @@ class WebsiteTwitterTweet(osv.osv):
         ('tweet_uniq', 'unique (wall_id, tweet_id)', 'Duplicate tweet in wall is not allowed !')
     ]
 
-    
     def _process_tweet(self, cr, uid, wall_id, tweet, context=None):
         card_url = "https://api.twitter.com/1/statuses/oembed.json?id=%s&omit_script=true" % (tweet.get('id'))
         req = urllib2.Request(card_url, None, {'Content-Type': 'application/json'})

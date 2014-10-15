@@ -97,7 +97,7 @@
                 <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </t>
             <t t-call="website.layout">
-                <div t-attf-style="background-image: url(#{wall.get_image()})">
+                <div t-attf-style="background-image: url(/website/image/website.twitter.wall/#{wall.id}/image);background-repeat: no-repeat;background-size: 100% auto;">
                     <div style="height: 500px; background-color: rgba(47,52,64,0.3);">
                         <div class="container">
                             <h1 class="mt32 wall-arch-title"><t t-esc="wall.name"/></h1>

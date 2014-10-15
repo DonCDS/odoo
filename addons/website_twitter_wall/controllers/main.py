@@ -1,4 +1,5 @@
-import ast, base64
+import ast
+import base64
 import urllib2
 import mimetypes
 from urllib2 import urlopen
@@ -6,21 +7,19 @@ from datetime import datetime
 from urllib2 import Request as URLRequest
 
 from oauth import oauth
+from openerp import SUPERUSER_ID
 from openerp.addons.web import http
 from openerp.addons.web.http import request
 from openerp.addons.website.controllers.main import Website as controllers
-from openerp import SUPERUSER_ID
 from openerp.addons.web.controllers.main import login_redirect, ensure_db
 
 
 class website_twitter_wall(http.Controller):
 
     _tweet_per_page = 10
-
-        
+    
     @http.route('/create_twitter_wall', type='http', auth='user', website=True)
     def create_twitter_wall(self, image=None, wall_name= None, screen_name=None, include_retweet=False, wall_description=None, **kw):
-        
         values = {
             'name': wall_name,
             'description': wall_description,
@@ -78,6 +77,23 @@ class website_twitter_wall(http.Controller):
         cr, uid, context = request.cr, SUPERUSER_ID, request.context
         request.registry['website.twitter.wall'].create_tweets(cr, uid, wall.id, args, context)
         return True
+
+
+    @http.route('/twitter_wall/pull_tweet/<model("website.twitter.wall"):wall>', type='json', auth="public", website=True)
+    def pull_tweet(self, wall, last_tweet=None):
+        tweet = False
+        domain = [('wall_id', '=', wall.id)]
+
+        if last_tweet:
+            domain += [('id','>',last_tweet)]
+
+        website_twitter_tweet = request.registry.get('website.twitter.wall.tweet')
+        tweets = website_twitter_tweet.search_read(request.cr, SUPERUSER_ID, domain, [], 0, limit=1, order='id desc', context=request.context)
+
+        if tweets and tweets[-1].get('id') != last_tweet:
+            tweet = tweets[-1]
+
+        return tweet
 
 
     @http.route(['/twitter_wall/story/<model("website.twitter.wall"):wall>',
@@ -158,21 +174,3 @@ class website_twitter_wall(http.Controller):
     def twitter_wall_approve(self, wall, **kw):
         vals = { 'wall' : wall}
         return request.website.render("website_twitter_wall.twitter_wall_archieve", vals)
-
-
-    @http.route('/twitter_wall/pull_tweet/<model("website.twitter.wall"):wall>', type='json', auth="public", website=True)
-    def tweet_data(self, wall, last_tweet=None):
-        tweet = False
-
-        domain = [('wall_id', '=', wall.id)]
-
-        if last_tweet:
-            domain += [('id','>',last_tweet)]
-
-        website_twitter_tweet = request.registry.get('website.twitter.wall.tweet')
-        tweets = website_twitter_tweet.search_read(request.cr, SUPERUSER_ID, domain, [], 0, limit=1, order='id desc', context=request.context)
-
-        if tweets and tweets[-1].get('id') != last_tweet:
-            tweet = tweets[-1]
-
-        return tweet
