@@ -32,7 +32,8 @@ class website_twitter_wall(http.Controller):
                 return False
             ext = mimetypes.guess_extension(mmtp[0])
             f= open("tmp"+ext,'wb')
-            f.write(urllib2.urlopen(image).read())
+            req = urllib2.Request(image,headers={'User-Agent': 'Mozilla/5.0'})
+            f.write(urllib2.urlopen(req).read())
             f.close()
             img = open("tmp"+ext,"rb").read().encode("base64").replace("\n","")
             values['image'] = img
