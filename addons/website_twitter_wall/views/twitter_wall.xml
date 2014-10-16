@@ -95,6 +95,7 @@
         <template id="website_twitter_wall.twitter_wall_archieve" name="Archieved Wall">
             <t t-set="head">
                 <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall_arhived.js"></script>
             </t>
             <t t-call="website.layout">
                 <div t-attf-style="background-image: url(/website/image/website.twitter.wall/#{wall.id}/image);background-repeat: no-repeat;background-size: 100% auto;">
@@ -113,7 +114,7 @@
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
                                 <li>
-                                    <p class="navbar-text mb0">3 Months ago</p>
+                                    <p class="navbar-text mb0"><timeago class="timeago" t-att-title="wall.create_date"></timeago></p>
                                 </li>
                                 <li>
                                     <p class="navbar-text mb0"><t t-esc="wall.number_view"/> total views</p>
