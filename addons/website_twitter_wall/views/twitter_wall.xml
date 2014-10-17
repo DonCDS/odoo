@@ -136,8 +136,8 @@
                                     <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'}">
                                         <div class="timeline-badge primary">
                                             <a>
-                                                <i class="glyphicon glyphicon-record" rel="tooltip" title="11 hours ago via Twitter">
-
+                                                <i class="glyphicon glyphicon-record" rel="tooltip" t-att-title="tweet.create_date">
+                                                    
                                                 </i>
                                             </a>
                                         </div>

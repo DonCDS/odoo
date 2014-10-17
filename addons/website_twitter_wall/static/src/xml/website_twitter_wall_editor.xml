@@ -38,7 +38,6 @@
                                                 </h5>                                   
                                                 <input type="text" id="image_url" name="url" class="form-control h5 image-url" placeholder="http://openerp.com/logo.png"/>
                                                 <p class="url-error" style="display:none">Wrong input. Please enter valid image URL</p>
-                                                <input type="hidden" id="h_ele" />
                                             </li>
                                         </ul>
                                     </div>
