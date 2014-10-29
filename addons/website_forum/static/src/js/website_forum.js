@@ -1,5 +1,21 @@
     openerp.website.if_dom_contains('.website_forum', function () {
         $("[data-toggle='popover']").popover();
+
+        $('.user-info').hover(
+            function(){
+               $(this).parent().find('.user-tooltip').delay(500).toggle('fast');
+            },
+            function(){
+                $(this).parent().find('.user-tooltip').clearQueue();
+            }
+        );
+        $('.user-tooltip').hover(
+            function(){},
+            function(){
+                $(this).fadeOut('fast');
+            }
+        );
+
         $('.karma_required').on('click', function (ev) {
             var karma = $(ev.currentTarget).data('karma');
             if (karma) {

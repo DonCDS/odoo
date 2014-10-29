@@ -735,7 +735,12 @@
         </div>
         <div class="question-block">
             <div class="pull-right author-box">
-                <img class="pull-left img img-rounded img-avatar" t-attf-src="/forum/user/#{answer.create_uid.id}/avatar"/>
+                <div class="user-tooltip" t-if=" answer.create_uid.karma >= answer.forum_id.karma_expand_userbio">
+                    <t t-call="website_forum.forum_user_tooltip"/>
+                </div>
+                <a t-attf-href="/forum/#{ slug(forum) }/user/#{ answer.create_uid.id }" class="user-info">
+                    <img class="pull-left img img-rounded img-avatar" t-attf-src="/forum/user/#{answer.create_uid.id}/avatar"/>
+                </a>
                 <a t-attf-href="/forum/#{ slug(forum) }/user/#{ answer.create_uid.id }"
                     t-field="answer.create_uid"
                     t-field-options='{"widget": "contact", "country_image": true, "fields": ["name", "country_id"]}'
@@ -803,6 +808,38 @@
                 <t t-call="website_forum.post_answers">
                     <t t-set="answer" t-value="child_answer"/>
                 </t>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for user tooltip  -->
+<template id="forum_user_tooltip">
+    <div class="user_bio">
+        <div class="tooltip_container">
+            <a t-attf-href="/forum/#{ slug(forum) }/user/#{ answer.create_uid.id }">
+                <img class="pull-left img img-rounded img-avatar-big" t-attf-src="/forum/user/#{answer.create_uid.id}/avatar"/>
+            </a>
+            <div class="tooltip_header">
+                <h4 class="user_heading"><a t-attf-href="/forum/#{ slug(forum) }/user/#{ answer.create_uid.id }"
+                    t-field="answer.create_uid"
+                    t-field-options='{"widget": "contact", "country_image": true, "fields": ["name", "country_id"]}'
+                    style="display: inline-block;"/>
+                </h4>
+                <div class="tooltip_line">
+                    <div><span t-field="answer.create_uid.company_id.name"/></div>
+                    <a t-att-href="answer.create_uid.company_id.website" t-if="answer.create_uid.company_id.website">
+                        <span t-field="answer.create_uid.company_id.website"/>
+                    </a>
+                </div>
+                <div t-field="answer.create_uid" t-field-options='{"widget": "contact", "badges": true, "fields": ["karma"]}'/>
+                <t t-set="answer_uid" t-value="answer.create_uid.sudo()" />
+                <div class="tooltip_line" t-if="answer_uid.partner_id.country_id or answer_uid.partner_id.city">
+                    <span t-field="answer_uid.partner_id.city"/><span t-if="answer_uid.partner_id.city and answer_uid.partner_id.country_id">, </span><span t-field="answer_uid.partner_id.country_id"/>
+                </div>
+            </div>
+            <div t-if="answer_uid.partner_id.website_description">
+                <span t-field="answer_uid.partner_id.website_description"/>
             </div>
         </div>
     </div>
