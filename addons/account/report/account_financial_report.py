@@ -411,4 +411,3 @@ class account_financial_report_context(models.TransientModel):
             'get_lines': self._get_lines
         }
         return report_obj.render('account.report_financial', docargs)
-

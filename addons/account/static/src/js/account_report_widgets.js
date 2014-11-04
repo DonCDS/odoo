@@ -439,7 +439,11 @@
                         var $nextEls = $(e.target).parents('tr').nextAll();
                         var isLoaded = false;
                         for (el in $nextEls) {
+<<<<<<< HEAD
                             $el = $($nextEls[el]).find("td span.domainLine");
+=======
+                            $el = $($nextEls[el]).find("td span[style='font-style: italic; margin-left: 100px']");
+>>>>>>> [ADD] account : financial reports
                             if ($el.length == 0)
                                 break;
                             else {

@@ -71,6 +71,76 @@
             <field name="sequence" eval="2"/>
             <field name="level" eval="3" />
         </record>
+        <record id="account_financial_report_executivesummary_net_assets0" model="account.financial.report.line">
+            <field name="name">Net assets</field>
+            <field name="sequence" eval="3"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_balancesheet0')])]"/>
+            <field name="formulas">balance = NA.balance</field>
+        </record>
+        <record id="account_financial_report_executivesummary_performance0" model="account.financial.report.line">
+            <field name="name">PERFORMANCE</field>
+            <field name="sequence" eval="4"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_line0')])]"/>
+        </record>
+        <record id="account_financial_report_executivesummary_gpmargin0" model="account.financial.report.line">
+            <field name="name">Gross profit margin</field>
+            <field name="sequence" eval="1"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_performance0')])]"/>
+            <field name="formulas">balance = GRP.balance / INC.balance</field>
+            <field name="figure_type">percents</field>
+        </record>
+        <record id="account_financial_report_executivesummary_npmargin0" model="account.financial.report.line">
+            <field name="name">Net profit margin</field>
+            <field name="sequence" eval="2"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_performance0')])]"/>
+            <field name="formulas">balance = NEP.balance / INC.balance</field>
+            <field name="figure_type">percents</field>
+        </record>
+        <record id="account_financial_report_executivesummary_return_investment0" model="account.financial.report.line">
+            <field name="name">Return on investment</field>
+            <field name="sequence" eval="3"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_performance0')])]"/>
+            <field name="formulas">balance = NEP.balance / TA.balance</field>
+            <field name="figure_type">percents</field>
+        </record>
+        <record id="account_financial_report_executivesummary_position0" model="account.financial.report.line">
+            <field name="name">POSITION</field>
+            <field name="sequence" eval="5"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_line0')])]"/>
+        </record>
+        <record id="account_financial_report_executivesummary_avdebt0" model="account.financial.report.line">
+            <field name="name">Average debtors days</field>
+            <field name="sequence" eval="1"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_position0')])]"/>
+            <field name="formulas">balance = DEB.balance / INC.balance * NDays</field>
+            <field name="figure_type">no_unit</field>
+            <field name="green_on_positive" eval="False"/>
+        </record>
+        <record id="account_financial_report_executivesummary_avgcre0" model="account.financial.report.line">
+            <field name="name">Average creditors days</field>
+            <field name="sequence" eval="2"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_position0')])]"/>
+            <field name="formulas">balance = CRE.balance / INC.balance * NDays</field>
+            <field name="figure_type">no_unit</field>
+            <field name="green_on_positive" eval="False"/>
+        </record>
+        <record id="account_financial_report_executivesummary_st_cash_forecast0" model="account.financial.report.line">
+            <field name="name">Short term cash forecast</field>
+            <field name="sequence" eval="3"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_position0')])]"/>
+            <field name="formulas">balance = DEB.balance - CRE.balance</field>
+        </record>
+        <record id="account_financial_report_executivesummary_ca_to_l0" model="account.financial.report.line">
+            <field name="name">Current assets to liabilities</field>
+            <field name="sequence" eval="4"/>
+            <field name="parent_ids" eval="[(6, 0, [ref('account_financial_report_executivesummary_position0')])]"/>
+            <field name="formulas">balance = TA.balance / L.balance</field>
+            <field name="figure_type">no_unit</field>
+        </record>
+
+        <!--
+            Aged Payable
+        -->
 
         <record id="account_financial_report_cost_sales0" model="account.financial.report.line">
             <field name="name">Less Cost of Sales</field>
