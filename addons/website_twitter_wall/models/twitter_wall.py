@@ -207,9 +207,10 @@ class WebsiteTwitterTweet(osv.osv):
         data = response.read()
         cardtweet = json.loads(data)
 
+
         vals = {
             'html_description': cardtweet.get('html', False),
-            'tweet_json': tweet,
+            'tweet_json': json.dumps(tweet),
             'tweet_id': tweet.get('id'),
             'published_date': datetime.datetime.now(),
             'wall_id': wall_id

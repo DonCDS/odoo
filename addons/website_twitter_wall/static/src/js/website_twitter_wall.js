@@ -125,6 +125,7 @@ openerp.website.tweet_wall = openerp.Class.extend({
     template : 'twitter_tweets',
     init : function($el, wall_id, interval_time) {
         this.$el = $el;
+        this.twitter_widget = 0;
         this.get_data_duration = interval_time || 5500;
         this.show_tweet_duation = interval_time || 5000;
         this.wall_id = wall_id;
@@ -162,6 +163,10 @@ openerp.website.tweet_wall = openerp.Class.extend({
     },
 
     animate_tweet:function(tweet_html){
-        $(tweet_html).prependTo(this.$el).hide().slideDown("slow");
+        //$(tweet_html).prependTo(this.$el).hide().slideDown("slow");
+        $(tweet_html).prependTo(this.$el);
+        setTimeout(function(){
+            $('.live-tweet').slideDown("slow");
+        },1100);
     }
 });

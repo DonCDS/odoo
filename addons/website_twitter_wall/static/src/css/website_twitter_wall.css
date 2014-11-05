@@ -221,6 +221,8 @@
   float: left !important;
 }
 
+
+
 @media (max-width: 767px) {
   ul.timeline:before {
     left: 40px;

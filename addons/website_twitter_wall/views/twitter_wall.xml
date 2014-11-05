@@ -172,13 +172,14 @@
                         type="text/css" />
                     <script type="text/javascript"
                         src="/website_twitter_wall/static/src/js/website_twitter_wall.js"></script>
+                    
                 </t>
                 <div class="full_screen" name="tweets_for_client" t-attf-style="background-image: url('data:image/jpg;base64, #{back_image}')">
                     <div class="container" t-att-wall_id="wall_id">
                         <div class="row">
                             <center>
                                 <div class="col-sm-12" id="tweet_wall_div">
-
+                                    
                                 </div>
                             </center>
                         </div>

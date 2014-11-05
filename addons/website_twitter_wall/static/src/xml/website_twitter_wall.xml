@@ -3,7 +3,7 @@
 
     <t t-name="twitter_tweets" name="res">
         <div class="col-sm-12">
-            <t t-raw="res.html_description"/>
+            <div class="live-tweet" style="display:none;"><t t-raw="res.html_description"/></div>
         </div>
         <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
     </t>
