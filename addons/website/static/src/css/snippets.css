@@ -771,6 +771,9 @@ table.table_desc tr td:last-child {
 .oe_snippet.o_block_faq .oe_snippet_thumbnail_img {
   background-image: url("/website/static/src/img/blocks/block_faq.png");
 }
+.oe_snippet.o_block_faq_roll .oe_snippet_thumbnail_img {
+  background-image: url("/website/static/src/img/blocks/block_faq.png");
+}
 .oe_snippet.o_block_references .oe_snippet_thumbnail_img {
   background-image: url("/website/static/src/img/blocks/block_references.png");
 }

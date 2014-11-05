@@ -537,6 +537,63 @@
     </div>
 
 
+    <div name="FAQ Roller" class="o_block_faq_roll">
+        <section class="mt16 mb16">
+            <div class="container">
+                <div class="panel-group oe_faq_group">
+                    <h2 class="page-header">Point of Sale Questions <small>v7</small></h2>
+                    <div class="panel panel-default oe_faq_default">
+                        <section class="oe_faq_sec">
+                            <div class="panel-heading oe_faq_heading">
+                                <h3>Which hardware does Odoo POS support?</h3>
+                            </div>
+                        </section>
+                        <div class="panel-body oe_faq_body">
+                            <p>
+                                Odoo's POS is a web application that can run on any device that
+                                can display websites with little to no setup required.
+                            </p>
+                            <p>
+                                The Point of Sale works perfectly on any kind of touch enabled
+                                device, whether it's multi-touch tablets like an iPad or
+                                keyboardless resistive touchscreen terminals.
+                            </p> 
+                        </div>
+                    </div>
+                    <div class="panel panel-default oe_faq_default">
+                        <section class="oe_faq_sec">
+                            <div class="panel-heading oe_faq_heading">
+                                <h3>Does it works offline?</h3>
+                            </div>
+                        </section>
+                        <div class="panel-body oe_faq_body">
+                            <p>
+                                Deploy new stores with just an internet connection: no
+                                installation, no specific hardware required. It works with any
+                                iPad, Tablet PC, laptop or industrial POS machine.
+                            </p>
+                            <p>
+                                While an internet connection is required to start the Point of
+                                Sale, it will stay operational even after a complete disconnection.
+                            </p> 
+                        </div>
+                    </div>
+                    <div class="panel panel-default oe_faq_default">
+                        <section class="oe_faq_sec">
+                            <div class="panel-heading oe_faq_heading">
+                                <h3>Can I use it to manage projects based on agile methodologies?</h3>
+                            </div>
+                        </section>
+                        <div class="panel-body oe_faq_body">
+                            <p>Yes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
     <div name="References" class="o_block_references">
         <section class="mb32 mt16">
             <div class="container">
