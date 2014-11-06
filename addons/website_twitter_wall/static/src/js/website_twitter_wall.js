@@ -167,6 +167,6 @@ openerp.website.tweet_wall = openerp.Class.extend({
         $(tweet_html).prependTo(this.$el);
         setTimeout(function(){
             $('.live-tweet').slideDown("slow");
-        },1100);
+        },1600);
     }
 });
