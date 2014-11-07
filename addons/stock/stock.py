@@ -2199,7 +2199,7 @@ class stock_move(osv.osv):
         todo_moves = []
         operations = set()
         for move in self.browse(cr, uid, ids, context=context):
-            if move.state not in ('confirmed', 'waiting', 'assigned'):
+            if move.state not in ('confirmed', 'waiting', 'assigned') and  move.product_id.type != 'consu':
                 continue
             if move.location_id.usage in ('supplier', 'inventory', 'production'):
                 to_assign_moves.append(move.id)

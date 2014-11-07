@@ -3198,7 +3198,6 @@ body.oe_single_form .oe_single_form_container {
 
 input[type="radio"], input[type="checkbox"] {
   margin-right: 4px;
-  margin-left: 4px;
 }
 
 .blockUI.blockOverlay {

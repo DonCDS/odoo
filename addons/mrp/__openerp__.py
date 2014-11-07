@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-TODAY Odoo S.A. (<https://www.odoo.com/>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,7 @@
     'website': 'https://www.odoo.com/page/manufacturing',
     'category': 'Manufacturing',
     'sequence': 18,
-    'summary': 'Manufacturing Orders, Bill of Materials, Routing',
+    'summary': 'Manufacturing Orders, Bill of Materials, Work Order Operations',
     'depends': ['product', 'procurement', 'stock_account', 'resource', 'report'],
     'description': """
 Manage the Manufacturing process in OpenERP

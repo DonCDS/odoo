@@ -566,17 +566,18 @@ class mrp_production(osv.osv):
                 ('ready', 'Ready to Produce'), ('in_production', 'Production Started'), ('done', 'Done')],
             string='Status', readonly=True,
             track_visibility='onchange', copy=False,
-            help="When the production order is created the status is set to 'Draft'.\n\
-                If the order is confirmed the status is set to 'Waiting Goods'.\n\
-                If any exceptions are there, the status is set to 'Picking Exception'.\n\
-                If the stock is available then the status is set to 'Ready to Produce'.\n\
-                When the production gets started then the status is set to 'In Production'.\n\
-                When the production is over, the status is set to 'Done'."),
+            help="When the production order is created the status is set to 'Draft'.\n"
+                "If the order is confirmed the status is set to 'Waiting Goods.\n"
+                "If any exceptions are there, the status is set to 'Picking Exception.\n"
+                "If the stock is available then the status is set to 'Ready to Produce.\n"
+                "When the production gets started then the status is set to 'In Production.\n"
+                "When the production is over, the status is set to 'Done'."),
         'hour_total': fields.function(_production_calc, type='float', string='Total Hours', multi='workorder', store=True),
         'cycle_total': fields.function(_production_calc, type='float', string='Total Cycles', multi='workorder', store=True),
         'user_id': fields.many2one('res.users', 'Responsible'),
         'company_id': fields.many2one('res.company', 'Company', required=True),
         'ready_production': fields.function(_moves_assigned, type='boolean', string="Ready for production", store={'stock.move': (_mrp_from_move, ['state'], 10)}),
+        'product_tmpl_id': fields.related('product_id', 'product_tmpl_id', type='many2one', relation='product.template', string='Product'),
     }
 
     _defaults = {
@@ -645,7 +646,8 @@ class mrp_production(osv.osv):
                 'bom_id': False,
                 'routing_id': False,
                 'product_uos_qty': 0,
-                'product_uos': False
+                'product_uos': False,
+                'product_tmpl_id': False
             }}
         bom_obj = self.pool.get('mrp.bom')
         product = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
@@ -655,7 +657,7 @@ class mrp_production(osv.osv):
             bom_point = bom_obj.browse(cr, uid, bom_id, context=context)
             routing_id = bom_point.routing_id.id or False
         product_uom_id = product.uom_id and product.uom_id.id or False
-        result['value'] = {'product_uos_qty': 0, 'product_uos': False, 'product_uom': product_uom_id, 'bom_id': bom_id, 'routing_id': routing_id}
+        result['value'] = {'product_uos_qty': 0, 'product_uos': False, 'product_uom': product_uom_id, 'bom_id': bom_id, 'routing_id': routing_id, 'product_tmpl_id': product.product_tmpl_id}
         if product.uos_id.id:
             result['value']['product_uos_qty'] = product_qty * product.uos_coeff
             result['value']['product_uos'] = product.uos_id.id
@@ -852,7 +854,7 @@ class mrp_production(osv.osv):
         production_qty = uom_obj._compute_qty(cr, uid, production.product_uom.id, production.product_qty, production.product_id.uom_id.id)
 
         scheduled_qty = {}
-        for scheduled in production.product_lines:
+        for scheduled in production.move_lines:
             if scheduled.product_id.type == 'service':
                 continue
             qty = uom_obj._compute_qty(cr, uid, scheduled.product_uom.id, scheduled.product_qty, scheduled.product_id.uom_id.id)
