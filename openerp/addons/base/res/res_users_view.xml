@@ -166,7 +166,7 @@
                     <sheet>
                         <field name="id" invisible="1"/>
                         <div class="oe_right oe_button_box">
-                            <field name="active" class="pull-right" widget="active_deactive_button" options='{"active": "Activate User", "deactive": "Deactivate User"}'/>
+                            <field name="active" class="pull-right" widget="boolean_button" options='{"active": "Activate User", "deactive": "Deactivate User"}'/>
                         </div>
                         <field name="image" widget='image' class="oe_avatar oe_left" options='{"preview_image": "image_medium"}'/>
                         <div class="oe_title">

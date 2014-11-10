@@ -3028,6 +3028,33 @@ instance.web.form.FieldBoolean = instance.web.form.AbstractField.extend({
     }
 });
 
+instance.web.form.FieldBooleanButton = instance.web.form.AbstractField.extend({
+    template: 'BooleanButton',
+    init: function() {
+        this._super.apply(this, arguments);
+        this.active_string = this.options['active'] || 'Active';
+        this.deactive_string = this.options['deactive'] || 'Deactive';
+    },
+    render_value: function() {
+        this.$("button:first")
+            .toggleClass("btn-success", !this.get_value())
+            .toggleClass("btn-danger", this.get_value());
+        this.$(".oe_deactivated").toggle(!this.get_value());
+        this.$(".oe_activated").toggle(this.get_value());
+    },
+    start: function() {
+        var self = this;
+        this._super.apply(this, arguments);
+        this.$("button:first").on("click", function () {
+            if ($(this).hasClass("btn-danger") && !confirm(_t("Are you sure you want to deactivate this user ?"))) {
+                return;
+            }
+            self.set_value(!$(this).hasClass("btn-danger"));
+            return self.view.recursive_save();
+        });
+    },
+});
+
 /**
     The progressbar field expect a float from 0 to 100.
 */
@@ -6310,6 +6337,7 @@ instance.web.form.StatInfo = instance.web.form.AbstractField.extend({
 
 });
 
+<<<<<<< HEAD
 /**
     This widget is intended to be used on boolean fields. It toggles a button
     switching between a green bullet / gray bullet.
@@ -6409,6 +6437,7 @@ instance.web.form.widgets = new instance.web.Registry({
     'reference' : 'instance.web.form.FieldReference',
     'boolean' : 'instance.web.form.FieldBoolean',
     'toggle_button' : 'instance.web.form.FieldToggleBoolean',
+    'boolean_button': 'instance.web.form.FieldBooleanButton',
     'float' : 'instance.web.form.FieldFloat',
     'percentpie': 'instance.web.form.FieldPercentPie',
     'barchart': 'instance.web.form.FieldBarChart',
@@ -6425,7 +6454,6 @@ instance.web.form.widgets = new instance.web.Registry({
     'priority':'instance.web.form.Priority',
     'kanban_state_selection':'instance.web.form.KanbanSelection',
     'statinfo': 'instance.web.form.StatInfo',
-    'active_deactive_button': 'instance.web.form.ActiveWidgetButton',
 });
 
 /**
