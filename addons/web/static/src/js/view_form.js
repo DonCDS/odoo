@@ -3034,7 +3034,7 @@ instance.web.form.FieldBooleanButton = instance.web.form.AbstractField.extend({
         this._super.apply(this, arguments);
         this.active_string = this.options['active'] || _t('Active');
         this.deactive_string = this.options['deactive'] || _t('Deactive');
-        this.warning_messsage = this.options['warning_message'] || _.str.sprintf(_t("Are you sure, you want to %s ?"), this.deactive_string);
+        this.confirm_message = this.options['confirm_message'] || _.str.sprintf(_t("Are you sure, you want to %s ?"), this.deactive_string);
     },
     render_value: function() {
         this.$("button:first")
@@ -3047,12 +3047,39 @@ instance.web.form.FieldBooleanButton = instance.web.form.AbstractField.extend({
         var self = this;
         this._super.apply(this, arguments);
         this.$("button:first").on("click", function () {
-            if ($(this).hasClass("btn-danger") && !confirm(self.warning_messsage)) {
-                return;
+            if ($(this).hasClass("btn-danger")) {
+                self.do_confirm_action();
+            }else{
+                self.do_apply_chage(!$(this).hasClass("btn-danger"));
             }
-            self.set_value(!$(this).hasClass("btn-danger"));
-            return self.view.recursive_save();
         });
+    },
+    do_confirm_action: function(){
+        var self = this;
+        var dialog = new instance.web.Dialog(this, {
+            title: 'Confirm',
+            size: 'small',
+            buttons: [
+                {text: _t("Cancel"), click: function() {
+                        this.parents('.modal').modal('hide');
+                    }
+                },
+                {text: _t("OK"), click: function() {
+                        var self2 = this;
+                        self.do_apply_chage(false).always(function(){
+                            self2.parents('.modal').modal('hide');
+                        });
+                    },
+                }
+            ],
+        },"<span>" + this.confirm_message + "</span>").open();
+    },
+    do_apply_chage: function(value){
+        this.set_value(value);
+        if(this.view.datarecord.id){
+            return this.view.recursive_save();
+        }
+        return $.when();
     },
 });
 
