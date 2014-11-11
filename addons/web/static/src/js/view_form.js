@@ -3032,8 +3032,9 @@ instance.web.form.FieldBooleanButton = instance.web.form.AbstractField.extend({
     template: 'BooleanButton',
     init: function() {
         this._super.apply(this, arguments);
-        this.active_string = this.options['active'] || 'Active';
-        this.deactive_string = this.options['deactive'] || 'Deactive';
+        this.active_string = this.options['active'] || _t('Active');
+        this.deactive_string = this.options['deactive'] || _t('Deactive');
+        this.warning_messsage = this.options['warning_message'] || _.str.sprintf(_t("Are you sure, you want to %s ?"), this.deactive_string);
     },
     render_value: function() {
         this.$("button:first")
@@ -3046,7 +3047,7 @@ instance.web.form.FieldBooleanButton = instance.web.form.AbstractField.extend({
         var self = this;
         this._super.apply(this, arguments);
         this.$("button:first").on("click", function () {
-            if ($(this).hasClass("btn-danger") && !confirm(_t("Are you sure you want to deactivate this user ?"))) {
+            if ($(this).hasClass("btn-danger") && !confirm(self.warning_messsage)) {
                 return;
             }
             self.set_value(!$(this).hasClass("btn-danger"));
