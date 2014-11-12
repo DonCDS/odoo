@@ -48,7 +48,7 @@ class website_twitter_wall(http.Controller):
             domain += [('website_published', '=', True), ('state', 'in', ['streaming', 'story'])]
             
         values = {
-            'walls': Wall.search(domain).sudo(),
+            'walls': Wall.search(domain),
             'is_public_user': request.env.user.id == request.website.user_id.id
         }
         return request.website.render("website_twitter_wall.twitter_walls", values)

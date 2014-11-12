@@ -60,6 +60,7 @@ class TwitterWall(osv.osv):
         twitter_api_secret = 'XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf'
         return twitter_api_key, twitter_api_secret
 
+    @api.multi
     def start_incoming_tweets(self):
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
         
@@ -88,6 +89,7 @@ class TwitterWall(osv.osv):
         return True
     
     #TODO: to check, may be useful to place this image in to website module
+    @api.model
     def crop_image(self, data, type='top', ratio=False, thumbnail_ratio=None, image_format="PNG"):
         """ Used for cropping image and create thumbnail
             :param data: base64 data of image.
@@ -133,6 +135,7 @@ class TwitterWall(osv.osv):
             thumb_image.save(output, image_format)
         return output.getvalue().encode('base64')
 
+    @api.multi
     def create(self, values):
         if values.get('image'):
             image_thumb = self.crop_image(values['image'], thumbnail_ratio=4)
@@ -144,18 +147,22 @@ class TwitterWall(osv.osv):
         wall_id = super(TwitterWall, self).create(values)
         return wall_id
     
+    @api.model
     def get_thumb_image(self):
         return "/website/image/website.twitter.wall/%s/image_thumb" % self.id
 
+    @api.model
     def get_image(self):
         return "/website/image/website.twitter.wall/%s/image" % self.id
 
+    @api.multi
     def stop_incoming_tweets(self):
         for wall in self:
             stream_pool.get(wall).disconnect()
         self.write({'state': 'not_streaming'})
         return True
 
+    @api.multi
     def create_tweets(self, vals):
         Tweet = self.env['website.twitter.wall.tweet']
         tweet_val = Tweet._process_tweet(self.id, vals)
@@ -175,6 +182,7 @@ class WebsiteTwitterTweet(osv.osv):
         ('tweet_uniq', 'unique (wall_id, tweet_id)', 'Duplicate tweet in wall is not allowed !')
     ]
 
+    @api.model
     def _process_tweet(self, wall_id, tweet):        
         card_url = "https://api.twitter.com/1/statuses/oembed.json?id=%s&omit_script=true" % (tweet.get('id'))
         req = urllib2.Request(card_url, None, {'Content-Type': 'application/json'})
