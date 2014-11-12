@@ -133,7 +133,7 @@
                         <center>
                             <ul class="timeline">
                                 <t t-foreach="tweets" t-as="tweet">
-                                    <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'}">
+                                    <li style="display:none;" t-attf-class="#{tweet_index % 2 and 'timeline-inverted'} tw">
                                         <div class="timeline-badge primary">
                                             <a>
                                                 <i class="glyphicon glyphicon-record" rel="tooltip" t-att-title="tweet.create_date">

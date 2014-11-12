@@ -12,7 +12,7 @@ You can create and display as multiple walls for your concurrent sessions, manag
     'depends': ['website'],
     'data': [
         'views/twitter_wall.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
      ],
     'demo': [],
     'qweb': [],
