@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_website_twitter_wall_public,website.twitter.wall,model_website_twitter_wall,base.group_public,1,1,1,0
-access_website_twitter_wall_tweet_public,website.twitter.wall.tweet,model_website_twitter_wall_tweet,base.group_public,1,1,1,0
+access_website_twitter_wall_public,website.twitter.wall.public,model_website_twitter_wall,base.group_public,1,1,1,0
+access_website_twitter_wall_portal,website.twitter.wall.portal,model_website_twitter_wall,base.group_portal,1,0,1,0
+access_website_twitter_wall_user,website.twitter.wall.user,model_website_twitter_wall,base.group_user,1,1,1,1
+access_website_twitter_wall_tweet_public,website.twitter.wall.tweet.public,model_website_twitter_wall_tweet,base.group_public,1,1,1,0
+access_website_twitter_wall_tweet_portal,website.twitter.wall.tweet.portal,model_website_twitter_wall_tweet,base.group_portal,1,0,1,0
+access_website_twitter_wall_tweet_user,website.twitter.wall.tweet.user,model_website_twitter_wall_tweet,base.group_user,1,1,1,1
