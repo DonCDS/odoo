@@ -85,23 +85,6 @@ class mail_thread(osv.AbstractModel):
     _mail_flat_thread = True
     _mail_post_access = 'write'
 
-    # Automatic logging system if mail installed
-    # _track = {
-    #   'field': {
-    #       'module.subtype_xml': lambda self, cr, uid, obj, context=None: obj[state] == done,
-    #       'module.subtype_xml2': lambda self, cr, uid, obj, context=None: obj[state] != done,
-    #   },
-    #   'field2': {
-    #       ...
-    #   },
-    # }
-    # where
-    #   :param string field: field name
-    #   :param module.subtype_xml: xml_id of a mail.message.subtype (i.e. mail.mt_comment)
-    #   :param obj: is a browse_record
-    #   :param function lambda: returns whether the tracking should record using this subtype
-    _track = {}
-
     # Mass mailing feature
     _mail_mass_mailing = False
 
@@ -465,13 +448,25 @@ class mail_thread(osv.AbstractModel):
         """
         tracked_fields = []
         for name, field in self._fields.items():
-            visibility = getattr(field, 'track_visibility', False)
-            if visibility == 'always' or (visibility == 'onchange' and name in updated_fields) or name in self._track:
+            if getattr(field, 'track_visibility', False):
                 tracked_fields.append(name)
 
         if tracked_fields:
             return self.fields_get(cr, uid, tracked_fields, context=context)
         return {}
+
+    def _track_subtype(self, cr, uid, record, values, context=None):
+        """ Give the subtypes triggered by the changes on the record according
+        to values that have been updated.
+
+        :param record: the record being updated
+        :type record: BrowseRecord
+        :param values: the values used to update the record; it is formatted
+                       like the dictionary used in create or write methods.
+        :type values: dict
+        :returns: a subtype xml_id or False if no subtype is trigerred
+        """
+        return False
 
     def message_track(self, cr, uid, ids, tracked_fields, initial_values, context=None):
 
@@ -529,28 +524,19 @@ class mail_thread(osv.AbstractModel):
                 continue
 
             # find subtypes and post messages or log if no subtype found
-            subtypes = []
+            subtype_xmlid = False
             # By passing this key, that allows to let the subtype empty and so don't sent email because partners_to_notify from mail_message._notify will be empty
             if not context.get('mail_track_log_only'):
-                for field, track_info in self._track.items():
-                    if field not in changes:
-                        continue
-                    for subtype, method in track_info.items():
-                        if method(self, cr, uid, browse_record, context):
-                            subtypes.append(subtype)
-
-            posted = False
-            for subtype in subtypes:
-                subtype_rec = self.pool.get('ir.model.data').xmlid_to_object(cr, uid, subtype, context=context)
+                subtype_xmlid = self._track_subtype(cr, uid, browse_record, dict((col_name, initial[col_name]) for col_name in changes), context=context)
+            if subtype_xmlid:
+                subtype_rec = self.pool['ir.model.data'].xmlid_to_object(cr, uid, subtype_xmlid, context=context)
                 if not (subtype_rec and subtype_rec.exists()):
-                    _logger.debug('subtype %s not found' % subtype)
+                    _logger.debug('subtype %s not found' % subtype_xmlid)
                     continue
                 message = format_message(subtype_rec.description if subtype_rec.description else subtype_rec.name, tracked_values)
-                self.message_post(cr, uid, browse_record.id, body=message, subtype=subtype, context=context)
-                posted = True
-            if not posted:
+            else:
                 message = format_message('', tracked_values)
-                self.message_post(cr, uid, browse_record.id, body=message, context=context)
+            self.message_post(cr, uid, browse_record.id, body=message, subtype=subtype_xmlid, context=context)
         return True
 
     #------------------------------------------------------

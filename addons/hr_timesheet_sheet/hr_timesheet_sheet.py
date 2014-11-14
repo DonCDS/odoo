@@ -36,13 +36,6 @@ class hr_timesheet_sheet(osv.osv):
     _order = "id desc"
     _description = "Timesheet"
 
-    _track = {
-        'state': {
-            'hr_timesheet_sheet.mt_timesheet_confirmed': lambda self, cr, uid, obj, ctx=None: obj.state == 'confirm',
-            'hr_timesheet_sheet.mt_timesheet_approved': lambda self, cr, uid, obj, ctx=None: obj.state == 'done',
-        },
-    }
-
     def _total(self, cr, uid, ids, name, args, context=None):
         """ Compute the attendances, analytic lines timesheets and differences between them
             for all the days of a timesheet and the current day
@@ -278,6 +271,13 @@ class hr_timesheet_sheet(osv.osv):
     # ------------------------------------------------
     # OpenChatter methods and notifications
     # ------------------------------------------------
+
+    def _track_subtype(self, cr, uid, record, values, context=None):
+        if 'state' in values and record.state == 'confirm':
+            return 'hr_timesheet_sheet.mt_timesheet_confirmed'
+        elif 'state' in values and record.state == 'done':
+            return 'hr_timesheet_sheet.mt_timesheet_approved'
+        return super(hr_timesheet_sheet, self)._track_subtype(cr, uid, record, values, context=context)
 
     def _needaction_domain_get(self, cr, uid, context=None):
         emp_obj = self.pool.get('hr.employee')

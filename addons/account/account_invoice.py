@@ -51,14 +51,6 @@ class account_invoice(models.Model):
     _inherit = ['mail.thread']
     _description = "Invoice"
     _order = "number desc, id desc"
-    _track = {
-        'type': {
-        },
-        'state': {
-            'account.mt_invoice_paid': lambda self, cr, uid, obj, ctx=None: obj.state == 'paid' and obj.type in ('out_invoice', 'out_refund'),
-            'account.mt_invoice_validated': lambda self, cr, uid, obj, ctx=None: obj.state == 'open' and obj.type in ('out_invoice', 'out_refund'),
-        },
-    }
 
     @api.one
     @api.depends('invoice_line.price_subtotal', 'tax_line.amount')
@@ -1206,6 +1198,15 @@ class account_invoice(models.Model):
         recs = self.browse(cr, uid, ids, context)
         return recs.pay_and_reconcile(pay_amount, pay_account_id, period_id, pay_journal_id,
                     writeoff_acc_id, writeoff_period_id, writeoff_journal_id, name=name)
+
+    @api.v7
+    def _track_subtype(self, cr, uid, record, values, context=None):
+        if 'state' in values and record.state == 'paid' and record.type in ('out_invoice', 'out_refund'):
+            return 'account.mt_invoice_paid'
+        elif 'state' in values and record.state == 'open' and record.type in ('out_invoice', 'out_refund'):
+            return 'account.mt_invoice_validated'
+        return super(account_invoice, self)._track_subtype(cr, uid, record, values, context=context)
+
 
 class account_invoice_line(models.Model):
     _name = "account.invoice.line"
