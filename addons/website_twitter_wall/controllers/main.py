@@ -3,11 +3,11 @@ import urllib2
 import mimetypes
 from urllib2 import urlopen
 from urllib2 import Request as URLRequest
-
 from oauth import oauth
 from openerp import SUPERUSER_ID
 from openerp.addons.web import http
 from openerp.addons.web.http import request
+from token import *
 
 class website_twitter_wall(http.Controller):
 
