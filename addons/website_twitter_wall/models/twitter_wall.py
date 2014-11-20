@@ -33,6 +33,7 @@ from openerp import api, fields, models
 from openerp.osv import osv
 from twitter_stream import WallListener, Stream
 from openerp.addons.website_twitter_wall.controllers.oauth import oauth
+#from openerp.addons.website_twitter_wall.models.auth import Auth, AuthToken, WallListener, Stream
 
 stream_pool = {
     
@@ -60,6 +61,34 @@ class TwitterWall(osv.osv):
         twitter_api_secret = 'XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf'
         return twitter_api_key, twitter_api_secret
 
+    '''
+    @api.multi
+    def start_incoming_tweets(self):
+        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        
+        def func(stream, user_ids):
+            return stream.filter(follow=user_ids)
+
+        if stream_pool.get(self.id):
+            return True
+        
+        if self.twitter_access_token and self.twitter_access_token_secret:
+            auth_token = AuthToken(self.twitter_access_token, self.twitter_access_token_secret)
+            auth = Auth(auth_token)
+
+            listner = WallListener(base_url, self)
+
+            stream = stream_pool.get(self.id, False)
+            if not stream:
+                stream = Stream(auth, listner)
+            stream_pool[self.id] = stream
+
+            user_ids = auth.get_authorise_user_id()
+            thread.start_new_thread(func, (stream, [user_ids], ))
+
+        self.write({'state': 'streaming'})
+        return True
+    '''
     @api.multi
     def start_incoming_tweets(self):
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
