@@ -250,6 +250,10 @@
                         def.resolve();
                     }
                 });
+                self.$element.on('mousedown', function($ev) {
+                    self.end_tip(tip);
+                    def.resolve();
+                });
 
                 // resize
                 instance.web.bus.on('resize', this, function() {
