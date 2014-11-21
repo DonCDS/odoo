@@ -49,8 +49,8 @@ FWS = r'(?:(?:' + WSP + r'*' + CRLF + r')?' + \
 CTEXT = r'[' + NO_WS_CTL + \
                 r'\x21-\x27\x2a-\x5b\x5d-\x7e]'              # see 3.2.3
 CCONTENT = r'(?:' + CTEXT + r'|' + \
-                     QUOTED_PAIR + r')'                        # see 3.2.3 (NB: The RFC includes COMMENT here
-                                                                                                         # as well, but that would be circular.)
+                     QUOTED_PAIR + r')'                      # see 3.2.3 (NB: The RFC includes COMMENT here
+                                                              # as well, but that would be circular.)
 COMMENT = r'\((?:' + FWS + r'?' + CCONTENT + \
                     r')*' + FWS + r'?\)'                       # see 3.2.3
 CFWS = r'(?:' + FWS + r'?' + COMMENT + ')*(?:' + \

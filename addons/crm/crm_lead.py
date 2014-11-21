@@ -1,34 +1,10 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-today OpenERP SA (<http://www.openerp.com>)
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
 import crm
 from datetime import datetime
 from operator import itemgetter
 
-import openerp
-from openerp import SUPERUSER_ID
-from openerp import tools
 from openerp.addons.base.res.res_partner import format_address
-from openerp.osv import fields, osv, orm
-from openerp.tools.translate import _
+from openerp import api, fields, models, tools, _
 from openerp.tools import email_re, email_split
 from openerp.exceptions import UserError, AccessError
 
@@ -65,8 +41,7 @@ CRM_LEAD_FIELDS_TO_MERGE = ['name',
     'email_cc',
     'partner_name']
 
-
-class crm_lead(format_address, osv.osv):
+class crm_lead(format_address, models.Model):
     """ CRM Lead Case """
     _name = "crm.lead"
     _description = "Lead/Opportunity"
@@ -84,50 +59,49 @@ class crm_lead(format_address, osv.osv):
     }
     _mail_mass_mailing = _('Leads / Opportunities')
 
-    def get_empty_list_help(self, cr, uid, help, context=None):
-        context = dict(context or {})
-        if context.get('default_type') == 'lead':
-            context['empty_list_help_model'] = 'crm.team'
-            context['empty_list_help_id'] = context.get('default_team_id')
-        context['empty_list_help_document_name'] = _("leads")
-        return super(crm_lead, self).get_empty_list_help(cr, uid, help, context=context)
+    @api.model
+    def get_empty_list_help(self, help):
+        if self._context.get('default_type') == 'lead':
+            self = self.with_context(
+                empty_list_help_model='crm.team',
+                empty_list_help_id=self._context.get('default_team_id'))
+        return super(crm_lead, self.with_context(empty_list_help_document_name = _("leads"))).get_empty_list_help(help)
 
-    def _get_default_team_id(self, cr, uid, user_id=False, context=None):
+    def _get_default_team_id(self, user_id=False):
         """ Gives default team by checking if present in the context """
-        team_id = self._resolve_team_id_from_context(cr, uid, context=context) or False
+        team_id = self._resolve_team_id_from_context() or False
         return team_id
 
-    def _get_default_stage_id(self, cr, uid, context=None):
+    def _get_default_stage_id(self):
         """ Gives default stage_id """
-        team_id = self._get_default_team_id(cr, uid, context=context)
-        return self.stage_find(cr, uid, [], team_id, [('fold', '=', False)], context=context)
+        team_id = self._get_default_team_id()
+        return self.stage_find(team_id, [('fold', '=', False)])
 
-    def _resolve_team_id_from_context(self, cr, uid, context=None):
+    @api.model
+    def _resolve_team_id_from_context(self):
         """ Returns ID of team based on the value of 'team_id'
             context key, or None if it cannot be resolved to a single
             Sales Team.
         """
-        if context is None:
-            context = {}
+        context = self._context
         if type(context.get('default_team_id')) in (int, long):
             return context.get('default_team_id')
         if isinstance(context.get('default_team_id'), basestring):
-            team_ids = self.pool.get('crm.team').name_search(cr, uid, name=context['default_team_id'], context=context)
+            team_ids = self.env['crm.team'].name_search(name=context['default_team_id'])
             if len(team_ids) == 1:
                 return int(team_ids[0][0])
         return None
 
-    def _resolve_type_from_context(self, cr, uid, context=None):
+    def _resolve_type_from_context(self):
         """ Returns the type (lead or opportunity) from the type context
             key. Returns None if it cannot be resolved.
         """
-        if context is None:
-            context = {}
-        return context.get('default_type')
+        return self._context.get('default_type')
 
-    def _read_group_stage_ids(self, cr, uid, ids, domain, read_group_order=None, access_rights_uid=None, context=None):
-        access_rights_uid = access_rights_uid or uid
-        stage_obj = self.pool.get('crm.stage')
+    @api.multi
+    def _read_group_stage_ids(self, domain, read_group_order=None, access_rights_uid=None):
+        access_rights_uid = access_rights_uid or self._uid
+        stage_obj = self.env['crm.stage']
         order = stage_obj._order
         # lame hack to allow reverting search, should just work in the trivial case
         if read_group_order == 'stage_id desc':
@@ -137,49 +111,50 @@ class crm_lead(format_address, osv.osv):
         # - OR ('case_default', '=', True), ('fold', '=', False): add default columns that are not folded
         # - OR ('team_ids', '=', team_id), ('fold', '=', False) if team_id: add team columns that are not folded
         search_domain = []
-        team_id = self._resolve_team_id_from_context(cr, uid, context=context)
+        team_id = self._resolve_team_id_from_context()
         if team_id:
             search_domain += ['|', ('team_ids', '=', team_id)]
-            search_domain += [('id', 'in', ids)]
+            search_domain += [('id', 'in', self.ids)]
         else:
-            search_domain += ['|', ('id', 'in', ids), ('case_default', '=', True)]
+            search_domain += ['|', ('id', 'in', self.ids), ('case_default', '=', True)]
         # retrieve type from the context (if set: choose 'type' or 'both')
-        type = self._resolve_type_from_context(cr, uid, context=context)
+        type = self._resolve_type_from_context()
         if type:
             search_domain += ['|', ('type', '=', type), ('type', '=', 'both')]
         # perform search
-        stage_ids = stage_obj._search(cr, uid, search_domain, order=order, access_rights_uid=access_rights_uid, context=context)
-        result = stage_obj.name_get(cr, access_rights_uid, stage_ids, context=context)
+        stage_ids = stage_obj._search(search_domain, order=order, access_rights_uid=access_rights_uid)
+        stage_rec = stage_obj.browse(stage_ids)
+        result = stage_rec.name_get()
         # restore order of the search
         result.sort(lambda x, y: cmp(stage_ids.index(x[0]), stage_ids.index(y[0])))
-
         fold = {}
-        for stage in stage_obj.browse(cr, access_rights_uid, stage_ids, context=context):
+        for stage in stage_rec:
             fold[stage.id] = stage.fold or False
         return result, fold
 
-    def fields_view_get(self, cr, user, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        if context and context.get('opportunity_id'):
-            action = self._get_formview_action(cr, user, context['opportunity_id'], context=context)
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        if self._context.get('opportunity_id'):
+            action = self._get_formview_action(self._context['opportunity_id'])
             if action.get('views') and any(view_id for view_id in action['views'] if view_id[1] == view_type):
                 view_id = next(view_id[0] for view_id in action['views'] if view_id[1] == view_type)
-        res = super(crm_lead, self).fields_view_get(cr, user, view_id, view_type, context, toolbar=toolbar, submenu=submenu)
+        res = super(crm_lead, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
         if view_type == 'form':
-            res['arch'] = self.fields_view_get_address(cr, user, res['arch'], context=context)
+            res['arch'] = self.fields_view_get_address(res['arch'])
         return res
 
     _group_by_full = {
         'stage_id': _read_group_stage_ids
     }
 
-    def _compute_day(self, cr, uid, ids, fields, args, context=None):
+    @api.multi
+    @api.depends('create_date', 'date_open', 'date_closed')
+    def _compute_day(self):
         """
         :return dict: difference between current date and log date
         """
-        res = {}
-        for lead in self.browse(cr, uid, ids, context=context):
-            for field in fields:
-                res[lead.id] = {}
+        for lead in self:
+            for field in self._fields:
                 duration = 0
                 ans = False
                 if field == 'day_open':
@@ -187,164 +162,176 @@ class crm_lead(format_address, osv.osv):
                         date_create = datetime.strptime(lead.create_date, "%Y-%m-%d %H:%M:%S")
                         date_open = datetime.strptime(lead.date_open, "%Y-%m-%d %H:%M:%S")
                         ans = date_open - date_create
+                        self.day_open = abs(int(ans.days))
                 elif field == 'day_close':
                     if lead.date_closed:
                         date_create = datetime.strptime(lead.create_date, "%Y-%m-%d %H:%M:%S")
                         date_close = datetime.strptime(lead.date_closed, "%Y-%m-%d %H:%M:%S")
                         ans = date_close - date_create
-                if ans:
-                    duration = abs(int(ans.days))
-                res[lead.id][field] = duration
-        return res
-    def _meeting_count(self, cr, uid, ids, field_name, arg, context=None):
-        Event = self.pool['calendar.event']
-        return {
-            opp_id: Event.search_count(cr,uid, [('opportunity_id', '=', opp_id)], context=context)
-            for opp_id in ids
-        }
+                        self.day_close = abs(int(ans.days))
 
-    def _calls_count(self, cr, uid, ids, field_name, args, context=None):
-        res = dict.fromkeys(ids, 0)
-        phonecall_data = self.pool['crm.phonecall'].read_group(
-            cr, uid, [('opportunity_id', 'in', ids)], ['opportunity_id'], ['opportunity_id'], context=context)
-        for data in phonecall_data:
-            res[data['opportunity_id'][0]] = data['opportunity_id_count']
-        return res
+    @api.multi
+    def _meeting_count(self):
+        self.meeting_count = self.env['calendar.event'].search_count([('opportunity_id', 'in', self.ids)])
 
-    _columns = {
-        'partner_id': fields.many2one('res.partner', 'Partner', ondelete='set null', track_visibility='onchange',
-            select=True, help="Linked partner (optional). Usually created when converting the lead."),
+    @api.multi
+    def _calls_count(self):
+        phonecall_data = self.env['crm.phonecall'].read_group([('opportunity_id', 'in', self._ids)], ['opportunity_id'], ['opportunity_id'])
+        mapped_data = dict([(m['opportunity_id'][0], m['opportunity_id_count']) for m in phonecall_data])
+        for call in self:
+            call.calls_count = mapped_data.get(call.id, 0)
 
-        'id': fields.integer('ID', readonly=True),
-        'name': fields.char('Opportunity', required=True, select=1),
-        'active': fields.boolean('Active', required=False),
-        'date_action_last': fields.datetime('Last Action', readonly=1),
-        'date_action_next': fields.datetime('Next Action', readonly=1),
-        'email_from': fields.char('Email', size=128, help="Email address of the contact", select=1),
-        'team_id': fields.many2one('crm.team', 'Sales Team', oldname='section_id',
-                        select=True, track_visibility='onchange', help='When sending mails, the default email address is taken from the sales team.'),
-        'create_date': fields.datetime('Creation Date', readonly=True),
-        'email_cc': fields.text('Global CC', help="These email addresses will be added to the CC field of all inbound and outbound emails for this record before being sent. Separate multiple email addresses with a comma"),
-        'description': fields.text('Notes'),
-        'write_date': fields.datetime('Update Date', readonly=True),
-        'tag_ids': fields.many2many('crm.lead.tag', 'crm_lead_tag_rel', 'lead_id', 'tag_id', 'Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service"),
-        'contact_name': fields.char('Contact Name', size=64),
-        'partner_name': fields.char("Customer Name", size=64,help='The name of the future partner company that will be created while converting the lead into opportunity', select=1),
-        'opt_out': fields.boolean('Opt-Out', oldname='optout',
-            help="If opt-out is checked, this contact has refused to receive emails for mass mailing and marketing campaign. "
-                    "Filter 'Available for Mass Mailing' allows users to filter the leads when performing mass mailing."),
-        'type': fields.selection([ ('lead','Lead'), ('opportunity','Opportunity'), ],'Type', select=True, help="Type is used to separate Leads and Opportunities"),
-        'priority': fields.selection(crm.AVAILABLE_PRIORITIES, 'Priority', select=True),
-        'date_closed': fields.datetime('Closed', readonly=True, copy=False),
-        'stage_id': fields.many2one('crm.stage', 'Stage', track_visibility='onchange', select=True,
-                        domain="['&', ('team_ids', '=', team_id), '|', ('type', '=', type), ('type', '=', 'both')]"),
-        'user_id': fields.many2one('res.users', 'Salesperson', select=True, track_visibility='onchange'),
-        'referred': fields.char('Referred By'),
-        'date_open': fields.datetime('Assigned', readonly=True),
-        'day_open': fields.function(_compute_day, string='Days to Assign',
-                                    multi='day_open', type="float",
-                                    store={'crm.lead': (lambda self, cr, uid, ids, c={}: ids, ['date_open'], 10)}),
-        'day_close': fields.function(_compute_day, string='Days to Close',
-                                     multi='day_open', type="float",
-                                     store={'crm.lead': (lambda self, cr, uid, ids, c={}: ids, ['date_closed'], 10)}),
-        'date_last_stage_update': fields.datetime('Last Stage Update', select=True),
-        'date_conversion': fields.datetime('Conversion Date', readonly=1),
+    partner_id = fields.Many2one('res.partner', string='Partner',
+                                 ondelete='set null', track_visibility='onchange',
+                                 select=True, help="Linked partner (optional). Usually created when converting the lead.")
+    name = fields.Char(string='Opportunity', required=True, select=True)
+    active = fields.Boolean(required=False, default=True)
+    email_from = fields.Char(
+        string='Email', size=128, help="Email address of the contact", select=1)
+    team_id = fields.Many2one('crm.team', string='Sales Team',
+                              select=True,
+                              track_visibility='onchange',
+                              help='When sending mails, the default email address is taken from the sales team.',
+                              default=lambda self: self._get_default_team_id())
+    email_cc = fields.Text(
+        string='Global CC', help="These email addresses will be added to the CC field of all inbound and outbound emails for this record before being sent. Separate multiple email addresses with a comma")
+    description = fields.Text(string='Notes')
+    write_date = fields.Datetime(string='Update Date', readonly=True)
+    tag_ids = fields.Many2many(
+        comodel_name='crm.lead.tag', relation='crm_lead_tag_rel',
+        column1='lead_id', column2='tag_id', string='Tags', help="Classify and analyze your lead/opportunity categories like: Training, Service")
+    contact_name = fields.Char(string='Contact Name', size=64)
+    partner_name = fields.Char(
+        string="Customer Name", size=64, help='The name of the future partner company that will be created while converting the lead into opportunity', select=1)
+    opt_out = fields.Boolean(string='Opt-Out', oldname='optout',
+                             help="If opt-out is checked, this contact has refused to receive emails for mass mailing and marketing campaign. "
+                             "Filter 'Available for Mass Mailing' allows users to filter the leads when performing mass mailing.")
+    type = fields.Selection(
+        [('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
+        select=True, help="Type is used to separate Leads and Opportunities", default='lead')
+    priority = fields.Selection(
+        crm.AVAILABLE_PRIORITIES, select=True,
+        default=lambda *a: crm.AVAILABLE_PRIORITIES[0][0])
+    stage_id = fields.Many2one('crm.stage', string='Stage',
+                               track_visibility='onchange',
+                               select=True,
+                               domain="['&', ('team_ids', '=', team_id), '|', ('type', '=', type), ('type', '=', 'both')]",
+                               default=lambda self: self._get_default_stage_id())
+    user_id = fields.Many2one('res.users', string='Salesperson', select=True,
+                              track_visibility='onchange',
+                              default=lambda self: self._uid)
+    referred = fields.Char(string='Referred By')
+    create_date = fields.Datetime(string='Creation Date', readonly=True)
+    date_action_last = fields.Datetime(string='Last Action', readonly=1)
+    date_action_next = fields.Datetime(string='Next Action', readonly=1)
+    date_open = fields.Datetime(string='Assigned', readonly=True)
+    date_closed = fields.Datetime(string='Closed', readonly=True, copy=False)
+    date_last_stage_update = fields.Datetime(string='Last Stage Update', select=True,
+                                             default=fields.datetime.now())
+    date_conversion = fields.Datetime('Conversion Date', readonly=1)
+    day_open = fields.Float(
+        compute='_compute_day', string='Days to Assign', store=True)
+    day_close = fields.Float(
+        compute='_compute_day', string='Days to Close', store=True)
 
-        # Messaging and marketing
-        'message_bounce': fields.integer('Bounce', help="Counter of the number of bounced emails for this contact"),
-        # Only used for type opportunity
-        'probability': fields.float('Probability', group_operator="avg"),
-        'planned_revenue': fields.float('Expected Revenue', track_visibility='always'),
-        'ref': fields.reference('Reference', selection=openerp.addons.base.res.res_request.referencable_models),
-        'ref2': fields.reference('Reference 2', selection=openerp.addons.base.res.res_request.referencable_models),
-        'phone': fields.char("Phone", size=64),
-        'date_deadline': fields.date('Expected Closing', help="Estimate of the date on which the opportunity will be won."),
-        'date_action': fields.date('Next Action Date', select=True),
-        'title_action': fields.char('Next Action'),
-        'color': fields.integer('Color Index'),
-        'partner_address_name': fields.related('partner_id', 'name', type='char', string='Partner Contact Name', readonly=True),
-        'partner_address_email': fields.related('partner_id', 'email', type='char', string='Partner Contact Email', readonly=True),
-        'company_currency': fields.related('company_id', 'currency_id', type='many2one', string='Currency', readonly=True, relation="res.currency"),
-        'user_email': fields.related('user_id', 'email', type='char', string='User Email', readonly=True),
-        'user_login': fields.related('user_id', 'login', type='char', string='User Login', readonly=True),
+    # Messaging and marketing
+    message_bounce = fields.Integer(string='Bounce')
+    # Only used for type opportunity
+    probability = fields.Float(group_operator="avg")
+    planned_revenue = fields.Float(
+        string='Expected Revenue', track_visibility='always')
+    ref = fields.Reference(string='Reference', selection='referencable_models')
+    ref2 = fields.Reference(
+        string='Reference 2', selection='referencable_models')
+    company_currency = fields.Many2one(
+        comodel_name='res.currency', related='company_id.currency_id', string='Currency', store=True, readonly=True)
+    company_id = fields.Many2one('res.company', string='Company', select=True,
+                                 default=lambda self: self.env['res.company']._company_default_get('crm.lead'))
+    phone = fields.Char()
+    date_deadline = fields.Date(
+        string='Expected Closing', help="Estimate of the date on which the opportunity will be won.")
+    date_action = fields.Date(string='Next Action Date', select=True)
+    title_action = fields.Char(string='Next Action')
+    color = fields.Integer(string='Color Index', default=0)
+    partner_address_name = fields.Char(
+        related='partner_id.name', string='Partner Contact Name', readonly=True)
+    partner_address_email = fields.Char(
+        related='partner_id.email', string='Partner Contact Email', readonly=True)
 
-        # Fields for address, due to separation from crm and res.partner
-        'street': fields.char('Street'),
-        'street2': fields.char('Street2'),
-        'zip': fields.char('Zip', change_default=True, size=24),
-        'city': fields.char('City'),
-        'state_id': fields.many2one("res.country.state", 'State'),
-        'country_id': fields.many2one('res.country', 'Country'),
-        'phone': fields.char('Phone'),
-        'fax': fields.char('Fax'),
-        'mobile': fields.char('Mobile'),
-        'function': fields.char('Function'),
-        'title': fields.many2one('res.partner.title', 'Title'),
-        'company_id': fields.many2one('res.company', 'Company', select=1),
-        'planned_cost': fields.float('Planned Costs'),
-        'meeting_count': fields.function(_meeting_count, string='# Meetings', type='integer'),
-        'lost_reason': fields.many2one('crm.lost.reason', 'Lost Reason', select=True, track_visibility='onchange'),
-        'calls_count': fields.function(_calls_count, string='# Phonecalls', type='integer'),
-    }
+    user_email = fields.Char(
+        related='user_id.email', string='User Email', readonly=True)
+    user_login = fields.Char(
+        related='user_id.login', string='User Login', readonly=True)
 
-    _defaults = {
-        'active': 1,
-        'type': 'lead',
-        'user_id': lambda s, cr, uid, c: uid,
-        'stage_id': lambda s, cr, uid, c: s._get_default_stage_id(cr, uid, c),
-        'team_id': lambda s, cr, uid, c: s._get_default_team_id(cr, uid, context=c),
-        'company_id': lambda s, cr, uid, c: s.pool.get('res.company')._company_default_get(cr, uid, 'crm.lead', context=c),
-        'priority': lambda *a: crm.AVAILABLE_PRIORITIES[0][0],
-        'color': 0,
-        'date_last_stage_update': fields.datetime.now,
-    }
+    # Fields for address, due to separation from crm and res.partner
+    street = fields.Char()
+    street2 = fields.Char()
+    zip = fields.Char(change_default=True)
+    city = fields.Char()
+    state_id = fields.Many2one("res.country.state", string='State')
+    country_id = fields.Many2one('res.country', string='Country')
+    phone = fields.Char()
+    fax = fields.Char()
+    mobile = fields.Char()
+    function = fields.Char()
+    title = fields.Many2one('res.partner.title')
+    planned_cost = fields.Float(string='Planned Costs')
+    meeting_count = fields.Integer(
+        compute='_meeting_count', string='# Meetings')
+    lost_reason = fields.Many2one(
+        'crm.lost.reason', string='Lost Reason', select=True, track_visibility='onchange')
+    calls_count = fields.Integer(compute='_calls_count', string='# Phonecalls')
 
     _sql_constraints = [
         ('check_probability', 'check(probability >= 0 and probability <= 100)', 'The probability of closing the deal should be between 0% and 100%!')
     ]
 
-    def onchange_stage_id(self, cr, uid, ids, stage_id, context=None):
+    @api.model
+    def referencable_models(self):
+        res = self.env['res.request.link'].search_read([])
+        return [(r['object'], r['name']) for r in res]
+
+    @api.multi
+    def onchange_stage_id(self, stage_id=False):
         if not stage_id:
-            return {'value': {}}
-        stage = self.pool.get('crm.stage').browse(cr, uid, stage_id, context=context)
+            return
+        stage = self.env['crm.stage'].browse(stage_id)
         if not stage.on_change:
-            return {'value': {}}
-        vals = {'probability': stage.probability}
-        if stage.probability >= 100 or (stage.probability == 0 and stage.sequence > 1):
-                vals['date_closed'] = fields.datetime.now()
-        return {'value': vals}
+            return vals
+        for lead in self:
+            lead.probability = stage.probability
+            if stage.probability >= 100 or (stage.probability == 0 and stage.sequence > 1):
+                lead.date_closed = fields.datetime.now()
 
-    def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
-        values = {}
-        if partner_id:
-            partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
-            values = {
-                'partner_name': partner.parent_id.name if partner.parent_id else partner.name,
-                'contact_name': partner.name if partner.parent_id else False,
-                'street': partner.street,
-                'street2': partner.street2,
-                'city': partner.city,
-                'state_id': partner.state_id and partner.state_id.id or False,
-                'country_id': partner.country_id and partner.country_id.id or False,
-                'email_from': partner.email,
-                'phone': partner.phone,
-                'mobile': partner.mobile,
-                'fax': partner.fax,
-                'zip': partner.zip,
-            }
-        return {'value': values}
+    @api.onchange('partner_id')
+    def on_change_partner_id(self):
+        partner = self.partner_id
+        self.partner_name = partner.parent_id.name if partner.parent_id else partner.name
+        self.contact_name = partner.name if partner.parent_id else False
+        self.street = partner.street
+        self.street2 = partner.street2
+        self.city = partner.city
+        self.state_id = partner.state_id and partner.state_id.id or False
+        self.country_id = partner.country_id and partner.country_id.id or False
+        self.email_from = partner.email
+        self.phone = partner.phone
+        self.mobile = partner.mobile
+        self.fax = partner.fax
+        self.zip = partner.zip
 
-    def on_change_user(self, cr, uid, ids, user_id, context=None):
+    @api.onchange('user_id')
+    def on_change_user(self):
         """ When changing the user, also set a team_id or restrict team id
             to the ones user_id is member of. """
-        team_id = self._get_default_team_id(cr, uid, context=context)
-        if user_id and not team_id and self.pool['res.users'].has_group(cr, uid, 'base.group_multi_salesteams'):
-            team_ids = self.pool.get('crm.team').search(cr, uid, ['|', ('user_id', '=', user_id), ('member_ids', '=', user_id)], context=context)
+        team_id = self._get_default_team_id()
+        if self.user_id and not team_id and self.user_id.has_group('base.group_multi_salesteams'):
+            team_ids = self.env['crm.team'].search(['|', ('user_id', '=', self.user_id.id), ('member_ids', '=', self.user_id.id)], limit=1)
             if team_ids:
-                team_id = team_ids[0]
-        return {'value': {'team_id': team_id}}
+                team_id = team_ids.id
+        self.team_id = team_id
 
-    def stage_find(self, cr, uid, cases, team_id, domain=None, order='sequence', context=None):
+    @api.multi
+    def stage_find(self, team_id, domain=None, order='sequence'):
         """ Override of the base.stage method
             Parameter of the stage search taken from the lead:
             - type: stage type must be the same or 'both'
@@ -352,21 +339,16 @@ class crm_lead(format_address, osv.osv):
               be a default stage; if not set, stages must be default
               stages
         """
-        if isinstance(cases, (int, long)):
-            cases = self.browse(cr, uid, cases, context=context)
-        if context is None:
-            context = {}
-        # check whether we should try to add a condition on type
         avoid_add_type_term = any([term for term in domain if len(term) == 3 if term[0] == 'type'])
         # collect all team_ids
         team_ids = set()
         types = ['both']
-        if not cases and context.get('default_type'):
-            ctx_type = context.get('default_type')
+        if not self and self._context.get('default_type'):
+            ctx_type = self._context.get('default_type')
             types += [ctx_type]
         if team_id:
             team_ids.add(team_id)
-        for lead in cases:
+        for lead in self:
             if lead.team_id:
                 team_ids.add(lead.team_id.id)
             if lead.type not in types:
@@ -384,17 +366,18 @@ class crm_lead(format_address, osv.osv):
         # AND with the domain in parameter
         search_domain += list(domain)
         # perform search, return the first found
-        stage_ids = self.pool.get('crm.stage').search(cr, uid, search_domain, order=order, limit=1, context=context)
+        stage_ids = self.env['crm.stage'].search(search_domain, order=order, limit=1)
         if stage_ids:
-            return stage_ids[0]
+            return stage_ids.id
         return False
 
-    def case_mark_lost(self, cr, uid, ids, context=None):
+    @api.multi
+    def case_mark_lost(self):
         """ Mark the case as lost: state=cancel and probability=0
         """
         stages_leads = {}
-        for lead in self.browse(cr, uid, ids, context=context):
-            stage_id = self.stage_find(cr, uid, [lead], lead.team_id.id or False, [('probability', '=', 0.0), ('fold', '=', True), ('sequence', '>', 1)], context=context)
+        for lead in self:
+            stage_id = lead.stage_find(lead.team_id.id or False, [('probability', '=', 0.0), ('fold', '=', True), ('sequence', '>', 1)])
             if stage_id:
                 if stages_leads.get(stage_id):
                     stages_leads[stage_id].append(lead.id)
@@ -405,15 +388,16 @@ class crm_lead(format_address, osv.osv):
                                     'probability = 0 %, select "Change Probability Automatically".\n'
                                     'Create a specific stage or edit an existing one by editing columns of your opportunity pipe.'))
         for stage_id, lead_ids in stages_leads.items():
-            self.write(cr, uid, lead_ids, {'stage_id': stage_id}, context=context)
+            self.write({'stage_id': stage_id})
         return True
 
-    def case_mark_won(self, cr, uid, ids, context=None):
+    @api.multi
+    def case_mark_won(self):
         """ Mark the case as won: state=done and probability=100
         """
         stages_leads = {}
-        for lead in self.browse(cr, uid, ids, context=context):
-            stage_id = self.stage_find(cr, uid, [lead], lead.team_id.id or False, [('probability', '=', 100.0), ('fold', '=', True)], context=context)
+        for lead in self:
+            stage_id = lead.stage_find(lead.team_id.id or False, domain=[('probability', '=', 100.0), ('fold', '=', True)])
             if stage_id:
                 if stages_leads.get(stage_id):
                     stages_leads[stage_id].append(lead.id)
@@ -424,12 +408,13 @@ class crm_lead(format_address, osv.osv):
                                     'probability = 100 % and select "Change Probability Automatically".\n'
                                     'Create a specific stage or edit an existing one by editing columns of your opportunity pipe.'))
         for stage_id, lead_ids in stages_leads.items():
-            self.write(cr, uid, lead_ids, {'stage_id': stage_id}, context=context)
+            self.write({'stage_id': stage_id})
         return True
 
-    def case_escalate(self, cr, uid, ids, context=None):
+    @api.multi
+    def case_escalate(self):
         """ Escalates case to parent level """
-        for case in self.browse(cr, uid, ids, context=context):
+        for case in self:
             data = {'active': True}
             if case.team_id.parent_id:
                 data['team_id'] = case.team_id.parent_id.id
@@ -438,10 +423,11 @@ class crm_lead(format_address, osv.osv):
                         data['user_id'] = case.team_id.parent_id.user_id.id
             else:
                 raise UserError(_("You are already at the top level of your sales-team category.\nTherefore you cannot escalate furthermore."))
-            self.write(cr, uid, [case.id], data, context=context)
+            case.write(data)
         return True
 
-    def _merge_get_result_type(self, cr, uid, opps, context=None):
+    @api.multi
+    def _merge_get_result_type(self, opps=False):
         """
         Define the type of the result of the merge.  If at least one of the
         element to merge is an opp, the resulting new element will be an opp.
@@ -454,13 +440,15 @@ class crm_lead(format_address, osv.osv):
         :param list opps: list of browse records containing the leads/opps to process
         :return string type: the type of the final element
         """
-        for opp in opps:
+        opportunity = opps or self
+        for opp in opportunity:
             if (opp.type == 'opportunity'):
                 return 'opportunity'
 
         return 'lead'
 
-    def _merge_data(self, cr, uid, ids, oldest, fields, context=None):
+    @api.multi
+    def _merge_data(self, fields):
         """
         Prepare lead/opp data into a dictionary for merging.  Different types
         of fields are processed in different ways:
@@ -469,14 +457,11 @@ class crm_lead(format_address, osv.osv):
         - m2o: the first not null value prevails (the other are dropped)
         - any other type of field: same as m2o
 
-        :param list ids: list of ids of the leads to process
         :param list fields: list of leads' fields to process
         :return dict data: contains the merged values
         """
-        opportunities = self.browse(cr, uid, ids, context=context)
-
         def _get_first_not_null(attr):
-            for opp in opportunities:
+            for opp in self:
                 if hasattr(opp, attr) and bool(getattr(opp, attr)):
                     return getattr(opp, attr)
             return False
@@ -486,8 +471,7 @@ class crm_lead(format_address, osv.osv):
             return res and res.id or False
 
         def _concat_all(attr):
-            return '\n\n'.join(filter(lambda x: x, [getattr(opp, attr) or '' for opp in opportunities if hasattr(opp, attr)]))
-
+            return '\n\n'.join(filter(lambda x: x, [getattr(opp, attr) or '' for opp in self if hasattr(opp, attr)]))
         # Process the fields' values
         data = {}
         for field_name in fields:
@@ -502,12 +486,11 @@ class crm_lead(format_address, osv.osv):
                 data[field_name] = _concat_all(field_name)  #not lost
             else:
                 data[field_name] = _get_first_not_null(field_name)  #not lost
-
         # Define the resulting type ('lead' or 'opportunity')
-        data['type'] = self._merge_get_result_type(cr, uid, opportunities, context)
+        data['type'] = self._merge_get_result_type()
         return data
 
-    def _mail_body(self, cr, uid, lead, fields, title=False, context=None):
+    def _mail_body(self, fields, title=False):
         body = []
         if title:
             body.append("%s\n" % (title))
@@ -517,34 +500,34 @@ class crm_lead(format_address, osv.osv):
             if field is None:
                 continue
             value = ''
-
             if field.type == 'selection':
-                if callable(field.selection):
-                    key = field.selection(self, cr, uid, context=context)
+                if hasattr(field.selection, '__call__'):
+                    key = field.selection(self, self._cr, self._uid, context=self._context)
                 else:
                     key = field.selection
-                value = dict(key).get(lead[field_name], lead[field_name])
+                value = dict(key).get(self[field_name], self[field_name])
             elif field.type == 'many2one':
-                if lead[field_name]:
-                    value = lead[field_name].name_get()[0][1]
+                if self[field_name]:
+                    value = self[field_name].name_get()[0][1]
             elif field.type == 'many2many':
-                if lead[field_name]:
-                    for val in lead[field_name]:
+                if self[field_name]:
+                    for val in self[field_name]:
                         field_value = val.name_get()[0][1]
                         value += field_value + ","
             else:
-                value = lead[field_name]
+                value = self[field_name]
 
             body.append("%s: %s" % (field.string, value or ''))
         return "<br/>".join(body + ['<br/>'])
 
-    def _merge_notify(self, cr, uid, opportunity_id, opportunities, context=None):
+    @api.one
+    def _merge_notify(self, opportunities):
         """
         Create a message gathering merged leads/opps information.
         """
         #TOFIX: mail template should be used instead of fix body, subject text
         details = []
-        result_type = self._merge_get_result_type(cr, uid, opportunities, context)
+        result_type = self._merge_get_result_type(opportunities)
         if result_type == 'lead':
             merge_message = _('Merged leads')
         else:
@@ -554,39 +537,36 @@ class crm_lead(format_address, osv.osv):
             subject.append(opportunity.name)
             title = "%s : %s" % (opportunity.type == 'opportunity' and _('Merged opportunity') or _('Merged lead'), opportunity.name)
             fields = list(CRM_LEAD_FIELDS_TO_MERGE)
-            details.append(self._mail_body(cr, uid, opportunity, fields, title=title, context=context))
+            details.append(opportunity._mail_body(fields, title=title))
 
         # Chatter message's subject
         subject = subject[0] + ": " + ", ".join(subject[1:])
         details = "\n\n".join(details)
-        return self.message_post(cr, uid, [opportunity_id], body=details, subject=subject, context=context)
+        return self.message_post(body=details, subject=subject)
 
-    def _merge_opportunity_history(self, cr, uid, opportunity_id, opportunities, context=None):
-        message = self.pool.get('mail.message')
+    @api.one
+    def _merge_opportunity_history(self, opportunities):
         for opportunity in opportunities:
             for history in opportunity.message_ids:
-                message.write(cr, uid, history.id, {
-                        'res_id': opportunity_id,
+                history.write({
+                        'res_id': self.id,
                         'subject' : _("From %s : %s") % (opportunity.name, history.subject)
-                }, context=context)
-
+                })
         return True
 
-    def _merge_opportunity_attachments(self, cr, uid, opportunity_id, opportunities, context=None):
-        attach_obj = self.pool.get('ir.attachment')
-
+    @api.one
+    def _merge_opportunity_attachments(self, opportunities):
         # return attachments of opportunity
         def _get_attachments(opportunity_id):
-            attachment_ids = attach_obj.search(cr, uid, [('res_model', '=', self._name), ('res_id', '=', opportunity_id)], context=context)
-            return attach_obj.browse(cr, uid, attachment_ids, context=context)
-
-        first_attachments = _get_attachments(opportunity_id)
+            attachment_ids = self.env['ir.attachment'].search([('res_model', '=', self._name), ('res_id', '=', opportunity_id)])
+            return attachment_ids
+        first_attachments = _get_attachments(self.id)
         #counter of all attachments to move. Used to make sure the name is different for all attachments
         count = 1
         for opportunity in opportunities:
             attachments = _get_attachments(opportunity.id)
             for attachment in attachments:
-                values = {'res_id': opportunity_id,}
+                values = {'res_id': self.id}
                 for attachment_in_first in first_attachments:
                     if attachment.name == attachment_in_first.name:
                         values['name'] = "%s (%s)" % (attachment.name, count,),
@@ -594,22 +574,23 @@ class crm_lead(format_address, osv.osv):
                 attachment.write(values)
         return True
 
-    def _merge_opportunity_phonecalls(self, cr, uid, opportunity_id, opportunities, context=None):
-        phonecall_obj = self.pool['crm.phonecall']
+    @api.one
+    def _merge_opportunity_phonecalls(self, opportunities):
+        phonecall_obj = self.env['crm.phonecall']
         for opportunity in opportunities:
-            for phonecall_id in phonecall_obj.search(cr, uid, [('opportunity_id', '=', opportunity.id)], context=context):
-                phonecall_obj.write(cr, uid, phonecall_id, {'opportunity_id': opportunity_id}, context=context)
+            for phonecall_id in phonecall_obj.search([('opportunity_id', '=', opportunity.id)]):
+                phonecall_id.write({'opportunity_id': self.id})
         return True
 
-    def get_duplicated_leads(self, cr, uid, ids, partner_id, include_lost=False, context=None):
+    @api.one
+    def get_duplicated_leads(self, partner_id, include_lost=False):
         """
         Search for opportunities that have the same partner and that arent done or cancelled
         """
-        lead = self.browse(cr, uid, ids[0], context=context)
-        email = lead.partner_id and lead.partner_id.email or lead.email_from
-        return self.pool['crm.lead']._get_duplicated_leads_by_emails(cr, uid, partner_id, email, include_lost=include_lost, context=context)
+        email = self.partner_id.email or self.email_from
+        return self._get_duplicated_leads_by_emails(partner_id, email, include_lost=include_lost)
 
-    def _get_duplicated_leads_by_emails(self, cr, uid, partner_id, email, include_lost=False, context=None):
+    def _get_duplicated_leads_by_emails(self, partner_id, email, include_lost=False):
         """
         Search for opportunities that have   the same partner and that arent done or cancelled
         """
@@ -625,35 +606,32 @@ class crm_lead(format_address, osv.osv):
         domain = partner_match_domain
         if not include_lost:
             domain += final_stage_domain
-        return self.search(cr, uid, domain, context=context)
+        return self.search(domain)
 
-    def merge_dependences(self, cr, uid, highest, opportunities, context=None):
-        self._merge_notify(cr, uid, highest, opportunities, context=context)
-        self._merge_opportunity_history(cr, uid, highest, opportunities, context=context)
-        self._merge_opportunity_attachments(cr, uid, highest, opportunities, context=context)
-        self._merge_opportunity_phonecalls(cr, uid, highest, opportunities, context=context)
+    @api.one
+    def merge_dependences(self, opportunities):
+        self._merge_notify(opportunities)
+        self._merge_opportunity_history(opportunities)
+        self._merge_opportunity_attachments(opportunities)
+        self._merge_opportunity_phonecalls(opportunities)
 
-    def merge_opportunity(self, cr, uid, ids, user_id=False, team_id=False, context=None):
+    @api.multi
+    def merge_opportunity(self, user_id=False, team_id=False):
         """
         Different cases of merge:
         - merge leads together = 1 new lead
         - merge at least 1 opp with anything else (lead or opp) = 1 new opp
 
-        :param list ids: leads/opportunities ids to merge
         :return int id: id of the resulting lead/opp
         """
-        if context is None:
-            context = {}
-
-        if len(ids) <= 1:
+        if len(self) <= 1:
             raise UserError(_('Please select more than one element (lead or opportunity) from the list view.'))
 
-        opportunities = self.browse(cr, uid, ids, context=context)
         sequenced_opps = []
         # Sorting the leads/opps according to the confidence level of its stage, which relates to the probability of winning it
         # The confidence level increases with the stage sequence, except when the stage probability is 0.0 (Lost cases)
         # An Opportunity always has higher confidence level than a lead, unless its stage probability is 0.0
-        for opportunity in opportunities:
+        for opportunity in self:
             sequence = -1
             if opportunity.stage_id and not opportunity.stage_id.fold:
                 sequence = opportunity.stage_id.sequence
@@ -661,147 +639,143 @@ class crm_lead(format_address, osv.osv):
 
         sequenced_opps.sort(reverse=True)
         opportunities = map(itemgetter(1), sequenced_opps)
-        ids = [opportunity.id for opportunity in opportunities]
         highest = opportunities[0]
         opportunities_rest = opportunities[1:]
-
         tail_opportunities = opportunities_rest
-
         fields = list(CRM_LEAD_FIELDS_TO_MERGE)
-        merged_data = self._merge_data(cr, uid, ids, highest, fields, context=context)
-
+        oppo_ids = [opp_id.id for opp_id in opportunities]
+        opportunity = self.browse(oppo_ids)
+        merged_data = opportunity._merge_data(fields)
         if user_id:
             merged_data['user_id'] = user_id
         if team_id:
             merged_data['team_id'] = team_id
-
         # Merge notifications about loss of information
         opportunities = [highest]
         opportunities.extend(opportunities_rest)
-
-        self.merge_dependences(cr, uid, highest.id, tail_opportunities, context=context)
-
+        highest.merge_dependences(tail_opportunities)
         # Check if the stage is in the stages of the sales team. If not, assign the stage with the lowest sequence
         if merged_data.get('team_id'):
-            team_stage_ids = self.pool.get('crm.stage').search(cr, uid, [('team_ids', 'in', merged_data['team_id']), ('type', '=', merged_data.get('type'))], order='sequence', context=context)
-            if merged_data.get('stage_id') not in team_stage_ids:
-                merged_data['stage_id'] = team_stage_ids and team_stage_ids[0] or False
+            team_stage_ids = self.env['crm.stage'].search([('team_ids', 'in', merged_data['team_id']), ('type', '=', merged_data.get('type'))], order='sequence')
+            if merged_data.get('stage_id') not in team_stage_ids.ids:
+                merged_data['stage_id'] = team_stage_ids and team_stage_ids[0].id or False
         # Write merged data into first opportunity
-        self.write(cr, uid, [highest.id], merged_data, context=context)
-        # Delete tail opportunities 
+        highest.write(merged_data)
+        # Delete tail_opportunities
         # We use the SUPERUSER to avoid access rights issues because as the user had the rights to see the records it should be safe to do so
-        self.unlink(cr, SUPERUSER_ID, [x.id for x in tail_opportunities], context=context)
+        for x in tail_opportunities:
+            x.sudo().unlink()
+        return highest
 
-        return highest.id
-
-    def _convert_opportunity_data(self, cr, uid, lead, customer, team_id=False, context=None):
-        crm_stage = self.pool.get('crm.stage')
+    @api.one
+    def _convert_opportunity_data(self, customer, team_id=False):
         contact_id = False
         if customer:
-            contact_id = self.pool.get('res.partner').address_get(cr, uid, [customer.id])['default']
+            customer.address_get()['default']
         if not team_id:
-            team_id = lead.team_id and lead.team_id.id or False
+            team_id = self.team_id and self.team_id.id or False
         val = {
-            'planned_revenue': lead.planned_revenue,
-            'probability': lead.probability,
-            'name': lead.name,
+            'planned_revenue': self.planned_revenue,
+            'probability': self.probability,
+            'name': self.name,
             'partner_id': customer and customer.id or False,
             'type': 'opportunity',
             'date_action': fields.datetime.now(),
             'date_open': fields.datetime.now(),
-            'email_from': customer and customer.email or lead.email_from,
-            'phone': customer and customer.phone or lead.phone,
-            'date_conversion': fields.datetime.now(),
+            'email_from': customer and customer.email or self.email_from,
+            'phone': customer and customer.phone or self.phone,
+            'date_conversion': fields.Datetime.now(),
         }
-        if not lead.stage_id or lead.stage_id.type=='lead':
-            val['stage_id'] = self.stage_find(cr, uid, [lead], team_id, [('type', 'in', ('opportunity', 'both'))], context=context)
+        if not self.stage_id or self.stage_id.type=='lead':
+            val['stage_id'] = self.stage_find(team_id, domain=[('type', 'in', ('opportunity', 'both'))])
         return val
 
-    def convert_opportunity(self, cr, uid, ids, partner_id, user_ids=False, team_id=False, context=None):
+    @api.multi
+    def convert_opportunity(self, partner_id, user_ids=False, team_id=False):
         customer = False
         if partner_id:
-            partner = self.pool.get('res.partner')
-            customer = partner.browse(cr, uid, partner_id, context=context)
-        for lead in self.browse(cr, uid, ids, context=context):
+            customer = self.env['res.partner'].browse(partner_id)
+        for lead in self:
             # TDE: was if lead.state in ('done', 'cancel'):
             if lead.probability == 100 or (lead.probability == 0 and lead.stage_id.fold):
                 continue
-            vals = self._convert_opportunity_data(cr, uid, lead, customer, team_id, context=context)
-            self.write(cr, uid, [lead.id], vals, context=context)
-
+            vals = lead._convert_opportunity_data(customer, team_id)[0]
+            lead.write(vals)
         if user_ids or team_id:
-            self.allocate_salesman(cr, uid, ids, user_ids, team_id, context=context)
-
+            self.allocate_salesman(user_ids, team_id)
         return True
 
-    def _lead_create_contact(self, cr, uid, lead, name, is_company, parent_id=False, context=None):
-        partner = self.pool.get('res.partner')
+    @api.one
+    def _lead_create_contact(self, name, is_company, parent_id=False):
         vals = {'name': name,
-            'user_id': lead.user_id.id,
-            'comment': lead.description,
-            'team_id': lead.team_id.id or False,
+            'user_id': self.user_id.id,
+            'comment': self.description,
+            'team_id': self.team_id.id or False,
             'parent_id': parent_id,
-            'phone': lead.phone,
-            'mobile': lead.mobile,
-            'email': tools.email_split(lead.email_from) and tools.email_split(lead.email_from)[0] or False,
-            'fax': lead.fax,
-            'title': lead.title and lead.title.id or False,
-            'function': lead.function,
-            'street': lead.street,
-            'street2': lead.street2,
-            'zip': lead.zip,
-            'city': lead.city,
-            'country_id': lead.country_id and lead.country_id.id or False,
-            'state_id': lead.state_id and lead.state_id.id or False,
+            'phone': self.phone,
+            'mobile': self.mobile,
+            'email': tools.email_split(self.email_from) and tools.email_split(self.email_from)[0] or False,
+            'fax': self.fax,
+            'title': self.title and self.title.id or False,
+            'function': self.function,
+            'street': self.street,
+            'street2': self.street2,
+            'zip': self.zip,
+            'city': self.city,
+            'country_id': self.country_id and self.country_id.id or False,
+            'state_id': self.state_id and self.state_id.id or False,
             'is_company': is_company,
             'type': 'contact'
         }
-        partner = partner.create(cr, uid, vals, context=context)
+        partner = self.env['res.partner'].create(vals)
         return partner
 
-    def _create_lead_partner(self, cr, uid, lead, context=None):
+    @api.one
+    def _create_lead_partner(self):
         partner_id = False
-        if lead.partner_name and lead.contact_name:
-            partner_id = self._lead_create_contact(cr, uid, lead, lead.partner_name, True, context=context)
-            partner_id = self._lead_create_contact(cr, uid, lead, lead.contact_name, False, partner_id, context=context)
-        elif lead.partner_name and not lead.contact_name:
-            partner_id = self._lead_create_contact(cr, uid, lead, lead.partner_name, True, context=context)
-        elif not lead.partner_name and lead.contact_name:
-            partner_id = self._lead_create_contact(cr, uid, lead, lead.contact_name, False, context=context)
-        elif lead.email_from and self.pool.get('res.partner')._parse_partner_name(lead.email_from, context=context)[0]:
-            contact_name = self.pool.get('res.partner')._parse_partner_name(lead.email_from, context=context)[0]
-            partner_id = self._lead_create_contact(cr, uid, lead, contact_name, False, context=context)
+        if self.partner_name and self.contact_name:
+            partner_id = self._lead_create_contact(self.partner_name, True)
+            partner_id = self._lead_create_contact(
+                self.contact_name, False, partner_id[0].id)
+        elif self.partner_name and not self.contact_name:
+            partner_id = self._lead_create_contact(self.partner_name, True)
+        elif not self.partner_name and self.contact_name:
+            partner_id = self._lead_create_contact(self.contact_name, False)
+        elif self.email_from and self.env['res.partner']._parse_partner_name(self.email_from, context=self._context)[0]:
+            contact_name = self.env['res.partner']._parse_partner_name(self.email_from, context=self._context)[0]
+            partner_id = self._lead_create_contact(contact_name, False)
         else:
             raise UserError(_('No customer name defined. Please fill one of the following fields: Company Name, Contact Name or Email ("Name <email@address>")'))
-        return partner_id
+        return partner_id[0]
 
-    def handle_partner_assignation(self, cr, uid, ids, action='create', partner_id=False, context=None):
+    @api.multi
+    def handle_partner_assignation(self, action='create', partner=False):
         """
         Handle partner assignation during a lead conversion.
         if action is 'create', create new partner with contact and assign lead to new partner_id.
         otherwise assign lead to the specified partner_id
 
-        :param list ids: leads/opportunities ids to process
         :param string action: what has to be done regarding partners (create it, assign an existing one, or nothing)
         :param int partner_id: partner to assign if any
         :return dict: dictionary organized as followed: {lead_id: partner_assigned_id}
         """
         #TODO this is a duplication of the handle_partner_assignation method of crm_phonecall
         partner_ids = {}
-        for lead in self.browse(cr, uid, ids, context=context):
+        for lead in self:
             # If the action is set to 'create' and no partner_id is set, create a new one
             if lead.partner_id:
                 partner_ids[lead.id] = lead.partner_id.id
                 continue
-            if not partner_id and action == 'create':
-                partner_id = self._create_lead_partner(cr, uid, lead, context)
-                self.pool['res.partner'].write(cr, uid, partner_id, {'team_id': lead.team_id and lead.team_id.id or False})
-            if partner_id:
-                lead.write({'partner_id': partner_id})
-            partner_ids[lead.id] = partner_id
+            if not partner and action == 'create':
+                partner = lead._create_lead_partner()[0]
+                partner.write({'team_id': lead.team_id and lead.team_id.id or False})
+            if partner:
+                lead.write({'partner_id': partner.id})
+            partner_ids[lead.id] = partner.id
         return partner_ids
 
-    def allocate_salesman(self, cr, uid, ids, user_ids=None, team_id=False, context=None):
+    @api.multi
+    def allocate_salesman(self, user_ids=None, team_id=False):
         """
         Assign salesmen and salesteam to a batch of leads.  If there are more
         leads than salesmen, these salesmen will be assigned in round-robin.
@@ -809,137 +783,39 @@ class crm_lead(format_address, osv.osv):
         will be assigned as followed: L1 - S1, L2 - S2, L3 - S3, L4 - S4,
         L5 - S1, L6 - S2.
 
-        :param list ids: leads/opportunities ids to process
         :param list user_ids: salesmen to assign
         :param int team_id: salesteam to assign
         :return bool
         """
         index = 0
-
-        for lead_id in ids:
+        for lead in self:
             value = {}
+
             if team_id:
                 value['team_id'] = team_id
+
             if user_ids:
                 value['user_id'] = user_ids[index]
                 # Cycle through user_ids
                 index = (index + 1) % len(user_ids)
+
             if value:
-                self.write(cr, uid, [lead_id], value, context=context)
+                lead.write(value)
+
         return True
 
-    def schedule_phonecall(self, cr, uid, ids, schedule_time, call_summary, desc, phone, contact_name, user_id=False, team_id=False, categ_id=False, action='schedule', context=None):
-        """
-        :param string action: ('schedule','Schedule a call'), ('log','Log a call')
-        """
-        phonecall = self.pool.get('crm.phonecall')
-        model_data = self.pool.get('ir.model.data')
-        phonecall_dict = {}
-        if not categ_id:
-            try:
-                res_id = model_data._get_id(cr, uid, 'crm', 'categ_phone2')
-                categ_id = model_data.browse(cr, uid, res_id, context=context).res_id
-            except ValueError:
-                pass
-        for lead in self.browse(cr, uid, ids, context=context):
-            if not team_id:
-                team_id = lead.team_id and lead.team_id.id or False
-            if not user_id:
-                user_id = lead.user_id and lead.user_id.id or False
-            vals = {
-                'name': call_summary,
-                'opportunity_id': lead.id,
-                'user_id': user_id or False,
-                'categ_id': categ_id or False,
-                'description': desc or '',
-                'date': schedule_time,
-                'team_id': team_id or False,
-                'partner_id': lead.partner_id and lead.partner_id.id or False,
-                'partner_phone': phone or lead.phone or (lead.partner_id and lead.partner_id.phone or False),
-                'partner_mobile': lead.partner_id and lead.partner_id.mobile or False,
-                'priority': lead.priority,
-            }
-            new_id = phonecall.create(cr, uid, vals, context=context)
-            phonecall.write(cr, uid, [new_id], {'state': 'open'}, context=context)
-            if action == 'log':
-                phonecall.write(cr, uid, [new_id], {'state': 'done'}, context=context)
-            phonecall_dict[lead.id] = new_id
-            self.schedule_phonecall_send_note(cr, uid, [lead.id], new_id, action, context=context)
-        return phonecall_dict
-
-    def redirect_opportunity_view(self, cr, uid, opportunity_id, context=None):
-        models_data = self.pool.get('ir.model.data')
-
-        # Get opportunity views
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'crm', 'crm_case_form_view_oppor')
-        dummy, tree_view = models_data.get_object_reference(cr, uid, 'crm', 'crm_case_tree_view_oppor')
-        return {
-            'name': _('Opportunity'),
-            'view_type': 'form',
-            'view_mode': 'tree, form',
-            'res_model': 'crm.lead',
-            'domain': [('type', '=', 'opportunity')],
-            'res_id': int(opportunity_id),
-            'view_id': False,
-            'views': [(form_view or False, 'form'),
-                      (tree_view or False, 'tree'), (False, 'kanban'),
-                      (False, 'calendar'), (False, 'graph')],
-            'type': 'ir.actions.act_window',
-        }
-
-    def redirect_lead_view(self, cr, uid, lead_id, context=None):
-        models_data = self.pool.get('ir.model.data')
-
-        # Get lead views
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'crm', 'crm_case_form_view_leads')
-        dummy, tree_view = models_data.get_object_reference(cr, uid, 'crm', 'crm_case_tree_view_leads')
-        return {
-            'name': _('Lead'),
-            'view_type': 'form',
-            'view_mode': 'tree, form',
-            'res_model': 'crm.lead',
-            'domain': [('type', '=', 'lead')],
-            'res_id': int(lead_id),
-            'view_id': False,
-            'views': [(form_view or False, 'form'),
-                      (tree_view or False, 'tree'),
-                      (False, 'calendar'), (False, 'graph')],
-            'type': 'ir.actions.act_window',
-        }
-
-    def action_schedule_meeting(self, cr, uid, ids, context=None):
-        """
-        Open meeting's calendar view to schedule meeting on current opportunity.
-        :return dict: dictionary value for created Meeting view
-        """
-        lead = self.browse(cr, uid, ids[0], context)
-        res = self.pool.get('ir.actions.act_window').for_xml_id(cr, uid, 'calendar', 'action_calendar_event', context)
-        partner_ids = [self.pool['res.users'].browse(cr, uid, uid, context=context).partner_id.id]
-        if lead.partner_id:
-            partner_ids.append(lead.partner_id.id)
-        res['context'] = {
-            'default_opportunity_id': lead.type == 'opportunity' and lead.id or False,
-            'default_partner_id': lead.partner_id and lead.partner_id.id or False,
-            'default_partner_ids': partner_ids,
-            'default_team_id': lead.team_id and lead.team_id.id or False,
-            'default_name': lead.name,
-        }
-        return res
-
-    def create(self, cr, uid, vals, context=None):
-        context = dict(context or {})
-        if vals.get('type') and not context.get('default_type'):
-            context['default_type'] = vals.get('type')
-        if vals.get('team_id') and not context.get('default_team_id'):
-            context['default_team_id'] = vals.get('team_id')
+    @api.model
+    def create(self, vals):
+        if vals.get('type') and not self._context.get('default_type'):
+            self = self.with_context(default_type=vals.get('type'))
+        if vals.get('team_id') and not self._context.get('default_team_id'):
+            self = self.with_context(default_team_id=vals.get('team_id'))
         if vals.get('user_id'):
             vals['date_open'] = fields.datetime.now()
+        return super(crm_lead, self.with_context(mail_create_nolog=True)).create(vals)
 
-        # context: no_log, because subtype already handle this
-        create_context = dict(context, mail_create_nolog=True)
-        return super(crm_lead, self).create(cr, uid, vals, context=create_context)
-
-    def write(self, cr, uid, ids, vals, context=None):
+    @api.multi
+    def write(self, vals):
         # stage change: update date_last_stage_update
         if 'stage_id' in vals:
             vals['date_last_stage_update'] = fields.datetime.now()
@@ -947,66 +823,123 @@ class crm_lead(format_address, osv.osv):
             vals['date_open'] = fields.datetime.now()
         # stage change with new stage: update probability and date_closed
         if vals.get('stage_id') and not vals.get('probability'):
-            onchange_stage_values = self.onchange_stage_id(cr, uid, ids, vals.get('stage_id'), context=context)['value']
-            vals.update(onchange_stage_values)
-        return super(crm_lead, self).write(cr, uid, ids, vals, context=context)
+            self.onchange_stage_id(vals.get('stage_id'))
+        return super(crm_lead, self).write(vals)
 
-    def copy(self, cr, uid, id, default=None, context=None):
-        if not default:
-            default = {}
-        if not context:
-            context = {}
-        lead = self.browse(cr, uid, id, context=context)
-        local_context = dict(context)
-        local_context.setdefault('default_type', lead.type)
-        local_context.setdefault('default_team_id', lead.team_id.id)
-        if lead.type == 'opportunity':
+    @api.one
+    def copy(self, default=None):
+        if default is None: default = {}
+        if self.type == 'opportunity':
             default['date_open'] = fields.datetime.now()
         else:
             default['date_open'] = False
-        return super(crm_lead, self).copy(cr, uid, id, default, context=local_context)
+        return super(crm_lead, self.with_context(default_type=self.type, default_team_id=self.team_id.id)).copy(default)
 
-    def get_empty_list_help(self, cr, uid, help, context=None):
-        context = dict(context or {})
-        context['empty_list_help_model'] = 'crm.team'
-        context['empty_list_help_id'] = context.get('default_team_id', None)
-        context['empty_list_help_document_name'] = _("opportunity")
-        if context.get('default_type') == 'lead':
-            context['empty_list_help_document_name'] = _("lead")
-        return super(crm_lead, self).get_empty_list_help(cr, uid, help, context=context)
+    @api.multi
+    def redirect_opportunity_view(self):
+        # Get opportunity views
+        self.ensure_one()
+        form_view = self.env.ref('crm.crm_case_form_view_oppor').id
+        tree_view = self.env.ref('crm.crm_case_tree_view_oppor').id
+        return {
+            'name': _('Opportunity'),
+            'view_type': 'form',
+            'view_mode': 'tree, form',
+            'res_model': 'crm.lead',
+            'domain': [('type', '=', 'opportunity')],
+            'res_id': self.id,
+            'view_id': False,
+            'views': [(form_view or False, 'form'),
+                      (tree_view or False, 'tree'), (False, 'kanban'),
+                      (False, 'calendar'), (False, 'graph')],
+            'type': 'ir.actions.act_window',
+        }
+
+    @api.multi
+    def redirect_lead_view(self):
+        # Get lead views
+        self.ensure_one()
+        form_view = self.env.ref('crm.crm_case_form_view_leads').id
+        tree_view = self.env.ref('crm.crm_case_tree_view_leads').id
+        return {
+            'name': _('Lead'),
+            'view_type': 'form',
+            'view_mode': 'tree, form',
+            'res_model': 'crm.lead',
+            'domain': [('type', '=', 'lead')],
+            'res_id': self.id,
+            'view_id': False,
+            'views': [(form_view or False, 'form'),
+                      (tree_view or False, 'tree'),
+                      (False, 'calendar'), (False, 'graph')],
+            'type': 'ir.actions.act_window',
+        }
+
+    @api.multi
+    def action_schedule_meeting(self):
+        """
+        Open meeting's calendar view to schedule meeting on current opportunity.
+        :return dict: dictionary value for created Meeting view
+        """
+        self.ensure_one()
+        res = self.env['ir.actions.act_window'].for_xml_id('calendar', 'action_calendar_event')
+        partner_ids = [self.env.user.partner_id.id]
+        if self.partner_id:
+            partner_ids.append(self.partner_id.id)
+        res['context'] = {
+            'default_opportunity_id': self.type == 'opportunity' and self.id or False,
+            'default_partner_id': self.partner_id and self.partner_id.id or False,
+            'default_partner_ids': partner_ids,
+            'default_team_id': self.team_id and self.team_id.id or False,
+            'default_name': self.name,
+        }
+        return res
+
+    @api.model
+    def get_empty_list_help(self, help):
+        if self._context.get('default_type') == 'lead':
+            self = self.with_context(empty_list_help_document_name = _("lead"))
+        else:
+            self = self.with_context(empty_list_help_document_name=_("opportunity"))
+        return super(crm_lead, self.with_context(empty_list_help_model='crm.team',
+            empty_list_help_id = self._context.get('default_team_id', None),
+            )).get_empty_list_help(help)
 
     # ----------------------------------------
     # Mail Gateway
     # ----------------------------------------
 
-    def message_get_reply_to(self, cr, uid, ids, context=None):
+    @api.multi
+    def message_get_reply_to(self):
         """ Override to get the reply_to of the parent project. """
-        leads = self.browse(cr, SUPERUSER_ID, ids, context=context)
-        team_ids = set([lead.team_id.id for lead in leads if lead.team_id])
-        aliases = self.pool['crm.team'].message_get_reply_to(cr, uid, list(team_ids), context=context)
-        return dict((lead.id, aliases.get(lead.team_id and lead.team_id.id or 0, False)) for lead in leads)
+        team_ids = set([lead.team_id.id for lead in self if lead.team_id])
+        aliases = self.env['crm.team'].message_get_reply_to(list(team_ids))
+        return dict((lead.id, aliases.get(lead.team_id and lead.team_id.id or 0, False)) for lead in self)
 
-    def get_formview_id(self, cr, uid, id, context=None):
-        obj = self.browse(cr, uid, id, context=context)
-        if obj.type == 'opportunity':
-            model, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'crm', 'crm_case_form_view_oppor')
+    @api.one
+    def get_formview_id(self):
+        if self.type == 'opportunity':
+            view_id = self.env.ref('crm.crm_case_form_view_oppor').id
         else:
-            view_id = super(crm_lead, self).get_formview_id(cr, uid, id, context=context)
+            view_id = super(crm_lead, self).get_formview_id()
         return view_id
 
-    def message_get_suggested_recipients(self, cr, uid, ids, context=None):
-        recipients = super(crm_lead, self).message_get_suggested_recipients(cr, uid, ids, context=context)
+    @api.multi
+    def message_get_suggested_recipients(self):
+        recipients = super(crm_lead, self).message_get_suggested_recipients()
+    #TODO: set proper parameter
         try:
-            for lead in self.browse(cr, uid, ids, context=context):
+            for lead in self:
                 if lead.partner_id:
-                    self._message_add_suggested_recipient(cr, uid, recipients, lead, partner=lead.partner_id, reason=_('Customer'))
+                    self._message_add_suggested_recipient(recipients, lead,partner=lead.partner_id, reason=_('Customer'))
                 elif lead.email_from:
-                    self._message_add_suggested_recipient(cr, uid, recipients, lead, email=lead.email_from, reason=_('Customer Email'))
-        except AccessError:  # no read access rights -> just ignore suggested recipients because this imply modifying followers
+                    self._message_add_suggested_recipient(recipients, lead, email=lead.email_from, reason=_('Customer Email'))
+        except AccessError:    # no read access rights -> just ignore suggested recipients because this imply modifying followers
             pass
         return recipients
 
-    def message_new(self, cr, uid, msg, custom_values=None, context=None):
+    @api.model
+    def message_new(self, msg, custom_values=None):
         """ Overrides mail_thread message_new that is called by the mailgateway
             through message_process.
             This override updates the document according to the email.
@@ -1021,21 +954,21 @@ class crm_lead(format_address, osv.osv):
             'user_id': False,
         }
         if msg.get('author_id'):
-            defaults.update(self.on_change_partner_id(cr, uid, None, msg.get('author_id'), context=context)['value'])
+            self.partner_id = msg.get('author_id')
+            defaults.update(self.on_change_partner_id())
+
         if msg.get('priority') in dict(crm.AVAILABLE_PRIORITIES):
             defaults['priority'] = msg.get('priority')
         defaults.update(custom_values)
-        return super(crm_lead, self).message_new(cr, uid, msg, custom_values=defaults, context=context)
+        return super(crm_lead, self).message_new(msg, custom_values=defaults)
 
-    def message_update(self, cr, uid, ids, msg, update_vals=None, context=None):
+    @api.multi
+    def message_update(self, msg, update_vals=None):
         """ Overrides mail_thread message_update that is called by the mailgateway
             through message_process.
             This method updates the document according to the email.
         """
-        if isinstance(ids, (str, int, long)):
-            ids = [ids]
         if update_vals is None: update_vals = {}
-
         if msg.get('priority') in dict(crm.AVAILABLE_PRIORITIES):
             update_vals['priority'] = msg.get('priority')
         maps = {
@@ -1050,64 +983,62 @@ class crm_lead(format_address, osv.osv):
                 key = maps.get(res.group(1).lower())
                 update_vals[key] = res.group(2).lower()
 
-        return super(crm_lead, self).message_update(cr, uid, ids, msg, update_vals=update_vals, context=context)
+        return super(crm_lead, self).message_update(msg, update_vals=update_vals)
 
     # ----------------------------------------
     # OpenChatter methods and notifications
     # ----------------------------------------
 
-    def schedule_phonecall_send_note(self, cr, uid, ids, phonecall_id, action, context=None):
-        phonecall = self.pool.get('crm.phonecall').browse(cr, uid, [phonecall_id], context=context)[0]
+    @api.multi
+    def schedule_phonecall_send_note(self, phonecall_id, action):
+        phonecall = self.env['crm.phonecall'].browse([phonecall_id])[0]
         if action == 'log':
             message = _('Logged a call for %(date)s. %(description)s')
         else:
             message = _('Scheduled a call for %(date)s. %(description)s')
         phonecall_date = datetime.strptime(phonecall.date, tools.DEFAULT_SERVER_DATETIME_FORMAT)
-        phonecall_usertime = fields.datetime.context_timestamp(cr, uid, phonecall_date, context=context).strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
+        phonecall_usertime = fields.datetime.context_timestamp(phonecall_date).strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
         html_time = "<time datetime='%s+00:00'>%s</time>" % (phonecall.date, phonecall_usertime)
         message = message % dict(date=html_time, description=phonecall.description)
-        return self.message_post(cr, uid, ids, body=message, context=context)
+        return self.message_post(body=message)
 
-    def log_meeting(self, cr, uid, ids, meeting_subject, meeting_date, duration, context=None):
+    @api.multi
+    def log_meeting(self, meeting_subject, meeting_date, duration):
         if not duration:
             duration = _('unknown')
         else:
             duration = str(duration)
         message = _("Meeting scheduled at '%s'<br> Subject: %s <br> Duration: %s hour(s)") % (meeting_date, meeting_subject, duration)
-        return self.message_post(cr, uid, ids, body=message, context=context)
+        return self.message_post(body=message)
 
-    def onchange_state(self, cr, uid, ids, state_id, context=None):
-        if state_id:
-            country_id=self.pool.get('res.country.state').browse(cr, uid, state_id, context).country_id.id
-            return {'value':{'country_id':country_id}}
-        return {}
+    @api.onchange('state_id')
+    def onchange_state(self):
+        self.country_id = self.state_id.country_id.id
 
-    def message_partner_info_from_emails(self, cr, uid, id, emails, link_mail=False, context=None):
-        res = super(crm_lead, self).message_partner_info_from_emails(cr, uid, id, emails, link_mail=link_mail, context=context)
-        lead = self.browse(cr, uid, id, context=context)
+    @api.multi
+    def message_partner_info_from_emails(self, emails, link_mail=False):
+        res = super(crm_lead, self).message_partner_info_from_emails(emails, link_mail=link_mail)[0]
         for partner_info in res:
-            if not partner_info.get('partner_id') and (lead.partner_name or lead.contact_name):
+            if not partner_info.get('partner_id') and (self.partner_name or self.contact_name):
                 emails = email_re.findall(partner_info['full_name'] or '')
                 email = emails and emails[0] or ''
-                if email and lead.email_from and email.lower() == lead.email_from.lower():
-                    partner_info['full_name'] = '%s <%s>' % (lead.partner_name or lead.contact_name, email)
+                if email and self.email_from and email.lower() == self.email_from.lower():
+                    partner_info['full_name'] = '%s <%s>' % (self.partner_name or self.contact_name, email)
                     break
         return res
 
 
-class crm_lead_tag(osv.Model):
+class crm_lead_tag(models.Model):
     _name = "crm.lead.tag"
     _description = "Category of lead"
-    _columns = {
-        'name': fields.char('Name', required=True, translate=True),
-        'team_id': fields.many2one('crm.team', 'Sales Team'),
-    }
+
+    name = fields.Char('Name', required=True, translate=True)
+    team_id = fields.Many2one('crm.team', 'Sales Team')
 
 
-class crm_lost_reason(osv.Model):
+class crm_lost_reason(models.Model):
     _name = "crm.lost.reason"
     _description = 'Reason for loosing leads'
 
-    _columns = {
-        'name': fields.char('Name', required=True),
-    }
+    name = fields.Char('Name', required=True)
+

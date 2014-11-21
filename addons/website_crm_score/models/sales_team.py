@@ -163,7 +163,7 @@ class crm_team(osv.osv):
                     leads_done = set()
                     for lead in leads:
                         if lead.id not in leads_done:
-                            leads_duplicated = lead.get_duplicated_leads(False)
+                            leads_duplicated = lead.get_duplicated_leads(False)[0]
                             if len(leads_duplicated) > 1:
                                 self.env["crm.lead"].browse(leads_duplicated).merge_opportunity(False, False)
                             leads_done.update(leads_duplicated)
