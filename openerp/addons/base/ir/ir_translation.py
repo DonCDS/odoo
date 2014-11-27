@@ -22,7 +22,7 @@
 import logging
 import unicodedata
 
-from openerp import tools
+from openerp import api, tools
 import openerp.modules
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
@@ -306,8 +306,7 @@ class ir_translation(osv.osv):
         return translations
 
     def _set_ids(self, cr, uid, name, tt, lang, ids, value, src=None):
-        self._get_ids.clear_cache(self)
-        self._get_source.clear_cache(self)
+        self.clear_caches()
 
         cr.execute('delete from ir_translation '
                 'where lang=%s '
@@ -384,12 +383,35 @@ class ir_translation(osv.osv):
         # Remove control characters
         return filter(lambda c: unicodedata.category(c) != 'Cc', tools.ustr(trad))
 
+    @api.model
+    @tools.ormcache(skiparg=1)
+    def get_field_string(self, model_name):
+        """ Return the translation of fields strings in the context's language.
+        Note that the result contains the available translations only.
+
+        :param model_name: the name of a model
+        :return: the model's fields' strings as a dictionary `{field_name: field_string}`
+        """
+        fields = self.env['ir.model.fields'].search([('model', '=', model_name)])
+        return {field.name: field.field_description for field in fields}
+
+    @api.model
+    @tools.ormcache(skiparg=1)
+    def get_field_help(self, model_name):
+        """ Return the translation of fields help in the context's language.
+        Note that the result contains the available translations only.
+
+        :param model_name: the name of a model
+        :return: the model's fields' help as a dictionary `{field_name: field_help}`
+        """
+        fields = self.env['ir.model.fields'].search([('model', '=', model_name)])
+        return {field.name: field.help for field in fields}
+
     def create(self, cr, uid, vals, context=None):
         if context is None:
             context = {}
         ids = super(ir_translation, self).create(cr, uid, vals, context=context)
-        self._get_source.clear_cache(self)
-        self._get_ids.clear_cache(self)
+        self.clear_caches()
         self.pool['ir.ui.view'].clear_cache()
         return ids
 
@@ -403,8 +425,7 @@ class ir_translation(osv.osv):
         if vals.get('value'):
             vals.update({'state':'translated'})
         result = super(ir_translation, self).write(cursor, user, ids, vals, context=context)
-        self._get_source.clear_cache(self)
-        self._get_ids.clear_cache(self)
+        self.clear_caches()
         self.pool['ir.ui.view'].clear_cache()
         return result
 
@@ -414,8 +435,7 @@ class ir_translation(osv.osv):
         if isinstance(ids, (int, long)):
             ids = [ids]
 
-        self._get_source.clear_cache(self)
-        self._get_ids.clear_cache(self)
+        self.clear_caches()
         result = super(ir_translation, self).unlink(cursor, user, ids, context=context)
         return result
 
