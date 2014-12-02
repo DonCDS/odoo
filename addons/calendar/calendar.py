@@ -666,7 +666,7 @@ class calendar_event_type(osv.Model):
 class calendar_event(osv.Model):
     """ Model for Calendar Event """
     _name = 'calendar.event'
-    _description = "Event"
+    _description = "Meeting"
     _order = "id desc"
     _inherit = ["mail.thread", "ir.needaction_mixin"]
 
@@ -879,14 +879,6 @@ class calendar_event(osv.Model):
                 duration = float(diff.days) * 24 + (float(diff.seconds) / 3600)
                 values['duration'] = round(duration, 2)
 
-    _track = {
-        'location': {
-            'calendar.subtype_invitation': lambda self, cr, uid, obj, ctx=None: True,
-        },
-        'start': {
-            'calendar.subtype_invitation': lambda self, cr, uid, obj, ctx=None: True,
-        },
-    }
     _columns = {
         'id': fields.integer('ID', readonly=True),
         'state': fields.selection([('draft', 'Unconfirmed'), ('open', 'Confirmed')], string='Status', readonly=True, track_visibility='onchange'),
@@ -962,14 +954,8 @@ class calendar_event(osv.Model):
         'partner_ids': _get_default_partners,
     }
 
-    def _check_closing_date(self, cr, uid, ids, context=None):
-        for event in self.browse(cr, uid, ids, context=context):
-            if event.stop < event.start:
-                return False
-        return True
-
-    _constraints = [
-        (_check_closing_date, 'Error ! End date cannot be set before start date.', ['start', 'stop'])
+    _sql_constraints = [
+        ('check_closing_date', 'CHECK (stop >= start)', 'Error! End date cannot be set before start date.')
     ]
 
     def onchange_allday(self, cr, uid, ids, start=False, end=False, starttime=False, endtime=False, startdatetime=False, enddatetime=False, checkallday=False, context=None):
@@ -1083,8 +1069,7 @@ class calendar_event(osv.Model):
                 if not current_user.email or current_user.email != partner.email:
                     mail_from = current_user.email or tools.config.get('email_from', False)
                     if not context.get('no_email'):
-                        if self.pool['calendar.attendee']._send_mail_to_attendees(cr, uid, att_id, email_from=mail_from, context=context):
-                            self.message_post(cr, uid, event.id, body=_("An invitation email has been sent to attendee %s") % (partner.name,), subtype="calendar.subtype_invitation", context=context)
+                        self.pool['calendar.attendee']._send_mail_to_attendees(cr, uid, att_id, email_from=mail_from, context=context)
 
             if new_attendees:
                 self.write(cr, uid, [event.id], {'attendee_ids': [(4, att) for att in new_attendees]}, context=context)
@@ -1394,8 +1379,7 @@ class calendar_event(osv.Model):
             current_user = self.pool['res.users'].browse(cr, uid, uid, context=context)
 
             if current_user.email:
-                if self.pool['calendar.attendee']._send_mail_to_attendees(cr, uid, [att.id for att in event.attendee_ids], email_from=current_user.email, context=context):
-                    self.message_post(cr, uid, event.id, body=_("An invitation email has been sent to attendee(s)"), subtype="calendar.subtype_invitation", context=context)
+                self.pool['calendar.attendee']._send_mail_to_attendees(cr, uid, [att.id for att in event.attendee_ids], email_from=current_user.email, context=context)
         return
 
     def get_attendee(self, cr, uid, meeting_id, context=None):
@@ -1569,7 +1553,10 @@ class calendar_event(osv.Model):
         if values.get('partner_ids', False):
             attendees_create = self.create_attendees(cr, uid, ids, context)
 
-        if (values.get('start_date') or values.get('start_datetime', False)) and values.get('active', True):
+        if values.get('active', True):
+            context['notification'] = _(",".join((['Date'] if values.get('start_date') or values.get('start_datetime') else []) + (['Location'] if values.get('location') else [])))
+
+        if context.get('notification'):
             the_id = new_id or (ids and int(ids[0]))
             if the_id:
                 if attendees_create:
@@ -1580,8 +1567,7 @@ class calendar_event(osv.Model):
 
                 if mail_to_ids:
                     current_user = self.pool['res.users'].browse(cr, uid, uid, context=context)
-                    if self.pool['calendar.attendee']._send_mail_to_attendees(cr, uid, mail_to_ids, template_xmlid='calendar_template_meeting_changedate', email_from=current_user.email, context=context):
-                        self.message_post(cr, uid, the_id, body=_("A email has been send to specify that the date has been changed !"), subtype="calendar.subtype_invitation", context=context)
+                    self.pool['calendar.attendee']._send_mail_to_attendees(cr, uid, mail_to_ids, template_xmlid='calendar_template_meeting_update', email_from=current_user.email, context=context)
         return res or True and False
 
     def create(self, cr, uid, vals, context=None):
