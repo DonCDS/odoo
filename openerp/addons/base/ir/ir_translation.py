@@ -25,7 +25,7 @@ import unicodedata
 from openerp import api, tools
 import openerp.modules
 from openerp.osv import fields, osv
-from openerp.tools.translate import _
+from openerp.tools.translate import _, get_translate_terms
 
 _logger = logging.getLogger(__name__)
 
@@ -390,6 +390,19 @@ class ir_translation(osv.osv):
         return filter(lambda c: unicodedata.category(c) != 'Cc', tools.ustr(trad))
 
     @api.model
+    @tools.ormcache_multi(skiparg=1, multi=4)
+    def _get_terms_translations(self, model_name, field_name, lang, ids):
+        """ Return the terms and translations of a given field on record ids. """
+        result = {rid: {} for rid in ids}
+        if ids:
+            query = """ SELECT res_id, src, value FROM ir_translation
+                        WHERE lang=%s AND type=%s AND name=%s AND res_id IN %s """
+            self._cr.execute(query, (lang, 'model', "%s,%s" % (model_name, field_name), tuple(ids)))
+            for res_id, src, value in self._cr.fetchall():
+                result[res_id][src] = value
+        return result
+
+    @api.model
     @tools.ormcache(skiparg=1)
     def get_field_string(self, model_name, lang):
         """ Return the translation of fields strings in the given language.
@@ -493,7 +506,7 @@ class ir_translation(osv.osv):
                 })
             elif src:
                 # insert missing translations for each term
-                terms = set(fld.translate(src))
+                terms = set(get_translate_terms(fld.translate, src))
                 for term in terms:
                     query = """ INSERT INTO ir_translation (lang, type, name, res_id, src, value)
                                 SELECT l.code, 'model', %(name)s, %(res_id)s, %(src)s, %(src)s
