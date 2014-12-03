@@ -261,6 +261,11 @@
                             <h1>
                                 <field name="name"/>
                             </h1>
+                            <group>
+                                <field name="popup_redirect_url"/>
+                            </group>
+                            <separator string="Popup Content"/>
+                            <field name="popup_content"/>
                         </div>
                     </sheet>
                 </form>

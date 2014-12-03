@@ -128,6 +128,21 @@ class MassMailingList(osv.Model):
             _get_contact_nbr, type='integer',
             string='Number of Contacts',
         ),
+        'popup_content': fields.html("Popup content", translate=True, required=True, sanitize=False),
+        'popup_redirect_url': fields.char("Popup Redirect URL"),
+    }
+
+    def _default_content(self, cr, uid, context):
+        content = """<div class="message">
+                         <font>7</font>
+                         <strong>Business Hacks</strong>
+                         <span> to<br/>boost your marketing</span>
+                     </div>
+                     <p>Join our Marketing newsletter and get <strong>this white paper instantly</strong></p>"""
+        return content
+
+    _defaults = {
+        'popup_content': _default_content,
     }
 
 

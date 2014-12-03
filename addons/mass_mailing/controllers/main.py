@@ -77,3 +77,17 @@ class MassMailController(http.Controller):
         cr, uid, context = request.cr, request.uid, request.context
         request.registry['website.links.click'].add_click(cr, uid, code, request.httprequest.remote_addr, request.session['geoip'].get('country_code'), stat_id=stat_id, context=context)
         return werkzeug.utils.redirect(request.registry['website.links'].get_url_from_code(cr, uid, code, context=context), 301)
+
+    @http.route(['/website_mass_mailing/get_content'], type='json', auth="public")
+    def get_popup_content(self, newsletter_id, **post):
+        is_subscriber = False
+        email = None
+        if request.env.uid == request.session.uid:
+            email = request.env.user.email
+
+        if email:
+            contact_ids = request.env['mail.mass_mailing.contact'].sudo().search_count([('list_id', '=', int(newsletter_id)), ('email', '=', email)])
+            is_subscriber = contact_ids > 0
+
+        mass_mailing_list = request.env['mail.mass_mailing.list'].sudo().browse(int(newsletter_id))
+        return {'content': mass_mailing_list.popup_content, 'redirect_url': mass_mailing_list.popup_redirect_url, 'is_subscriber': is_subscriber, 'email': email}
