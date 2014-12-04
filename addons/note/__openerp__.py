@@ -40,6 +40,7 @@ Notes can be found in the 'Home' menu.
     'summary': 'Sticky notes, Collaborative, Memos',
     'sequence': 9,
     'depends': [
+        'web_kanban',
         'mail',
     ],
     'data': [
