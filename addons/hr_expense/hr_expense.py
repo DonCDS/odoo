@@ -316,29 +316,22 @@ class hr_expense_expense(osv.osv):
                 ## 
                 is_price_include = tax_obj.read(cr,uid,tax['id'],['price_include'],context)['price_include']
                 if is_price_include:
-                    if tax['base_sign'] == -1:
-                        res[-1]['price'] = res[-1]['price']  - (tax['amount'] * tax['ref_base_sign'] or 0.0)
-                        base_tax_amount = (base_tax_amount - tax['amount']) * tax['ref_base_sign']
-                    else:
-                        ## We need to deduce the price for the tax
-                        res[-1]['price'] = res[-1]['price']  - (tax['amount'] * tax['base_sign'] or 0.0)
-                        # tax amount countains base amount without the tax
-                        base_tax_amount = (base_tax_amount - tax['amount']) * tax['base_sign']
+                    ## We need to deduce the price for the tax
+                    res[-1]['price'] = (res[-1]['price'] - tax['amount']) or 0.0
+                    # tax amount countains base amount without the tax
+                    base_tax_amount = (base_tax_amount - tax['amount']) * tax['base_sign']
                 else:
-                    if tax['base_sign'] == -1:
-                        base_tax_amount = base_tax_amount * tax['base_sign']
-                    else:
-                        base_tax_amount = base_tax_amount * tax['ref_base_sign']
+                    base_tax_amount = base_tax_amount * tax['base_sign']
 
                 assoc_tax = {
                              'type':'tax',
                              'name':tax['name'],
                              'price_unit': tax['price_unit'],
                              'quantity': 1,
-                             'price': tax['amount'] * tax['ref_base_sign'] if tax['base_sign']==-1 else tax['amount'] * tax['base_sign'] or 0.0,
+                             'price': tax['amount'] or 0.0,
                              'account_id': tax['account_collected_id'] or mres['account_id'],
                              'tax_code_id': tax['tax_code_id'],
-                             'tax_amount': tax['amount'] * tax['ref_base_sign'] if tax['base_sign']==-1 else tax['amount'] * tax['base_sign'],
+                             'tax_amount': tax['amount'] * tax['base_sign'],
                              }
                 tax_l.append(assoc_tax)
 
