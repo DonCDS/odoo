@@ -21,28 +21,25 @@
 
 from openerp.addons.mail.tests.common import TestMail
 
-
 class test_invite(TestMail):
 
     def test_00_basic_invite(self):
-        cr, uid = self.cr, self.uid
-        mail_invite = self.registry('mail.wizard.invite')
-
+        user_raoul = self.user_raoul
         # Do: create a mail_wizard_invite, validate it
         self._init_mock_build_email()
-        context = {'default_res_model': 'mail.group', 'default_res_id': self.group_pigs_id}
-        mail_invite_id = mail_invite.create(cr, self.user_raoul_id, {'partner_ids': [(4, self.partner_bert_id)], 'send_mail': True}, context)
-        mail_invite.add_followers(cr, self.user_raoul_id, [mail_invite_id], {'default_model': 'mail.group', 'default_res_id': 0})
-
+        mail_invite = self.env['mail.wizard.invite'].with_context({
+                        'default_res_model': 'mail.group',
+                        'default_res_id': self.group_pigs.id
+                        }).sudo(user_raoul.id).create({
+                        'partner_ids': [(4, self.partner_bert_id)],
+                        'send_mail': True})
+        mail_invite.with_context({'default_model': 'mail.group', 'default_res_id': 0}).sudo(user_raoul.id).add_followers()
         # Test: Pigs followers should contain Admin, Bert
-        self.group_pigs.refresh()
-        follower_ids = [follower.id for follower in self.group_pigs.message_follower_ids]
-        self.assertEqual(set(follower_ids), set([self.partner_admin_id, self.partner_bert_id]), 'invite: Pigs followers after invite is incorrect')
-
+        self.assertEqual(set(self.group_pigs.message_follower_ids.ids), set([self.partner_admin_id, self.partner_bert_id]), 'invite: Pigs followers after invite is incorrect')
         # Test: (pretend to) send email and check subject, body
         self.assertEqual(len(self._build_email_kwargs_list), 1, 'sent email number incorrect, should be only for Bert')
         for sent_email in self._build_email_kwargs_list:
             self.assertEqual(sent_email.get('subject'), 'Invitation to follow Discussion group: Pigs',
-                            'invite: subject of invitation email is incorrect')
+                'invite: subject of invitation email is incorrect')
             self.assertIn('Raoul Grosbedon invited you to follow Discussion group document: Pigs', sent_email.get('body'),
-                            'invite: body of invitation email is incorrect')
+                'invite: body of invitation email is incorrect')

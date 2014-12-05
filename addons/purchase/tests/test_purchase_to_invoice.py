@@ -21,73 +21,52 @@
 
 from openerp.addons.mail.tests.common import TestMail
 from openerp.tools import mute_logger
-from datetime import datetime
 
 
 class TestPurchase(TestMail):
     @mute_logger('openerp.addons.base.ir.ir_model', 'openerp.osv.orm')
-    
     def setUp(self):
         super(TestPurchase, self).setUp()
-        
+
     def test_purchase_to_invoice(self):
         """ Testing for invoice create,validate and pay with invoicing and payment user."""
-        cr, uid = self.cr, self.uid   
-        
         # Usefull models
-        data_obj = self.registry('ir.model.data')
-        user_obj = self.registry('res.users')
-        partner_obj = self.registry('res.partner')
-        purchase_obj = self.registry('purchase.order')
-        purchase_order_line = self.registry('purchase.order.line')
-        invoice_obj = self.registry('account.invoice')
-        
+        IrModelData = self.env['ir.model.data']
         # Usefull record id
-        group_id = data_obj.get_object_reference(cr, uid, 'account', 'group_account_invoice')[1]
-        product_ref = data_obj.get_object_reference(cr, uid, 'product', 'product_category_5')
-        product_id = product_ref and product_ref[1] or False
-        company_id = data_obj.get_object_reference(cr, uid, 'base', 'main_company')[1]
-        location_id = data_obj.get_object_reference(cr, uid, 'stock', 'stock_location_3')[1]
-        
+        group_id = IrModelData.xmlid_to_res_id('account.group_account_invoice') or False
+        product_id = IrModelData.xmlid_to_res_id('product.product_category_5') or False
+        company_id = IrModelData.xmlid_to_res_id('base.main_company') or False
+        location_id = IrModelData.xmlid_to_res_id('stock.stock_location_3') or False
         # In order to test, I create new user and applied Invoicing & Payments group.
-        user_id = user_obj.create(cr, uid, {
+        user = self.env['res.users'].create({
             'name': 'Test User',
             'login': 'test@test.com',
-            'company_id': 1,
-            'groups_id': [(6, 0, [group_id])]
-        })
-        assert user_id, "User will not created."
-        
+            'company_id': company_id,
+            'groups_id': [(6, 0, [group_id])]})
+        assert user, "User will not created."
         # I create partner for purchase order.
-        partner_id = partner_obj.create(cr, uid, {
+        partner = self.env['res.partner'].create({
             'name': 'Test Customer',
-            'email': 'testcustomer@test.com',
-        })
-        
+            'email': 'testcustomer@test.com'})
         # In order to test I create purchase order and confirmed it.
-        order_id = purchase_obj.create(cr, uid, {
-            'partner_id': partner_id,
+        order = self.env['purchase.order'].create({
+            'partner_id': partner.id,
             'location_id': location_id,
-            'pricelist_id': 1,
-        })
-        order_line = purchase_order_line.create(cr, uid, {
-                'order_id': order_id, 
-                'product_id': product_id,
-                'product_qty': 100.0,
-                'product_uom': 1,
-                'price_unit': 89.0,
-                'name': 'Service',
-                'date_planned': '2014-05-31',
-        })
-        assert order_id, "purchase order will not created."
-        
-        context = {"active_model": 'purchase.order', "active_ids": [order_id], "active_id":order_id}
-        purchase_obj.wkf_confirm_order(cr, uid, [order_id], context=context)
-        
+            'pricelist_id': 1})
+        self.env['purchase.order.line'].create({
+            'order_id': order.id,
+            'product_id': product_id,
+            'product_qty': 100.0,
+            'product_uom': 1,
+            'price_unit': 89.0,
+            'name': 'Service',
+            'date_planned': '2014-05-31'})
+        assert order, "purchase order will not created."
+        context = {"active_model": 'purchase.order', "active_ids": [order.id], "active_id": order.id}
+        order.with_context(context).wkf_confirm_order()
         # In order to test I create invoice.
-        invoice_id = purchase_obj.action_invoice_create(cr, uid, [order_id], context=context)
-        assert invoice_id,"No any invoice is created for this purchase order"
-        
+        invoice = order.with_context(context).action_invoice_create()
+        assert invoice, "No any invoice is created for this purchase order"
         # In order to test I validate invoice wihth Test User(invoicing and payment).
-        res = invoice_obj.invoice_validate(cr, uid, [invoice_id], context=context)
+        res = self.env['account.invoice'].browse(invoice).with_context(context).invoice_validate()
         self.assertTrue(res, 'Invoice will not validated')

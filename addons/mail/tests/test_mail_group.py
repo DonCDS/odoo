@@ -21,51 +21,53 @@
 
 from openerp.addons.mail.tests.common import TestMail
 from openerp.exceptions import AccessError
+from openerp.exceptions import except_orm
 from openerp.tools import mute_logger
-
 
 class TestMailGroup(TestMail):
 
     @mute_logger('openerp.addons.base.ir.ir_model', 'openerp.models')
     def test_00_mail_group_access_rights(self):
         """ Testing mail_group access rights and basic mail_thread features """
-        cr, uid, user_noone_id, user_employee_id = self.cr, self.uid, self.user_noone_id, self.user_employee_id
-
+        user_noone, user_employee = self.user_noone, self.user_employee
+        group_priv, group_jobs = self.group_priv, self.group_jobs
         # Do: Bert reads Jobs -> ok, public
-        self.mail_group.read(cr, user_noone_id, [self.group_jobs_id])
+        group_jobs.sudo(user_noone.id).read()
         # Do: Bert read Pigs -> ko, restricted to employees
-        with self.assertRaises(AccessError):
-            self.mail_group.read(cr, user_noone_id, [self.group_pigs_id])
+        # TODO: Change the except_orm to Warning ( Because here it's call check_access_rule
+        # which still generate exception in except_orm.So we need to change all
+        # except_orm to warning in mail module.)
+        with self.assertRaises(except_orm):
+            self.group_pigs.sudo(user_noone.id).read()
         # Do: Raoul read Pigs -> ok, belong to employees
-        self.mail_group.read(cr, user_employee_id, [self.group_pigs_id])
-
+        self.group_pigs.sudo(user_employee.id).read()
         # Do: Bert creates a group -> ko, no access rights
         with self.assertRaises(AccessError):
-            self.mail_group.create(cr, user_noone_id, {'name': 'Test'})
+            self.MailGroup.sudo(user_noone.id).create({'name': 'Test'})
         # Do: Raoul creates a restricted group -> ok
-        new_group_id = self.mail_group.create(cr, user_employee_id, {'name': 'Test'})
+        new_group = self.MailGroup.sudo(user_employee.id).create({'name': 'Test'})
         # Do: Bert added in followers, read -> ok, in followers
-        self.mail_group.message_subscribe_users(cr, uid, [new_group_id], [user_noone_id])
-        self.mail_group.read(cr, user_noone_id, [new_group_id])
-
+        new_group.message_subscribe_users(user_ids=[user_noone.id])
+        new_group.sudo(user_noone.id).read()
         # Do: Raoul reads Priv -> ko, private
-        with self.assertRaises(AccessError):
-            self.mail_group.read(cr, user_employee_id, [self.group_priv_id])
+        # TODO Change the except_orm to Warning
+        with self.assertRaises(except_orm):
+            group_priv.sudo(user_employee.id).read()
         # Do: Raoul added in follower, read -> ok, in followers
-        self.mail_group.message_subscribe_users(cr, uid, [self.group_priv_id], [user_employee_id])
-        self.mail_group.read(cr, user_employee_id, [self.group_priv_id])
-
+        group_priv.message_subscribe_users(user_ids=[user_employee.id])
+        group_priv.sudo(user_employee.id).read()
         # Do: Raoul write on Jobs -> ok
-        self.mail_group.write(cr, user_employee_id, [self.group_priv_id], {'name': 'modified'})
+        group_priv.sudo(user_employee.id).write({'name': 'modified'})
         # Do: Bert cannot write on Private -> ko (read but no write)
         with self.assertRaises(AccessError):
-            self.mail_group.write(cr, user_noone_id, [self.group_priv_id], {'name': 're-modified'})
+            group_priv.sudo(user_noone.id).write({'name': 're-modified'})
         # Test: Bert cannot unlink the group
-        with self.assertRaises(AccessError):
-            self.mail_group.unlink(cr, user_noone_id, [self.group_priv_id])
-        # Do: Raoul unlinks the group, there are no followers and messages left
-        self.mail_group.unlink(cr, user_employee_id, [self.group_priv_id])
-        fol_ids = self.mail_followers.search(cr, uid, [('res_model', '=', 'mail.group'), ('res_id', '=', self.group_priv_id)])
-        self.assertFalse(fol_ids, 'unlinked document should not have any followers left')
-        msg_ids = self.mail_message.search(cr, uid, [('model', '=', 'mail.group'), ('res_id', '=', self.group_priv_id)])
-        self.assertFalse(msg_ids, 'unlinked document should not have any followers left')
+        # TODO Change the except_orm to Warning
+        with self.assertRaises(except_orm):
+            group_priv.sudo(user_noone.id).unlink()
+        #Do: Raoul unlinks the group, there are no followers and messages left
+        group_priv.sudo(user_employee.id).unlink()
+        no_of_fol = self.MailFollowers.search_count([('res_model', '=', 'mail.group'), ('res_id', '=', group_priv.id)])
+        self.assertFalse(no_of_fol, 'unlinked document should not have any followers left')
+        no_of_msg = self.MailMessage.search_count([('model', '=', 'mail.group'), ('res_id', '=', group_priv.id)])
+        self.assertFalse(no_of_msg, 'unlinked document should not have any followers left')

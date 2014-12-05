@@ -21,54 +21,53 @@
 
 from openerp.addons.mail.tests.common import TestMail
 from openerp.exceptions import AccessError
+from openerp.exceptions import except_orm
 from openerp.tools.misc import mute_logger
-
 
 class test_portal(TestMail):
 
     def setUp(self):
         super(test_portal, self).setUp()
-        cr, uid = self.cr, self.uid
-
         # Find Portal group
-        group_portal = self.registry('ir.model.data').get_object(cr, uid, 'base', 'group_portal')
-        self.group_portal_id = group_portal.id
+        self.group_portal_id = self.IrModelData.xmlid_to_res_id('base.group_portal')
 
         # Create Chell (portal user)
-        self.user_chell_id = self.res_users.create(cr, uid, {'name': 'Chell Gladys', 'login': 'chell', 'email': 'chell@gladys.portal', 'groups_id': [(6, 0, [self.group_portal_id])]})
-        self.user_chell = self.res_users.browse(cr, uid, self.user_chell_id)
+        self.user_chell = self.ResUsers.create({
+            'name': 'Chell Gladys',
+            'login': 'chell',
+            'email': 'chell@gladys.portal',
+            'groups_id': [(6, 0, [self.group_portal_id])]})
+
         self.partner_chell_id = self.user_chell.partner_id.id
 
         # Create a PigsPortal group
-        self.group_port_id = self.mail_group.create(cr, uid,
-                        {'name': 'PigsPortal', 'public': 'groups', 'group_public_id': self.group_portal_id},
-                        {'mail_create_nolog': True})
+        self.group_port = self.MailGroup.with_context({'mail_create_nolog': True}).create({
+            'name': 'PigsPortal',
+            'public': 'groups',
+            'group_public_id': self.group_portal_id})
 
         # Set an email address for the user running the tests, used as Sender for outgoing mails
-        self.res_users.write(cr, uid, uid, {'email': 'test@localhost'})
+        self.user_admin.write({'email': 'test@localhost'})
 
     @mute_logger('openerp.addons.base.ir.ir_model', 'openerp.models')
     def test_00_mail_access_rights(self):
         """ Test basic mail_message and mail_group access rights for portal users. """
-        cr, uid = self.cr, self.uid
-        mail_compose = self.registry('mail.compose.message')
-
+        MailCompose = self.env['mail.compose.message']
         # Prepare group: Pigs and PigsPortal
-        pigs_msg_id = self.mail_group.message_post(cr, uid, self.group_pigs_id, body='Message')
-        port_msg_id = self.mail_group.message_post(cr, uid, self.group_port_id, body='Message')
-
+        pigs_msg_id = self.group_pigs.message_post(body='Message')
+        port_msg_id = self.group_port.message_post(body='Message')
         # Do: Chell browses Pigs -> ko, employee group
-        chell_pigs = self.mail_group.browse(cr, self.user_chell_id, self.group_pigs_id)
-        with self.assertRaises(AccessError):
+        chell_pigs = self.MailGroup.sudo(self.user_chell.id).browse(self.group_pigs.id)
+        # TODO: Change the except_orm to Warning ( Because here it's call check_access_rule
+        # which still generate exception in except_orm)
+        with self.assertRaises(except_orm):
             trigger_read = chell_pigs.name
-
         # Do: Chell posts a message on Pigs, crash because can not write on group or is not in the followers
         with self.assertRaises(AccessError):
-            self.mail_group.message_post(cr, self.user_chell_id, self.group_pigs_id, body='Message')
-
+            self.group_pigs.sudo(self.user_chell.id).message_post(body='Message')
         # Do: Chell is added into Pigs followers and browse it -> ok for messages, ko for partners (no read permission)
-        self.mail_group.message_subscribe_users(cr, uid, [self.group_pigs_id], [self.user_chell_id])
-        chell_pigs = self.mail_group.browse(cr, self.user_chell_id, self.group_pigs_id)
+        self.group_pigs.message_subscribe_users(user_ids=[self.user_chell.id])
+        chell_pigs = self.MailGroup.sudo(self.user_chell.id).browse(self.group_pigs.id)
         trigger_read = chell_pigs.name
         for message in chell_pigs.message_ids:
             trigger_read = message.subject
@@ -76,90 +75,83 @@ class test_portal(TestMail):
             if partner.id == self.partner_chell_id:
                 # Chell can read her own partner record
                 continue
-            with self.assertRaises(AccessError):
+            # TODO Change the except_orm to Warning
+            with self.assertRaises(except_orm):
                 trigger_read = partner.name
-
         # Do: Chell comments Pigs, ok because he is now in the followers
-        self.mail_group.message_post(cr, self.user_chell_id, self.group_pigs_id, body='I love Pigs')
+        self.group_pigs.sudo(self.user_chell.id).message_post(body='I love Pigs')
         # Do: Chell creates a mail.compose.message record on Pigs, because he uses the wizard
-        compose_id = mail_compose.create(cr, self.user_chell_id,
-            {'subject': 'Subject', 'body': 'Body text', 'partner_ids': []},
-            {'default_composition_mode': 'comment', 'default_model': 'mail.group', 'default_res_id': self.group_pigs_id})
-        mail_compose.send_mail(cr, self.user_chell_id, [compose_id])
+        mail_compose_context = {'default_composition_mode': 'comment',
+                                'default_model': 'mail.group',
+                                'default_res_id': self.group_pigs.id}
+        compose = MailCompose.with_context(mail_compose_context).sudo(self.user_chell.id).create({
+            'subject': 'Subject',
+            'body': 'Body text',
+            'partner_ids': []})
+        compose.sudo(self.user_chell.id).send_mail()
+        mail_compose_context = {'default_composition_mode': 'comment',
+                                'default_parent_id': pigs_msg_id}
         # Do: Chell replies to a Pigs message using the composer
-        compose_id = mail_compose.create(cr, self.user_chell_id,
-            {'subject': 'Subject', 'body': 'Body text'},
-            {'default_composition_mode': 'comment', 'default_parent_id': pigs_msg_id})
-        mail_compose.send_mail(cr, self.user_chell_id, [compose_id])
-
+        compose = MailCompose.with_context(mail_compose_context).sudo(self.user_chell.id).create({
+                    'subject': 'Subject',
+                    'body': 'Body text'})
+        compose.sudo(self.user_chell.id).send_mail()
         # Do: Chell browses PigsPortal -> ok because groups security, ko for partners (no read permission)
-        chell_port = self.mail_group.browse(cr, self.user_chell_id, self.group_port_id)
+        chell_port = self.MailGroup.sudo(self.user_chell.id).browse(self.group_port.id)
         trigger_read = chell_port.name
         for message in chell_port.message_ids:
             trigger_read = message.subject
         for partner in chell_port.message_follower_ids:
-            with self.assertRaises(AccessError):
+            # TODO Change the except_orm to Warning
+            with self.assertRaises(except_orm):
                 trigger_read = partner.name
 
     def test_10_mail_invite(self):
-        cr, uid = self.cr, self.uid
-        mail_invite = self.registry('mail.wizard.invite')
-        base_url = self.registry('ir.config_parameter').get_param(cr, uid, 'web.base.url', default='')
+        group_pigs = self.group_pigs
+        base_url = self.env['ir.config_parameter'].get_param('web.base.url', default='')
         # Carine Poilvache, with email, should receive emails for comments and emails
-        partner_carine_id = self.res_partner.create(cr, uid, {'name': 'Carine Poilvache', 'email': 'c@c'})
+        partner_carine = self.ResPartner.create({'name': 'Carine Poilvache', 'email': 'c@c'})
 
         # Do: create a mail_wizard_invite, validate it
         self._init_mock_build_email()
-        context = {'default_res_model': 'mail.group', 'default_res_id': self.group_pigs_id}
-        mail_invite_id = mail_invite.create(cr, uid, {'partner_ids': [(4, partner_carine_id)], 'send_mail': True}, context)
-        mail_invite.add_followers(cr, uid, [mail_invite_id])
-
+        mail_invite = self.env['mail.wizard.invite'].with_context({'default_res_model': 'mail.group',
+            'default_res_id': group_pigs.id}).create({
+            'partner_ids': [(4, partner_carine.id)], 'send_mail': True})
+        mail_invite.add_followers()
         # Test: Pigs followers should contain Admin and Bert
-        group_pigs = self.mail_group.browse(cr, uid, self.group_pigs_id)
-        follower_ids = [follower.id for follower in group_pigs.message_follower_ids]
-        self.assertEqual(set(follower_ids), set([self.partner_admin_id, partner_carine_id]), 'Pigs followers after invite is incorrect')
-
+        self.assertEqual(set(group_pigs.message_follower_ids.ids), set([self.partner_admin_id, partner_carine.id]), 'Pigs followers after invite is incorrect')
         # Test: partner must have been prepared for signup
-        partner_carine = self.res_partner.browse(cr, uid, partner_carine_id)
         self.assertTrue(partner_carine.signup_valid, 'partner has not been prepared for signup')
         self.assertTrue(base_url in partner_carine.signup_url, 'signup url is incorrect')
-        self.assertTrue(cr.dbname in partner_carine.signup_url, 'signup url is incorrect')
+        self.assertTrue(self.env.cr.dbname in partner_carine.signup_url, 'signup url is incorrect')
         self.assertTrue(partner_carine.signup_token in partner_carine.signup_url, 'signup url is incorrect')
-
         # Test: (pretend to) send email and check subject, body
         self.assertEqual(len(self._build_email_kwargs_list), 1, 'sent email number incorrect, should be only for Bert')
         for sent_email in self._build_email_kwargs_list:
             self.assertEqual(sent_email.get('subject'), 'Invitation to follow Discussion group: Pigs',
-                             'invite: subject of invitation email is incorrect')
+                        'invite: subject of invitation email is incorrect')
             self.assertIn('Administrator invited you to follow Discussion group document: Pigs', sent_email.get('body'),
-                          'invite: body of invitation email is incorrect')
+                        'invite: body of invitation email is incorrect')
             self.assertIn(partner_carine.signup_token, sent_email.get('body'),
-                          'invite: body of invitation email does not contain signup token')
+                        'invite: body of invitation email does not contain signup token')
 
     def test_20_notification_url(self):
         """ Tests designed to test the URL added in notification emails. """
-        cr, uid, group_pigs = self.cr, self.uid, self.group_pigs
-
         # Partner data
-        partner_raoul = self.res_partner.browse(cr, uid, self.partner_raoul_id)
-        partner_bert_id = self.res_partner.create(cr, uid, {'name': 'bert'})
-        partner_bert = self.res_partner.browse(cr, uid, partner_bert_id)
+        partner_raoul = self.ResPartner.browse(self.partner_raoul_id)
+        partner_bert = self.ResPartner.create({'name': 'bert'})
         # Mail data
-        mail_mail_id = self.mail_mail.create(cr, uid, {'state': 'exception'})
-        mail = self.mail_mail.browse(cr, uid, mail_mail_id)
-
+        mail = self.MailMail.create({'state': 'exception'})
         # Test: link for nobody -> None
-        url = self.mail_mail._get_partner_access_link(cr, uid, mail)
+        url = self.MailMail._get_partner_access_link(mail)
         self.assertEqual(url, None,
                         'notification email: mails not send to a specific partner should not have any URL')
-
         # Test: link for partner -> signup URL
-        url = self.mail_mail._get_partner_access_link(cr, uid, mail, partner=partner_bert)
+        url = self.MailMail._get_partner_access_link(mail, partner=partner_bert)
         self.assertIn(partner_bert.signup_token, url,
                         'notification email: mails send to a not-user partner should contain the signup token')
-
         # Test: link for user -> signin
-        url = self.mail_mail._get_partner_access_link(cr, uid, mail, partner=partner_raoul)
+        url = self.MailMail._get_partner_access_link(mail, partner=partner_raoul)
         self.assertIn('action=mail.action_mail_redirect', url,
                         'notification email: link should contain the redirect action')
         self.assertIn('login=%s' % partner_raoul.user_ids[0].login, url,
@@ -168,61 +160,54 @@ class test_portal(TestMail):
     @mute_logger('openerp.addons.mail.mail_thread', 'openerp.models')
     def test_21_inbox_redirection(self):
         """ Tests designed to test the inbox redirection of emails notification URLs. """
-        cr, uid, user_admin, group_pigs = self.cr, self.uid, self.user_admin, self.group_pigs
-        model, act_id = self.ir_model_data.get_object_reference(cr, uid, 'mail', 'action_mail_inbox_feeds')
-        model, port_act_id = self.ir_model_data.get_object_reference(cr, uid, 'portal', 'action_mail_inbox_feeds_portal')
+        group_pigs = self.group_pigs
+        model, act_id = self.IrModelData.xmlid_to_res_model_res_id('mail.action_mail_inbox_feeds')
+        model, port_act_id = self.IrModelData.xmlid_to_res_model_res_id('portal.action_mail_inbox_feeds_portal')
         # Data: post a message on pigs
-        msg_id = self.group_pigs.message_post(body='My body', partner_ids=[self.partner_bert_id, self.partner_chell_id], type='comment', subtype='mail.mt_comment')
-
+        msg_id = group_pigs.message_post(body='My body', partner_ids=[self.partner_bert_id, self.partner_chell_id], type='comment', subtype='mail.mt_comment')
         # No specific parameters -> should redirect to Inbox
-        action = self.mail_thread.message_redirect_action(cr, self.user_raoul_id, {'params': {}})
+        action = self.MailThread.with_context({'params': {}}).sudo(self.user_raoul.id).message_redirect_action()
         self.assertEqual(action.get('type'), 'ir.actions.client',
                         'URL redirection: action without parameters should redirect to client action Inbox')
         self.assertEqual(action.get('id'), act_id,
                         'URL redirection: action without parameters should redirect to client action Inbox')
-
         # Bert has read access to Pigs -> should redirect to form view of Pigs
-        action = self.mail_thread.message_redirect_action(cr, self.user_raoul_id, {'params': {'message_id': msg_id}})
+        action = self.MailThread.with_context({'params': {'message_id': msg_id}}).sudo(self.user_raoul.id).message_redirect_action()
         self.assertEqual(action.get('type'), 'ir.actions.act_window',
                         'URL redirection: action with message_id for read-accredited user should redirect to Pigs')
         self.assertEqual(action.get('res_id'), group_pigs.id,
                         'URL redirection: action with message_id for read-accredited user should redirect to Pigs')
-
         # Bert has no read access to Pigs -> should redirect to Inbox
-        action = self.mail_thread.message_redirect_action(cr, self.user_bert_id, {'params': {'message_id': msg_id}})
+        action = self.MailThread.with_context({'params': {'message_id': msg_id}}).sudo(self.user_bert.id).message_redirect_action()
         self.assertEqual(action.get('type'), 'ir.actions.client',
                         'URL redirection: action without parameters should redirect to client action Inbox')
         self.assertEqual(action.get('id'), act_id,
                         'URL redirection: action without parameters should redirect to client action Inbox')
-
         # Chell has no read access to pigs -> should redirect to Portal Inbox
-        action = self.mail_thread.message_redirect_action(cr, self.user_chell_id, {'params': {'message_id': msg_id}})
+        action = self.MailThread.with_context({'params': {'message_id': msg_id}}).sudo(self.user_chell.id).message_redirect_action()
         self.assertEqual(action.get('type'), 'ir.actions.client',
                         'URL redirection: action without parameters should redirect to client action Inbox')
         self.assertEqual(action.get('id'), port_act_id,
                         'URL redirection: action without parameters should redirect to client action Inbox')
 
     def test_30_message_read(self):
-        cr, uid, group_port_id = self.cr, self.uid, self.group_port_id
-
+        group_port = self.group_port
         # Data: custom subtypes
-        mt_group_public_id = self.mail_message_subtype.create(cr, uid, {'name': 'group_public', 'description': 'Group changed'})
-        self.ir_model_data.create(cr, uid, {'name': 'mt_group_public', 'model': 'mail.message.subtype', 'module': 'mail', 'res_id': mt_group_public_id})
+        mt_group_public = self.MailMessageSubtype.create({'name': 'group_public', 'description': 'Group changed'})
+        self.IrModelData.create({'name': 'mt_group_public', 'model': 'mail.message.subtype', 'module': 'mail', 'res_id': mt_group_public.id})
         # Data: post messages with various subtypes
-        msg1_id = self.mail_group.message_post(cr, uid, group_port_id, body='Body1', type='comment', subtype='mail.mt_comment')
-        msg2_id = self.mail_group.message_post(cr, uid, group_port_id, body='Body2', type='comment', subtype='mail.mt_group_public')
-        msg3_id = self.mail_group.message_post(cr, uid, group_port_id, body='Body3', type='comment', subtype='mail.mt_comment')
-        msg4_id = self.mail_group.message_post(cr, uid, group_port_id, body='Body4', type='comment')
-        # msg5_id = self.mail_group.message_post(cr, uid, group_port_id, body='Body5', type='notification')
-
+        msg1_id = group_port.message_post(body='Body1', type='comment', subtype='mail.mt_comment')
+        msg2_id = group_port.message_post(body='Body2', type='comment', subtype='mail.mt_group_public')
+        msg3_id = group_port.message_post(body='Body3', type='comment', subtype='mail.mt_comment')
+        msg4_id = group_port.message_post(body='Body4', type='comment')
+        # msg5_id = group_port.message_post(body='Body5', type='notification')
         # Do: Chell search messages: should not see internal notes (comment without subtype)
-        msg_ids = self.mail_message.search(cr, self.user_chell_id, [('model', '=', 'mail.group'), ('res_id', '=', group_port_id)])
-        self.assertEqual(set(msg_ids), set([msg1_id, msg2_id, msg3_id]),
+        messages = self.MailMessage.sudo(self.user_chell.id).search([('model', '=', 'mail.group'), ('res_id', '=', group_port.id)])
+        self.assertEqual(set(messages.ids), set([msg1_id, msg2_id, msg3_id]),
                         'mail_message: portal user has access to messages he should not read')
-
         # Do: Chell read messages she can read
-        self.mail_message.read(cr, self.user_chell_id, msg_ids, ['body', 'type', 'subtype_id'])
-
+        messages.sudo(self.user_chell.id).read(['body', 'type', 'subtype_id'])
         # Do: Chell read a message she should not be able to read
-        with self.assertRaises(AccessError):
-            self.mail_message.read(cr, self.user_chell_id, [msg4_id], ['body', 'type', 'subtype_id'])
+        # TODO Change the except_orm to Warning
+        with self.assertRaises(except_orm):
+            self.MailMessage.browse(msg4_id).sudo(self.user_chell.id).read(['body', 'type', 'subtype_id'])

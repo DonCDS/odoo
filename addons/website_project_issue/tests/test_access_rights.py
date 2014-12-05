@@ -23,36 +23,34 @@ from openerp.addons.portal_project.tests.test_access_rights import TestPortalPro
 from openerp.exceptions import AccessError
 from openerp.tools import mute_logger
 
-
 class TestPortalProjectBase(TestPortalProjectBase):
 
     def setUp(self):
         super(TestPortalProjectBase, self).setUp()
-        cr, uid = self.cr, self.uid
-
         # Useful models
-        self.project_issue = self.registry('project.issue')
+        self.ProjectIssue = self.env['project.issue']
+        context_nolog = {'mail_create_nolog': True}
 
         # Various test issues
-        self.issue_1_id = self.project_issue.create(cr, uid, {
-            'name': 'Test1', 'user_id': False, 'project_id': self.project_pigs_id}, {'mail_create_nolog': True})
-        self.issue_2_id = self.project_issue.create(cr, uid, {
-            'name': 'Test2', 'user_id': False, 'project_id': self.project_pigs_id}, {'mail_create_nolog': True})
-        self.issue_3_id = self.project_issue.create(cr, uid, {
-            'name': 'Test3', 'user_id': False, 'project_id': self.project_pigs_id}, {'mail_create_nolog': True})
-        self.issue_4_id = self.project_issue.create(cr, uid, {
-            'name': 'Test4', 'user_id': self.user_projectuser_id, 'project_id': self.project_pigs_id}, {'mail_create_nolog': True})
-        self.issue_5_id = self.project_issue.create(cr, uid, {
-            'name': 'Test5', 'user_id': self.user_portal_id, 'project_id': self.project_pigs_id}, {'mail_create_nolog': True})
-        self.issue_6_id = self.project_issue.create(cr, uid, {
-            'name': 'Test6', 'user_id': self.user_public_id, 'project_id': self.project_pigs_id}, {'mail_create_nolog': True})
+        self.issue_1 = self.ProjectIssue.with_context(context_nolog).create({
+            'name': 'Test1', 'user_id': False, 'project_id': self.project_pigs.id})
+        self.issue_2 = self.ProjectIssue.with_context(context_nolog).create({
+            'name': 'Test2', 'user_id': False, 'project_id': self.project_pigs.id})
+        self.issue_3 = self.ProjectIssue.with_context(context_nolog).create({
+            'name': 'Test3', 'user_id': False, 'project_id': self.project_pigs.id})
+        self.issue_4 = self.ProjectIssue.with_context(context_nolog).create({
+            'name': 'Test4', 'user_id': self.user_projectuser.id, 'project_id': self.project_pigs.id})
+        self.issue_5 = self.ProjectIssue.with_context(context_nolog).create({
+            'name': 'Test5', 'user_id': self.user_portal.id, 'project_id': self.project_pigs.id})
+        self.issue_6 = self.ProjectIssue.with_context(context_nolog).create({
+            'name': 'Test6', 'user_id': self.user_public.id, 'project_id': self.project_pigs.id})
 
 
 class TestPortalIssue(TestPortalProjectBase):
     @mute_logger('openerp.addons.base.ir.ir_model', 'openerp.models')
     def test_00_project_access_rights(self):
         """ Test basic project access rights, for project and portal_project """
-        cr, uid, pigs_id = self.cr, self.uid, self.project_pigs_id
+        pigs_id = self.project_pigs.id
 
         # ----------------------------------------
         # CASE1: public project
@@ -60,117 +58,115 @@ class TestPortalIssue(TestPortalProjectBase):
 
         # Do: Alfred reads project -> ok (employee ok public)
         # Test: all project issues visible
-        issue_ids = self.project_issue.search(cr, self.user_projectuser_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_1_id, self.issue_2_id, self.issue_3_id, self.issue_4_id, self.issue_5_id, self.issue_6_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_projectuser.id).search([('project_id', '=', pigs_id)])
+        test_issue_ids = set([self.issue_1.id, self.issue_2.id, self.issue_3.id, self.issue_4.id, self.issue_5.id, self.issue_6.id])
+        self.assertEqual(set(issues.ids), test_issue_ids,
                          'access rights: project user cannot see all issues of a public project')
         # Test: all project issues readable
-        self.project_issue.read(cr, self.user_projectuser_id, issue_ids, ['name'])
+        issues.read(['name'])
         # Test: all project issues writable
-        self.project_issue.write(cr, self.user_projectuser_id, issue_ids, {'description': 'TestDescription'})
+        issues.sudo(self.user_projectuser.id).write({'description': 'TestDescription'})
 
         # Do: Bert reads project -> crash, no group
         # Test: no project issue visible
-        self.assertRaises(AccessError, self.project_issue.search, cr, self.user_none_id, [('project_id', '=', pigs_id)])
+        self.assertRaises(AccessError, self.ProjectIssue.sudo(self.user_none.id).search, [('project_id', '=', pigs_id)])
         # Test: no project issue readable
-        self.assertRaises(AccessError, self.project_issue.read, cr, self.user_none_id, issue_ids, ['name'])
+        self.assertRaises(AccessError, issues.sudo(self.user_none.id).read, ['name'])
         # Test: no project issue writable
-        self.assertRaises(AccessError, self.project_issue.write, cr, self.user_none_id, issue_ids, {'description': 'TestDescription'})
+        self.assertRaises(AccessError, issues.sudo(self.user_none.id).write, {'description': 'TestDescription'})
 
         # Do: Chell reads project -> ok (portal ok public)
         # Test: all project issues visible
-        issue_ids = self.project_issue.search(cr, self.user_portal_id, [('project_id', '=', pigs_id)])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_portal.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), test_issue_ids,
                          'access rights: project user cannot see all issues of a public project')
         # Test: all project issues readable
-        self.project_issue.read(cr, self.user_portal_id, issue_ids, ['name'])
+        issues.sudo(self.user_portal.id).read(['name'])
         # Test: no project issue writable
-        self.assertRaises(AccessError, self.project_issue.write, cr, self.user_portal_id, issue_ids, {'description': 'TestDescription'})
+        self.assertRaises(AccessError, issues.sudo(self.user_portal.id).write, {'description': 'TestDescription'})
 
         # Do: Donovan reads project -> ok (public ok public)
         # Test: all project issues visible
-        issue_ids = self.project_issue.search(cr, self.user_public_id, [('project_id', '=', pigs_id)])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_public.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), test_issue_ids,
                          'access rights: project user cannot see all issues of a public project')
 
         # ----------------------------------------
         # CASE2: portal project
         # ----------------------------------------
-        self.project_project.write(cr, uid, [pigs_id], {'privacy_visibility': 'portal'})
+        self.project_pigs.write({'privacy_visibility': 'portal'})
 
         # Do: Alfred reads project -> ok (employee ok public)
         # Test: all project issues visible
-        issue_ids = self.project_issue.search(cr, self.user_projectuser_id, [('project_id', '=', pigs_id)])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_projectuser.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), test_issue_ids,
                          'access rights: project user cannot see all issues of a portal project')
 
         # Do: Bert reads project -> crash, no group
         # Test: no project issue searchable
-        self.assertRaises(AccessError, self.project_issue.search, cr, self.user_none_id, [('project_id', '=', pigs_id)])
+        self.assertRaises(AccessError, self.ProjectIssue.sudo(self.user_none.id).search, [('project_id', '=', pigs_id)])
 
         # Data: issue follower
-        self.project_issue.message_subscribe_users(cr, self.user_projectuser_id, [self.issue_1_id, self.issue_3_id], [self.user_portal_id])
+        self.issue_1.sudo(self.user_projectuser.id).message_subscribe_users(user_ids=[self.user_portal.id])
+        self.issue_3.sudo(self.user_projectuser.id).message_subscribe_users(user_ids=[self.user_portal.id])
 
         # Do: Chell reads project -> ok (portal ok public)
         # Test: only followed project issues visible + assigned
-        issue_ids = self.project_issue.search(cr, self.user_portal_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_1_id, self.issue_3_id, self.issue_5_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_portal.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), set([self.issue_1.id, self.issue_3.id, self.issue_5.id]),
                          'access rights: portal user should see the followed issues of a portal project')
 
         # Data: issue follower cleaning
-        self.project_issue.message_unsubscribe_users(cr, self.user_projectuser_id, [self.issue_1_id, self.issue_3_id], [self.user_portal_id])
+        self.issue_1.sudo(self.user_projectuser.id).message_unsubscribe_users(user_ids=[self.user_portal.id])
+        self.issue_3.sudo(self.user_projectuser.id).message_unsubscribe_users(user_ids=[self.user_portal.id])
 
         # ----------------------------------------
         # CASE3: employee project
         # ----------------------------------------
-        self.project_project.write(cr, uid, [pigs_id], {'privacy_visibility': 'employees'})
+        self.project_pigs.write({'privacy_visibility': 'employees'})
 
         # Do: Alfred reads project -> ok (employee ok employee)
         # Test: all project issues visible
-        issue_ids = self.project_issue.search(cr, self.user_projectuser_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_1_id, self.issue_2_id, self.issue_3_id, self.issue_4_id, self.issue_5_id, self.issue_6_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
-                         'access rights: project user cannot see all issues of an employees project')
+        issues = self.ProjectIssue.sudo(self.user_projectuser.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), set([self.issue_1.id, self.issue_2.id, self.issue_3.id,
+                        self.issue_4.id, self.issue_5.id, self.issue_6.id]),
+                        'access rights: project user cannot see all issues of an employees project')
 
         # Do: Chell reads project -> ko (portal ko employee)
         # Test: no project issue visible + assigned
-        issue_ids = self.project_issue.search(cr, self.user_portal_id, [('project_id', '=', pigs_id)])
-        self.assertFalse(issue_ids, 'access rights: portal user should not see issues of an employees project, even if assigned')
+        issues = self.ProjectIssue.sudo(self.user_portal.id).search([('project_id', '=', pigs_id)])
+        self.assertFalse(issues.ids, 'access rights: portal user should not see issues of an employees project, even if assigned')
 
         # ----------------------------------------
         # CASE4: followers project
         # ----------------------------------------
-        self.project_project.write(cr, uid, [pigs_id], {'privacy_visibility': 'followers'})
+        self.project_pigs.write({'privacy_visibility': 'followers'})
 
         # Do: Alfred reads project -> ko (employee ko followers)
         # Test: no project issue visible
-        issue_ids = self.project_issue.search(cr, self.user_projectuser_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_4_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_projectuser.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), set([self.issue_4.id]),
                          'access rights: employee user should not see issues of a not-followed followers project, only assigned')
 
         # Do: Chell reads project -> ko (portal ko employee)
         # Test: no project issue visible
-        issue_ids = self.project_issue.search(cr, self.user_portal_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_5_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_portal.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), set([self.issue_5.id]),
                          'access rights: portal user should not see issues of a not-followed followers project, only assigned')
 
         # Data: subscribe Alfred, Chell and Donovan as follower
-        self.project_project.message_subscribe_users(cr, uid, [pigs_id], [self.user_projectuser_id, self.user_portal_id, self.user_public_id])
-        self.project_issue.message_subscribe_users(cr, self.user_manager_id, [self.issue_1_id, self.issue_3_id], [self.user_portal_id, self.user_projectuser_id])
+        self.project_pigs.message_subscribe_users(user_ids=[self.user_projectuser.id, self.user_portal.id, self.user_public.id])
+        self.issue_1.sudo(self.user_manager.id).message_subscribe_users(user_ids=[self.user_portal.id, self.user_projectuser.id])
+        self.issue_3.sudo(self.user_manager.id).message_subscribe_users(user_ids=[self.user_portal.id, self.user_projectuser.id])
 
         # Do: Alfred reads project -> ok (follower ok followers)
         # Test: followed + assigned issues visible
-        issue_ids = self.project_issue.search(cr, self.user_projectuser_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_1_id, self.issue_3_id, self.issue_4_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_projectuser.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), set([self.issue_1.id, self.issue_3.id, self.issue_4.id]),
                          'access rights: employee user should not see followed + assigned issues of a follower project')
 
         # Do: Chell reads project -> ok (follower ok follower)
         # Test: followed + assigned issues visible
-        issue_ids = self.project_issue.search(cr, self.user_portal_id, [('project_id', '=', pigs_id)])
-        test_issue_ids = set([self.issue_1_id, self.issue_3_id, self.issue_5_id])
-        self.assertEqual(set(issue_ids), test_issue_ids,
+        issues = self.ProjectIssue.sudo(self.user_portal.id).search([('project_id', '=', pigs_id)])
+        self.assertEqual(set(issues.ids), set([self.issue_1.id, self.issue_3.id, self.issue_5.id]),
                          'access rights: employee user should not see followed + assigned issues of a follower project')

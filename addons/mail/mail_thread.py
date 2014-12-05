@@ -1574,7 +1574,7 @@ class mail_thread(osv.AbstractModel):
                 isinstance(thread_id, (int, long)) or \
                 (isinstance(thread_id, (list, tuple)) and len(thread_id) == 1), \
                 "Invalid thread_id; should be 0, False, an ID or a list with one ID"
-        if isinstance(thread_id, (list, tuple)):
+        if thread_id and isinstance(thread_id, (list, tuple)):
             thread_id = thread_id[0]
 
         # if we're processing a message directly coming from the gateway, the destination model was
