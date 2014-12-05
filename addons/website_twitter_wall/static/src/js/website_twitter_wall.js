@@ -10,6 +10,7 @@ $(document).ready(function() {
     }
 });
 
+openerp.qweb.add_template('/website_twitter_wall/static/src/xml/website_twitter_wall.xml');
 openerp.website.tweet_wall = openerp.Class.extend({
     template : 'twitter_tweets',
     init : function($el, wall_id, interval_time) {

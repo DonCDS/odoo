@@ -17,35 +17,35 @@ TWITTER_API_KEY = 'mQP4B4GIFo0bjGW4VB1wMxNJ3'
 TWITTER_API_SECRET = 'XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf'
 
 class AuthToken(object):
-	def __init__(self, key, secret):
-		self.key, self.secret = key, secret
-		self.callback = None
+    def __init__(self, key, secret):
+        self.key, self.secret = key, secret
+        self.callback = None
 
 class Auth(object):
-	def __init__(self, auth_token=None):
-		self.REQUEST_URL = 'https://api.twitter.com/oauth/request_token'
-		self.AUTHORIZE_URL = 'https://api.twitter.com/oauth/authorize'
-		self.ACCESS_URL = 'https://api.twitter.com/oauth/access_token'
-		self.credential_url="https://api.twitter.com/1.1/account/verify_credentials.json"
+    def __init__(self, auth_token=None):
+        self.REQUEST_URL = 'https://api.twitter.com/oauth/request_token'
+        self.AUTHORIZE_URL = 'https://api.twitter.com/oauth/authorize'
+        self.ACCESS_URL = 'https://api.twitter.com/oauth/access_token'
+        self.credential_url="https://api.twitter.com/1.1/account/verify_credentials.json"
 
-		self.auth_token = auth_token
-		self.consumer = OAuthConsumer(TWITTER_API_KEY, TWITTER_API_SECRET)
-		self.auth_request = None
+        self.auth_token = auth_token
+        self.consumer = OAuthConsumer(TWITTER_API_KEY, TWITTER_API_SECRET)
+        self.auth_request = None
 
-	def request(self, url, callback=None, verifier=None, request_token=None):
-		self.auth_request = OAuthRequest.from_consumer_and_token(self.consumer, token=self.auth_token or request_token, callback=callback, verifier=verifier, http_url=url)
-		signature_method = OAuthSignatureMethod_HMAC_SHA1()
-		self.auth_request.sign_request(signature_method, self.consumer, request_token)
-		return self.auth_request
+    def request(self, url, callback=None, verifier=None, request_token=None):
+        self.auth_request = OAuthRequest.from_consumer_and_token(self.consumer, token=self.auth_token or request_token, callback=callback, verifier=verifier, http_url=url)
+        signature_method = OAuthSignatureMethod_HMAC_SHA1()
+        self.auth_request.sign_request(signature_method, self.consumer, request_token)
+        return self.auth_request
 
-	def get_authorise_user_id(self):
-		auth_req = self.request(self.credential_url, request_token=self.auth_token)
-		req = Request(self.credential_url + '?' + auth_req.to_postdata())
-		response = urlopen(req).read()
-		return json.loads(response)['id_str']
+    def get_authorise_user_id(self):
+        auth_req = self.request(self.credential_url, request_token=self.auth_token)
+        req = Request(self.credential_url + '?' + auth_req.to_postdata())
+        response = urlopen(req).read()
+        return json.loads(response)['id_str']
 
 class Stream(object):
-    
+
     host = 'stream.twitter.com'
 
     def __init__(self, auth, listener, **options):
@@ -132,10 +132,10 @@ class Stream(object):
             conn.close()
 
         if exception:
-			print '------exception',exception
+            print '------exception',exception
             # call a handler first so that the exception can be logged.
-			self.listener.on_exception(exception)
-			raise
+            self.listener.on_exception(exception)
+            raise
 
     def _data(self, data):
         if self.listener.on_data(data) is False:
