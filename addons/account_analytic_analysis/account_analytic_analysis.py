@@ -533,6 +533,7 @@ class account_analytic_account(osv.osv):
             ], 'Recurrency', help="Invoice automatically repeat at specified interval"),
         'recurring_interval': fields.integer('Repeat Every', help="Repeat every (Days/Week/Month/Year)"),
         'recurring_next_date': fields.date('Date of Next Invoice'),
+        'toinvoice_total_related': fields.related('toinvoice_total', type="float", string="To Invoice"), #Here use of related field because display To Invoice in oe_stat button and also invoice section.
     }
 
     _defaults = {
