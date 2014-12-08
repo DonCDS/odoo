@@ -80,8 +80,8 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" data-action="save" class="btn btn-primary">Create Draft </button>
-                        <button type="button" id="save" class="btn btn-primary">Create and Publish</button>
+                        <button type="button" class="btn btn-primary save draft">Create Draft </button>
+                        <button type="button" class="btn btn-primary save">Create and Publish</button>
                         or
                         <a data-action="discard" data-dismiss="modal" href="#" >Discard</a>
                     </div>

@@ -14,7 +14,5 @@ You can create and display as multiple walls for your concurrent sessions, manag
         'views/twitter_wall.xml',
         'security/ir.model.access.csv',
      ],
-    'demo': [],
-    'qweb': [],
     'installable': True,
 }

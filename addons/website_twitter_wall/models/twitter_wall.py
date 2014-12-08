@@ -1,83 +1,48 @@
 import io
 import json
-import urllib
 import thread
-import urllib2
+from urllib2 import urlopen, Request
 import datetime
 import cStringIO
 from PIL import *
-
-import openerp
 from openerp import api, fields, models
-from openerp.osv import osv
 from twitter_stream import WallListener, Stream
 from openerp.addons.website_twitter_wall.controllers.oauth import oauth
-#from openerp.addons.website_twitter_wall.models.auth import Auth, AuthToken, WallListener, Stream
 
-stream_pool = {
-    
-}
+stream_pool = {}
 
-class TwitterWall(osv.osv):
+class TwitterWall(models.Model):
     _name = "website.twitter.wall"
 
-    name = fields.Char(string='Wall Name')
-    description = fields.Text(string='Description')
-    tweet_ids = fields.One2many('website.twitter.wall.tweet', 'wall_id', string='Tweets')
-    website_id = fields.Many2one('website', string='Website')
-    re_tweet = fields.Boolean(string='Include Re-Tweet ?')
+    name = fields.Char(string = 'Wall Name')
+    description = fields.Text(string = 'Description')
+    tweet_ids = fields.One2many('website.twitter.wall.tweet', 'wall_id', string = 'Tweets')
+    website_id = fields.Many2one('website', string = 'Website')
+    re_tweet = fields.Boolean(string = 'Include Re-Tweet ?')
     number_view = fields.Integer('# of Views')
-    state = fields.Selection([('not_streaming', 'Draft'), ('streaming', 'In Progress'), ('story', 'Story')],string="State")
-    website_published = fields.Boolean(string='Visible in Website')
-    user_id = fields.Many2one('res.users',string='Created User',default=1)
-    twitter_access_token = fields.Char(string='Twitter Access Token key', help="Twitter Access Token Key")
-    twitter_access_token_secret = fields.Char(string='Twitter Access Token secret', help="Twitter Access Token Secret")
-    image = fields.Binary(string='Image')
-    image_thumb = fields.Binary(string='Thumbnail')
-    
+    state = fields.Selection([('not_streaming', 'Draft'), ('streaming', 'In Progress'), ('story', 'Story')], string = "State")
+    website_published = fields.Boolean(string = 'Visible in Website')
+    user_id = fields.Many2one('res.users', string = 'Created User', default = 1)
+    twitter_access_token = fields.Char(string = 'Twitter Access Token key', help = "Twitter Access Token Key")
+    twitter_access_token_secret = fields.Char(string = 'Twitter Access Token secret', help = "Twitter Access Token Secret")
+    image = fields.Binary(string = 'Image')
+    image_thumb = fields.Binary(string = 'Thumbnail')
+
     def get_api_keys(self):
         twitter_api_key = 'mQP4B4GIFo0bjGW4VB1wMxNJ3'
         twitter_api_secret = 'XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf'
         return twitter_api_key, twitter_api_secret
 
-    '''
     @api.multi
     def start_incoming_tweets(self):
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
-        
+
         def func(stream, user_ids):
-            return stream.filter(follow=user_ids)
+            return stream.filter(follow = user_ids)
 
         if stream_pool.get(self.id):
             return True
-        
-        if self.twitter_access_token and self.twitter_access_token_secret:
-            auth_token = AuthToken(self.twitter_access_token, self.twitter_access_token_secret)
-            auth = Auth(auth_token)
 
-            listner = WallListener(base_url, self)
-
-            stream = stream_pool.get(self.id, False)
-            if not stream:
-                stream = Stream(auth, listner)
-            stream_pool[self.id] = stream
-
-            user_ids = auth.get_authorise_user_id()
-            thread.start_new_thread(func, (stream, [user_ids], ))
-
-        self.write({'state': 'streaming'})
-        return True
-    '''
-    @api.multi
-    def start_incoming_tweets(self):
-        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
-        
-        def func(stream, user_ids):
-            return stream.filter(follow=user_ids)
-
-        if stream_pool.get(self.id):
-            return True
-        
         if self.twitter_access_token and self.twitter_access_token_secret:
             twitter_api_key, twitter_api_secret = self.get_api_keys()
             auth = oauth(twitter_api_key, twitter_api_secret)
@@ -95,7 +60,7 @@ class TwitterWall(osv.osv):
 
         self.write({'state': 'streaming'})
         return True
-    
+
     #TODO: to check, may be useful to place this image in to website module
     @api.model
     def crop_image(self, data, type='top', ratio=False, thumbnail_ratio=None, image_format="PNG"):
@@ -110,7 +75,7 @@ class TwitterWall(osv.osv):
                 e.g. thumbnail_ratio=2 will reduce your 500x500 image converted in to 250x250
             :param image_format: return image format PNG,JPEG etc
         """
-        
+
         image = Image.open(cStringIO.StringIO(data.decode('base64')))
         output = io.BytesIO()
         w, h = image.size
@@ -146,7 +111,7 @@ class TwitterWall(osv.osv):
     @api.multi
     def create(self, values):
         if values.get('image'):
-            image_thumb = self.crop_image(values['image'], thumbnail_ratio=4)
+            image_thumb = self.crop_image(values['image'], thumbnail_ratio = 4)
             image = self.crop_image(values['image'])
             values.update({
                 'image_thumb': image_thumb,
@@ -154,7 +119,7 @@ class TwitterWall(osv.osv):
             })
         wall_id = super(TwitterWall, self).create(values)
         return wall_id
-    
+
     @api.model
     def get_thumb_image(self):
         return "/website/image/website.twitter.wall/%s/image_thumb" % self.id
@@ -172,33 +137,28 @@ class TwitterWall(osv.osv):
 
     @api.multi
     def create_tweets(self, vals):
-        Tweet = self.env['website.twitter.wall.tweet']
-        tweet_val = Tweet._process_tweet(self.id, vals)
-        tweet_id = Tweet.create(tweet_val)
+        tweet_obj = self.env['website.twitter.wall.tweet']
+        tweet_val = tweet_obj._process_tweet(self.id, vals)
+        tweet_id = tweet_obj.create(tweet_val)
         return tweet_id
 
-class WebsiteTwitterTweet(osv.osv):
+class WebsiteTwitterTweet(models.Model):
     _name = "website.twitter.wall.tweet"
 
-    wall_id = fields.Many2one('website.twitter.wall',string='Wall')
-    html_description = fields.Html(string='Tweet')
-    tweet_id = fields.Char(string='Tweet Id', size=256)
-    tweet_json = fields.Text(string='Tweet Json Data')
-    published_date = fields.Datetime(string='Publish on')
+    wall_id = fields.Many2one('website.twitter.wall', string = 'Wall')
+    html_description = fields.Html(string = 'Tweet')
+    tweet_id = fields.Char(string = 'Tweet Id', size = 256)
+    tweet_json = fields.Text(string = 'Tweet Json Data')
+    published_date = fields.Datetime(string = 'Publish on')
 
     _sql_constraints = [
-        ('tweet_uniq', 'unique (wall_id, tweet_id)', 'Duplicate tweet in wall is not allowed !')
+        ('tweet_uniq', 'unique(wall_id, tweet_id)', 'Duplicate tweet in wall is not allowed !')
     ]
 
     @api.model
     def _process_tweet(self, wall_id, tweet):        
         card_url = "https://api.twitter.com/1/statuses/oembed.json?id=%s&omit_script=true" % (tweet.get('id'))
-        req = urllib2.Request(card_url, None, {'Content-Type': 'application/json'})
-        response = urllib2.urlopen(req)
-        data = response.read()
-        cardtweet = json.loads(data)
-
-
+        cardtweet = json.loads(urlopen(Request(card_url, None, {'Content-Type': 'application/json'})).read())
         vals = {
             'html_description': cardtweet.get('html', False),
             'tweet_json': json.dumps(tweet),

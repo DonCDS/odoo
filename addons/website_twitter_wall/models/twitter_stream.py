@@ -1,28 +1,17 @@
 import ssl
 import json
-import hmac
-import thread
-
 import httplib
-
 from time import sleep
 from socket import timeout
 from threading import Thread
-
-import openerp
-import openerp.modules.registry
-from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp.addons.website_twitter_wall.controllers.oauth import oauth
-from openerp import api
-from urllib2 import urlopen, Request, HTTPError, quote
-
+from urllib2 import urlopen, Request, quote
 import logging
+
 _logger = logging.getLogger(__name__)
 
 STREAM_VERSION = '1.1'
-
-stream_obj={}
 
 class StreamListener(object):
 
@@ -86,7 +75,7 @@ class StreamListener(object):
         return
 
 class Stream(object):
-    
+
     host = 'stream.twitter.com'
 
     def __init__(self, auth, listener, **options):
@@ -246,7 +235,7 @@ class Stream(object):
         self.running = False
 
 class WallListener(StreamListener):
-    
+
     def __init__(self, base_url, wall):
         super(WallListener, self).__init__()
         self.wall = wall
@@ -265,7 +254,7 @@ class WallListener(StreamListener):
         req = Request(url, json.dumps(params), {'Content-Type': 'application/json'})
         response = urlopen(req)
         return True
-    
+
     def on_status(self, status):
         return 
 
@@ -278,4 +267,3 @@ class WallListener(StreamListener):
 
     def on_disconnect(self, notice):
         return False
-    

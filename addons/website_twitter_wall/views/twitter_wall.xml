@@ -36,10 +36,10 @@
                                 <div t-esc="wall.name" class="h3 mt0" style="text-overflow: ellipsis;overflow: hidden;"/>
                             </div>
                             <div class="btn-group pull-right">
-                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.twitter_access_token">
+                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.twitter_access_token" title="Storify">
                                    <i class="fa fa-arrows-alt"></i>
                                 </a>
-                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.state == 'streaming'">
+                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.state == 'streaming'" title="Archieve">
                                    <i class="fa fa-archive"></i>
                                 </a>
                             </div>
@@ -75,7 +75,7 @@
         
         <template id="website_twitter_wall.twitter_walls" name="Twitter Walls">
             <t t-set="head">
-                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.js"></script>
+                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.js" />
             </t>
             <t t-call="website.layout">
                 <div class="wrap">
@@ -95,8 +95,8 @@
 
         <template id="website_twitter_wall.twitter_wall_archieve" name="Archieved Wall">
             <t t-set="head">
-                <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall_arhived.js"></script>
+                <script src="//platform.twitter.com/widgets.js" charset="utf-8" />
+                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall_archived.js" />
             </t>
             <t t-call="website.layout">
                 <div t-attf-style="background-image: url(/website/image/website.twitter.wall/#{wall.id}/image);background-repeat: no-repeat;background-size: 100% auto;">
@@ -118,7 +118,7 @@
                                     <p class="navbar-text mb0"><timeago class="timeago" t-att-title="wall.create_date"></timeago></p>
                                 </li>
                                 <li>
-                                    <p class="navbar-text mb0"><t t-esc="wall.number_view"/> total views</p>
+                                    <p class="navbar-text mb0"><t t-esc="wall.number_view"/> Total views</p>
                                 </li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
@@ -134,7 +134,7 @@
                         <center>
                             <ul class="timeline">
                                 <t t-foreach="tweets" t-as="tweet">
-                                    <li style="display:none;" t-attf-class="#{tweet_index % 2 and 'timeline-inverted'} tw">
+                                    <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'} tw">
                                         <div class="timeline-badge primary">
                                             <a>
                                                 <i class="glyphicon glyphicon-record" rel="tooltip" t-att-title="tweet.create_date">

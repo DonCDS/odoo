@@ -15,7 +15,7 @@
     website.create_twitter_wall = openerp.Widget.extend({
         template: 'create_twitter_wall',
         events: {
-            'click #save': 'save',
+            'click .save': 'save',
             'change #image_upload':'image_upload',
             'change #image_url':'image_url',
             'change .text-wallname':'text_wallname',
@@ -93,21 +93,17 @@
                 return false;
             }
         },
-        save: function () {
-            console.log("SAve" + wall_name);
+        save: function (e) {
             var self = this;
             if(!image){
-                self.error("");
                 self.error("Upload Image.");
                 return;
             }
             if(wall_name.trim() == ''){
-                self.error("");
                 self.error("Must Enter Wall Name");
                 return;
             }
             if(wall_description.trim() == ''){
-                self.error("");
                 self.error("Enter description");
                 return;
             }
@@ -120,7 +116,8 @@
                 data:{
                     'wall_name':wall_name,
                     'image':image,
-                    'wall_description':wall_description
+                    'wall_description':wall_description,
+                    'publish': !self.$(e.target).hasClass("draft"),
                 },
                 success: function(data) {
                     self.$el.modal('hide');
