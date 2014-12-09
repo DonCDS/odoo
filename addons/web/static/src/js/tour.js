@@ -213,6 +213,16 @@ var Tour = {
         Tour.$element = $element;
         $element.data("tour", state.id);
         $element.data("tour-step", step.id);
+
+        // if element is not on window (screen) then it scroll down to get popup visible
+        if (!$element.is('body')){
+            var element_top = $element.offset().top;
+            var visible = ((element_top > $(window).scrollTop()) && (element_top < ($(window).scrollTop() + $(window).height())));
+            if (!visible) {
+                $("body, html").animate({scrollTop: $element.offset().top - $(window).height() / 2 }, 800);
+            }
+        }
+
         $element.popover({
             selector: "xxx", // to fix 'data-original-title'
             placement: step.placement || "auto",
