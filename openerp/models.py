@@ -48,6 +48,8 @@ import pickle
 import pytz
 import re
 import time
+import unicodedata
+from openerp.tools import ustr
 from collections import defaultdict, MutableMapping
 from inspect import getmembers
 
@@ -4848,6 +4850,28 @@ class BaseModel(object):
                 current_id = result[0] if result else None
                 if current_id == id:
                     return False
+        return True
+    
+    # Inspired by http://stackoverflow.com/questions/517923
+    @api.model
+    def remove_accents(self, input_str):
+        """Suboptimal-but-better-than-nothing way to replace accented
+        latin letters by an ASCII equivalent. Will obviously change the
+        meaning of input_str and work only for some cases"""
+        input_str = ustr(input_str)
+        nkfd_form = unicodedata.normalize('NFKD', input_str)
+        return u''.join([c for c in nkfd_form if not unicodedata.combining(c)])
+
+    # _constraint method making all tag a unique case and accent insensitive
+    @api.multi
+    def _check_unique_accent(self):
+        unaccent = expression.get_unaccent_wrapper(self._cr)
+        for tag in self:
+            query = ("""SELECT id from {table_name} WHERE lower({name}) = lower({tag}) and id != {current_id}""".format(table_name=str(self._model).replace('.','_'), name=unaccent('name'), tag=unaccent('%s'), current_id=tag.id))
+            self._cr.execute(query,[tag.name])
+            tag_ids = self._cr.fetchall()
+            if tag_ids:
+                return False
         return True
 
     def _check_m2m_recursion(self, cr, uid, ids, field_name):

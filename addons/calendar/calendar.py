@@ -662,7 +662,7 @@ class calendar_event_type(osv.Model):
     _columns = {
         'name': fields.char('Name', required=True, translate=True),
     }
-
+    _constraints = [(osv.Model._check_unique_accent, _('Error! Tag name already exist.'), ['name'])]
 
 class calendar_event(osv.Model):
     """ Model for Calendar Event """

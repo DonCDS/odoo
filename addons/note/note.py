@@ -22,6 +22,7 @@
 from openerp import SUPERUSER_ID
 from openerp.osv import osv, fields
 from openerp.tools import html2plaintext
+from openerp.tools.translate import _
 
 class note_stage(osv.osv):
     """ Category of Note """
@@ -46,6 +47,7 @@ class note_tag(osv.osv):
     _columns = {
         'name' : fields.char('Tag Name', required=True),
     }
+    _constraints = [(osv.osv._check_unique_accent, _('Error! Tag name already exist.'), ['name'])]
 
 class note_note(osv.osv):
     """ Note """

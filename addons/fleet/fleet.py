@@ -97,6 +97,7 @@ class fleet_vehicle_tag(osv.Model):
     _columns = {
         'name': fields.char('Name', required=True, translate=True),
     }
+    _constraints = [(osv.Model._check_unique_accent, _('Error! Tag name already exist.'), ['name'])]
 
 class fleet_vehicle_state(osv.Model):
     _name = 'fleet.vehicle.state'

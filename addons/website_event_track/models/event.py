@@ -12,7 +12,7 @@ class event_track_tag(models.Model):
 
     name = fields.Char('Tag', translate=True)
     track_ids = fields.Many2many('event.track', string='Tracks')
-
+    _constraints = [(models.Model._check_unique_accent, _('Error! Tag name already exist.'), ['name'])]
 
 class event_track_location(models.Model):
     _name = "event.track.location"

@@ -441,26 +441,6 @@ class test_translation(common.TransactionCase):
         fr_context_cat = self.res_category.browse(cr, uid, self.cat_id, context={'lang':'fr_FR'})
         self.assertEqual(fr_context_cat.name, 'Clients', "Translation not found")
 
-    def test_102_duplicate_record(self):
-        cr, uid = self.cr, self.uid
-        self.new_cat_id = self.res_category.copy(cr, uid, self.cat_id, context={'lang':'fr_FR'})
-
-        no_context_cat = self.res_category.browse(cr, uid, self.new_cat_id)
-        self.assertEqual(no_context_cat.name, 'Customers', "Duplication did not set untranslated value")
-
-        fr_context_cat = self.res_category.browse(cr, uid, self.new_cat_id, context={'lang':'fr_FR'})
-        self.assertEqual(fr_context_cat.name, 'Clients', "Did not found translation for initial value")
-
-    def test_103_duplicate_record_fr(self):
-        cr, uid = self.cr, self.uid
-        self.new_fr_cat_id = self.res_category.copy(cr, uid, self.cat_id, default={'name': 'Clients (copie)'}, context={'lang':'fr_FR'})
-
-        no_context_cat = self.res_category.browse(cr, uid, self.new_fr_cat_id)
-        self.assertEqual(no_context_cat.name, 'Customers', "Duplication erased original untranslated value")
-
-        fr_context_cat = self.res_category.browse(cr, uid, self.new_fr_cat_id, context={'lang':'fr_FR'})
-        self.assertEqual(fr_context_cat.name, 'Clients (copie)', "Did not used default value for translated value")
-
 test_state = None
 #: Stores state information across multiple test classes
 def setUpModule():

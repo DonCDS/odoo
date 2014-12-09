@@ -59,7 +59,7 @@ class BlogTag(osv.Model):
             'blog.post', string='Posts',
         ),
     }
-
+    _constraints = [(osv.Model._check_unique_accent, _('Error! Tag name already exist.'), ['name'])]
 
 class BlogPost(osv.Model):
     _name = "blog.post"

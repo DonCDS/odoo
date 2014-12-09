@@ -135,7 +135,8 @@ class res_partner_category(osv.Model):
         'partner_ids': fields.many2many('res.partner', id1='category_id', id2='partner_id', string='Partners'),
     }
     _constraints = [
-        (osv.osv._check_recursion, 'Error ! You can not create recursive categories.', ['parent_id'])
+        (osv.osv._check_recursion, 'Error ! You can not create recursive categories.', ['parent_id']),
+        (osv.Model._check_unique_accent, _('Error! Tag name already exist.'), ['name']),
     ]
     _defaults = {
         'active': 1,

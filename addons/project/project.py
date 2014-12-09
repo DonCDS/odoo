@@ -1430,3 +1430,4 @@ class project_category(osv.osv):
     _columns = {
         'name': fields.char('Name', required=True, translate=True),
     }
+    _constraints = [(osv.osv._check_unique_accent, _('Error! Tag name already exist.'), ['name'])]

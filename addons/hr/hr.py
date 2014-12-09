@@ -69,7 +69,8 @@ class hr_employee_category(osv.Model):
         return True
 
     _constraints = [
-        (_check_recursion, 'Error! You cannot create recursive Categories.', ['parent_id'])
+        (_check_recursion, 'Error! You cannot create recursive Categories.', ['parent_id']),
+        (osv.Model._check_unique_accent, _('Error! Tag name already exist.'), ['name'])
     ]
 
 class hr_job(osv.Model):
