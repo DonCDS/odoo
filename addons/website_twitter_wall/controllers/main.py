@@ -11,7 +11,7 @@ class website_twitter_wall(http.Controller):
     _tweet_per_page = 10
 
     @http.route('/create_twitter_wall', type='http', auth='user', website=True)
-    def create_twitter_wall(self, image=None, wall_name=None, screen_name=None, include_retweet=False, wall_description=None, publish=False, **kw):
+    def create_twitter_wall(self, image=None, wall_name=None, screen_name=None, wall_description=None, publish=False, **kw):
         values = {
             'name': wall_name,
             'description': wall_description,

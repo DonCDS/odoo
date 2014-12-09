@@ -8,16 +8,15 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         <h3 class="modal-title">Twitter Wall</h3>
                     </div>
-                    <div class="wall-creating text-center" style="display:none"><h4><i class='fa fa-spinner fa-spin'></i> Creating new Wall...  </h4></div>
-                    
+                    <div class="wall-creating text-center no_display"><h4><i class='fa fa-spinner fa-spin'></i> Creating new wall...  </h4></div>
                     <div class="modal-body">
-                        <div class="error_msg"/>
+                        <div class="error_msg" />
                         <form class="clearfix form-horizontal">
                             <div class="form-group">
                                 <div class="control-group">
                                     <div class="controls col-sm-4 input-group-sm slide-pr0 show_image">
-                                        <span class="oe-image-thumbnail slide-img-border" style="max-height: 168px;">
-                                            <img src="/website_twitter_wall/static/src/img/document.png" id="image" class="img-responsive" title="Preview" />
+                                        <span class="oe-image-thumbnail slide-img-border">
+                                            <img src="/website_twitter_wall/static/src/img/document.png" class="img-responsive image" title="Preview" />
                                         </span>
                                     </div>
                                     <div class="controls col-sm-8 input-group-sm">
@@ -28,59 +27,45 @@
                                                         Upload Image File
                                                     </label>
                                                 </h5>
-                                                <input type="file" name="file" id="image_upload" accept="image/*" />
+                                                <input type="file" class="image_upload" accept="image/*" />
                                             </li>
                                             <li class="list-group-item">
                                                 <h5 class="list-group-item-heading">
                                                     <label for="image-url" class="control-label">
-                                                        Image Url
+                                                        Image URL
                                                     </label>
-                                                </h5>                                   
-                                                <input type="text" id="image_url" name="url" class="form-control h5 image-url" placeholder="http://openerp.com/logo.png"/>
-                                                <p class="url-error" style="display:none">Wrong input. Please enter valid image URL</p>
+                                                </h5>
+                                                <input type="text" name="url" class="form-control h5 image_url" placeholder="http://odoo.com/logo.png" />
+                                                <p class="url-error no_display">Wrong input. please enter valid image URL</p>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <div class="control-group">
                                     <label for="wall_name" class="pr0 control-label col-sm-2">
                                         Name:
                                     </label>
                                     <div class="col-sm-10">
-                                        <input type="text" id="wall_name" name="wall_name" class="form-control text-wallname" placeholder="Wall Name" required="required" />
+                                        <input type="text" class="form-control text-wallname" placeholder="Wall Name" required="required" />
                                     </div>
                                 </div>
                             </div>
-
-                            <!--<div class="form-group">
-                                <div class="control-group">
-                                    <label for="include_retweet" class="pr0 control-label col-sm-3">
-                                        Re-Tweet?
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <input type="checkbox" id="include_retweet" name="include_retweet" class="form-control" />
-                                        <span class="text-muted">Tick mark if you Don't want to stream ReTweet.</span>
-                                    </div>
-                                </div>
-                            </div>-->
-
                             <div class="form-group">
                                 <div class="control-group">
-                                    <label for="wall_description" name="slide-description" class="pr0 control-label col-sm-2">
+                                    <label for="wall_description" class="pr0 control-label col-sm-2">
                                         Description:
                                     </label>
                                     <div class="controls col-sm-10">
-                                        <textarea id="wall_description" rows="4" placeholder="Description" class="form-control text-description"  maxlength="3000"></textarea>
+                                        <textarea rows="4" placeholder="Description" class="form-control text-description" maxlength="3000" />
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary save draft">Create Draft </button>
+                        <button type="button" class="btn btn-primary save draft">Create Draft</button>
                         <button type="button" class="btn btn-primary save">Create and Publish</button>
                         or
                         <a data-action="discard" data-dismiss="modal" href="#" >Discard</a>

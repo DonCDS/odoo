@@ -3,9 +3,9 @@
 
     <t t-name="twitter_tweets" name="res">
         <div class="col-sm-12">
-            <div class="live-tweet" style="display:none;"><t t-raw="res.html_description"/></div>
+            <div class="live-tweet no_display"><t t-raw="res.html_description"/></div>
         </div>
-        <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <script src="//platform.twitter.com/widgets.js" charset="utf-8" />
     </t>
 
 </template>

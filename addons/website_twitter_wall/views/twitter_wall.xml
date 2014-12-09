@@ -4,10 +4,10 @@
 
         <template id="assets_editor" inherit_id="website.assets_editor" name="Twitter wall Editor">
             <xpath expr="." position="inside">
-                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.editor.js"></script>
+                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.editor.js" />
             </xpath>
         </template>
-        
+
         <template id="twitter_wall_footer_custom" inherit_id="website.footer_default" name="Footer Twitter Wall Link">
             <xpath expr="//div[@id='info']/ul" position="inside">
                 <li><a href="/twitter_walls">Twitter Wall</a></li>
@@ -15,11 +15,11 @@
         </template>
 
         <template id="assets_frontend" inherit_id="website.assets_frontend" name="Slide">
-          <xpath expr="." position="inside">
-                <link type="text/less" href="/website_twitter_wall/static/src/less/website_twitter_wall.less" rel="stylesheet" t-ignore="true"/>
+            <xpath expr="." position="inside">
                 <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.js" />
-                <link type="text/stylesheet" rel="stylesheet" href="/website_twitter_wall/static/src/css/website_twitter_wall.css"></link>
-          </xpath>
+                <link type="text/less" href="/website_twitter_wall/static/src/less/website_twitter_wall.less" rel="stylesheet" t-ignore="true" />
+                <link type="text/stylesheet" rel="stylesheet" href="/website_twitter_wall/static/src/css/website_twitter_wall.css" />
+            </xpath>
         </template>
 
         <template id="website_twitter_wall.twitter_thumb_wall" name="Twitter Wall">
@@ -39,7 +39,7 @@
                                 <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.twitter_access_token" title="Storify">
                                    <i class="fa fa-arrows-alt"></i>
                                 </a>
-                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.state == 'streaming'" title="Archieve">
+                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.state == 'streaming'" title="Archive">
                                    <i class="fa fa-archive"></i>
                                 </a>
                             </div>
@@ -65,6 +65,7 @@
                                 <t t-call="website.publish_management">
                                     <t t-set="object" t-value="wall"/>
                                     <t t-set="publish_edit" t-value="True"/>
+                                    <li><a t-attf-href="/twitter_wall/#{wall.id}/delete">Delete</a></li>
                                 </t>
                             </div>
                         </div>
@@ -74,20 +75,12 @@
         </template>
         
         <template id="website_twitter_wall.twitter_walls" name="Twitter Walls">
-            <t t-set="head">
-                <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.js" />
-            </t>
             <t t-call="website.layout">
-                <div class="wrap">
-                    <div class="container">
-                        <div class="row">
-                            <t t-if="message">
-                                <div class="alert alert-success" role="alert"><t t-esc="message"/></div>
-                            </t>
-                            <t t-foreach="walls" t-as="wall">
-                                <t t-call="website_twitter_wall.twitter_thumb_wall"/>
-                            </t>
-                        </div>
+                <div class="container">
+                    <div class="row">
+                        <t t-foreach="walls" t-as="wall">
+                            <t t-call="website_twitter_wall.twitter_thumb_wall"/>
+                        </t>
                     </div>
                 </div>
             </t>
@@ -109,7 +102,6 @@
                         </div>
                     </div>
                 </div>
-
                 <nav class="navbar navbar-default" role="navigation">
                     <div class="container">
                         <div class="container-fluid">
@@ -137,9 +129,7 @@
                                     <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'} tw">
                                         <div class="timeline-badge primary">
                                             <a>
-                                                <i class="glyphicon glyphicon-record" rel="tooltip" t-att-title="tweet.create_date">
-                                                    
-                                                </i>
+                                                <i class="glyphicon glyphicon-record" rel="tooltip" t-att-title="tweet.create_date"></i>
                                             </a>
                                         </div>
                                         <div class="timeline-panel">
@@ -152,7 +142,6 @@
                             </ul>
                         </center>
                     </div>
-
                     <div class="row text-center">
                         <t t-call="website.pager"/>
                     </div>
@@ -164,18 +153,13 @@
         <template id="twitter_wall" name="Twitter Wall Tweet">
             <t t-call="website.layout">
                 <t t-set="head">
-                    <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-                    <link rel="stylesheet"
-                        href="/website_twitter_wall/static/src/css/website_twitter_wall.css"
-                        type="text/css" />
+                    <script src="//platform.twitter.com/widgets.js" charset="utf-8" />
                 </t>
                 <div class="full_screen" name="tweets_for_client" t-attf-style="background-image: url('data:image/jpg;base64, #{back_image}')">
                     <div class="container" t-att-wall_id="wall_id">
                         <div class="row">
                             <center>
-                                <div class="col-sm-12" id="tweet_wall_div">
-                                    
-                                </div>
+                                <div class="col-sm-12" id="tweet_wall_div" />
                             </center>
                         </div>
                     </div>
@@ -205,6 +189,5 @@
             </xpath>
         </template>
 
-    
     </data>
 </openerp>
