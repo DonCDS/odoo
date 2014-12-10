@@ -1,6 +1,27 @@
 .no_display {
   display: none;
 }
+.full_width {
+  width: 100%;
+}
+.full_padding {
+  padding: 10px;
+}
+.text_ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.full_font {
+  font-size: 100%;
+}
+.wall-arch-subtitle {
+  line-height: 2em;
+  font-size: 120%;
+}
+.cover {
+  height: 500px;
+  background-color: rgba(47,52,64,0.3);
+}
 .timeline {
   list-style: none;
   padding: 20px 0 20px;

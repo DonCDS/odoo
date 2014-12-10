@@ -27,13 +27,13 @@
                 <div t-attf-class="wall-dislay-box mt16 mb16">
                     <span class="wall-image-box">
                         <a t-attf-href="/twitter_wall/#{wall.id}">
-                            <img t-att-src="wall.get_image()" class="img-responsive" style="width: 100%;"/>
+                            <img t-att-src="wall.get_image()" class="img-responsive full_width" />
                         </a>
                     </span>
-                    <div style="padding: 10px;">
+                    <div class="full_padding">
                         <div class="mb8 mt0">
                             <div class="wall-title-text-truncation pull-left">
-                                <div t-esc="wall.name" class="h3 mt0" style="text-overflow: ellipsis;overflow: hidden;"/>
+                                <div t-esc="wall.name" class="h3 mt0 text_ellipsis" />
                             </div>
                             <div class="btn-group pull-right">
                                 <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.twitter_access_token" title="Storify">
@@ -45,8 +45,8 @@
                             </div>
                         </div>
                         <t t-if="wall.description">
-                            <div class="wall-title-text-truncation " style="width: 100%;">
-                                <p t-field="wall.description" class="mb16" style="text-overflow: ellipsis;overflow: hidden;"/>
+                            <div class="wall-title-text-truncation full_width">
+                                <p t-field="wall.description" class="mb16 text_ellipsis" />
                             </div>
                         </t>
                         <div class="mb8">
@@ -55,10 +55,10 @@
                             </div>
                             <div class="pull-left">
                                 <t t-if="wall.state == 'streaming'">
-                                    <span class="label label-success" style="font-size:100%">Live Event</span>
+                                    <span class="label label-success full_font">Live Event</span>
                                 </t>
                                 <t t-if="wall.state == 'story'">
-                                    <span class="label label-info" style="font-size:100%">Storify</span>
+                                    <span class="label label-info full_font">Storify</span>
                                 </t>
                             </div>
                             <div class="pull-right">
@@ -93,10 +93,10 @@
             </t>
             <t t-call="website.layout">
                 <div t-attf-style="background-image: url(/website/image/website.twitter.wall/#{wall.id}/image);background-repeat: no-repeat;background-size: 100% auto;">
-                    <div style="height: 500px; background-color: rgba(47,52,64,0.3);">
+                    <div class="cover">
                         <div class="container">
                             <h1 class="mt32 wall-arch-title"><t t-esc="wall.name"/></h1>
-                            <p class="mt32 wall-arch-subtitle" style="line-height: 2em;font-size: 120%;">
+                            <p class="mt32 wall-arch-subtitle">
                                 <t t-esc="wall.description"/>
                             </p>
                         </div>
@@ -129,7 +129,7 @@
                                     <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'} tw">
                                         <div class="timeline-badge primary">
                                             <a>
-                                                <i class="glyphicon glyphicon-record" rel="tooltip" t-att-title="tweet.create_date"></i>
+                                                <i class="fa fa-dot-circle-o" rel="tooltip" t-att-title="tweet.create_date"></i>
                                             </a>
                                         </div>
                                         <div class="timeline-panel">
