@@ -130,8 +130,8 @@ class TwitterWall(models.Model):
 
     @api.multi
     def stop_incoming_tweets(self):
-        for wall in self:
-            stream_pool.get(wall).disconnect()
+        if stream_pool.get(self.id):
+            stream_pool.get(self.id).disconnect()
         self.write({'state': 'not_streaming'})
         return True
 

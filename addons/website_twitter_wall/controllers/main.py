@@ -72,6 +72,7 @@ class website_twitter_wall(http.Controller):
     def twitter_wall_archieve(self, wall, page=1):
         tweet_obj = request.env['website.twitter.wall.tweet']
         if wall.state != 'story':
+            wall.stop_incoming_tweets()
             wall.write({'state': 'story'})
         domain = [('wall_id', '=', wall.id)]
         pager = request.website.pager(url = "/twitter_wall/story/%s" % (wall.id), total = tweet_obj.search_count(domain), page = page,
