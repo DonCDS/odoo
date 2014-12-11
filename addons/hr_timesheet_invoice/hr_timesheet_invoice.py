@@ -175,13 +175,15 @@ class account_analytic_line(osv.osv):
         currency_id = False
         # prepare for iteration on journal and accounts
         for line in self.pool.get('account.analytic.line').browse(cr, uid, ids, context=context):
+            # check if currency is the same in different accounts when grouping by partner
             if not currency_id :
                 if line.account_id.pricelist_id and line.account_id.pricelist_id.currency_id:
                     currency_id = line.account_id.pricelist_id.currency_id.id
             if line.account_id.pricelist_id and line.account_id.pricelist_id.currency_id:
                 if line.account_id.pricelist_id.currency_id.id <> currency_id and data['group_by_partner']:
                     raise osv.except_osv(_('Error!'),
-                        _('You cannot group invoice having different currencies on different analytic accounts for the same partner.'))
+                        _('You cannot group invoices having different currencies on different analytic accounts for the same partner.'))
+            
             if line.journal_id.type not in journal_types:
                 journal_types[line.journal_id.type] = set()
             if line.account_id.partner_id.id not in partners:
