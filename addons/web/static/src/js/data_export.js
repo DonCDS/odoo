@@ -70,7 +70,7 @@ instance.web.DataExport = instance.web.Widget.extend({
         this.$el.find("#import_compat").on('change',function(){
             if($(this).is(":checked")){
                 self.$el.find('#field-tree-structure').remove();
-                var import_comp = self.$el.find("#import_compat").val();
+                var import_comp = self.$el.find("#import_compat").prop("checked");
                 self.rpc("/web/export/get_fields", {
                     model: self.action.params.model,
                     import_compat: !!import_comp,
@@ -223,7 +223,7 @@ instance.web.DataExport = instance.web.Widget.extend({
         }
 
         if (!record.loaded) {
-            var import_comp = self.$el.find("#import_compat").val();
+            var import_comp = self.$el.find("#import_compat").prop("checked");
             self.rpc("/web/export/get_fields", {
                 model: model,
                 prefix: prefix,
@@ -439,7 +439,7 @@ instance.web.DataExport = instance.web.Widget.extend({
                 ids: this.ids_to_export,
                 domain: this.domain,
                 context: this.action.context,
-                import_compat: !!this.$el.find("#import_compat").val(),
+                import_compat: !!this.$el.find("#import_compat").prop("checked"),
             })},
             complete: instance.web.unblockUI,
             error: c.rpc_error.bind(c),
