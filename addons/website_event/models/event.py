@@ -89,3 +89,11 @@ class event(models.Model):
         if event.address_id:
             return self.browse(cr, SUPERUSER_ID, ids[0], context=context).address_id.google_map_link()
         return None
+
+    def open_event_badge_designer(self, cr, uid, event_id, context=None):
+        event = self.browse(cr, uid, event_id[0], context=context)
+        return {
+            'type': 'ir.actions.act_url',
+            'target': 'self',
+            'url': '/event/registration_badge_designer/%s' % (event.id),
+        }
