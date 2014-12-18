@@ -252,6 +252,21 @@ instance.web.CrashManager = instance.web.Class.extend({
         if (!this.active) {
             return;
         }
+        if (error.code == -32098) {
+            $.blockUI({ message: '' , overlayCSS: {'z-index': 9999, backgroundColor: '#FFFFFF', opacity: 0.0, cursor: 'wait'}});
+            $('<div class="oe_indicator">' + _t("Trying to connect...") + '<i class="fa fa-refresh fa-spin"></i></div>').prependTo("body");
+            var timeinterval = setInterval(function(){
+                openerp.jsonRpc('/web/webclient/version_info').then(function() {
+                    clearInterval(timeinterval);
+                    $('.oe_indicator').html(_t("You are back online"));
+                    $('.oe_indicator').delay(2000).fadeOut('slow',function(){
+                        $('.oe_indicator').remove();
+                    });
+                    $.unblockUI();
+                });
+            }, 2000);
+            return;
+        }
         var handler = instance.web.crash_manager_registry.get_object(error.data.name, true);
         if (handler) {
             new (handler)(this, error).display();
