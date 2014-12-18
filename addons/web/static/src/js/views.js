@@ -625,6 +625,9 @@ instance.web.ViewManager =  instance.web.Widget.extend({
                 self.$('.oe-vm-switch-' + view.type).tooltip();
             }
         });
+        if (this.flags.views_switcher === false) {
+            this.$el.find('.oe-view-manager-switch').hide();
+        }
         this.$('.oe_debug_view').click(this.on_debug_changed);
         this.$el.addClass("oe_view_manager_" + ((this.action && this.action.target) || 'current'));
 
