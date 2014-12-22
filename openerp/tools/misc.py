@@ -65,6 +65,9 @@ _logger = logging.getLogger(__name__)
 # We include the *Base ones just in case, currently they seem to be subclasses of the _* ones.
 SKIPPED_ELEMENT_TYPES = (etree._Comment, etree._ProcessingInstruction, etree.CommentBase, etree.PIBase)
 
+# Disable entity resolving by default
+etree.set_default_parser(etree.XMLParser(resolve_entities=False))
+
 def find_in_path(name):
     path = os.environ.get('PATH', os.defpath).split(os.pathsep)
     if config.get('bin_path') and config['bin_path'] != 'None':
