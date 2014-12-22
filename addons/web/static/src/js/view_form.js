@@ -3033,24 +3033,24 @@ instance.web.form.FieldBooleanButton = instance.web.form.AbstractField.extend({
     init: function() {
         this._super.apply(this, arguments);
         this.active_string = this.options['active'] || _t('Active');
-        this.deactive_string = this.options['deactive'] || _t('Deactive');
-        this.confirm_message = this.options['confirm_message'] || _.str.sprintf(_t("Are you sure, you want to %s ?"), this.deactive_string);
+        this.inactive_string = this.options['inactive'] || _t('Inactive');
+        this.confirm_message = this.options['confirm_message'] || _.str.sprintf(_t("Are you sure, you want to %s ?"), this.inactive_string);
     },
     render_value: function() {
         this.$("button:first")
-            .toggleClass("btn-success", !this.get_value())
-            .toggleClass("btn-danger", this.get_value());
-        this.$(".oe_deactivated").toggle(!this.get_value());
-        this.$(".oe_activated").toggle(this.get_value());
+            .toggleClass("btn-success", this.get_value())
+            .toggleClass("btn-danger", !this.get_value());
+        this.$(".oe_deactivated").toggle(this.get_value());
+        this.$(".oe_activated").toggle(!this.get_value());
     },
     start: function() {
         var self = this;
         this._super.apply(this, arguments);
         this.$("button:first").on("click", function () {
-            if ($(this).hasClass("btn-danger")) {
+            if ($(this).hasClass("btn-success")) {
                 self.do_confirm_action();
             }else{
-                self.do_apply_chage(!$(this).hasClass("btn-danger"));
+                self.do_apply_chage($(this).hasClass("btn-danger"));
             }
         });
     },
@@ -6365,7 +6365,6 @@ instance.web.form.StatInfo = instance.web.form.AbstractField.extend({
 
 });
 
-<<<<<<< HEAD
 /**
     This widget is intended to be used on boolean fields. It toggles a button
     switching between a green bullet / gray bullet.
@@ -6395,45 +6394,6 @@ instance.web.form.FieldToggleBoolean = instance.web.form.AbstractField.extend({
     },
     reload_record: function () {
         this.view.reload();
-});
-instance.web.form.ActiveWidgetButton = instance.web.form.AbstractField.extend({
-    template: 'ActiveWidgetButton',
-    start:function(){
-        this._super.apply(this, arguments);
-        var self = this;
-        $(".js_active_deactive")
-            .live("click",function(){
-                if(self.get_value()){
-                    if (!confirm(_t("Do you really want to "+ self.toggle_string + " ?"))) { return false; }
-                }
-                self.set_value($(this).hasClass("btn-danger"));
-                return self.view.recursive_save();
-        });
-        $('ul.dropdown-menu li a.js_publish_btn')
-            .live("click", function () {
-                if(self.get_value()){
-                    if (!confirm(_t("Do you really want to "+ self.toggle_string + " ?"))) { return false; }
-                }
-                self.set_value($(this).hasClass("deactive"));
-                return self.view.recursive_save();
-        });
-    },
-    render_value:function(){
-        this._super();
-        var self = this;
-        this.string = this.get_value() ? this.options['active'] : this.options['deactive'];
-        this.toggle_string = this.get_value() ? this.options['deactive'] : this.options['active'];
-        $(".js_active_deactive")
-            .live("click",function(){
-                $(".js_active_deactive").toggleClass("btn-success", self.get_value());
-                $(".js_active_deactive").toggleClass("btn-danger", !self.get_value());
-            });
-        $('ul.dropdown-menu li a.js_publish_btn')
-            .live("click", function(){
-                $("a.js_publish_btn").toggleClass("active", self.get_value());
-                $("a.js_publish_btn").toggleClass("deactive", !self.get_value());
-            });
-        return this.$el.html(QWeb.render("ActiveWidgetButton", {'widget': this}));
     },
 });
 

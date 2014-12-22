@@ -2029,7 +2029,7 @@
     <div class="oe_boolean_button">
         <button class="btn btn-sm btn-success">
             <span class="oe_deactivated"><t t-esc="widget.active_string"></t></span>
-            <span class="oe_activated"><t t-esc="widget.deactive_string"></t></span>
+            <span class="oe_activated"><t t-esc="widget.inactive_string"></t></span>
         </button>
     </div>
 </t>
