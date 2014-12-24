@@ -18,103 +18,107 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 import time
-from openerp.osv import osv
-from openerp.report import report_sxw
+from openerp import models, api
+from openerp.tools.translate import _
 
 
-class product_pricelist(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(product_pricelist, self).__init__(cr, uid, name, context=context)
-        self.pricelist=False
-        self.quantity=[]
-        self.localcontext.update({
-            'time': time,
-            'get_pricelist': self._get_pricelist,
-            'get_currency': self._get_currency,
-            'get_categories': self._get_categories,
-            'get_price': self._get_price,
-            'get_titles': self._get_titles,
-        })
+class report_pricelist(models.AbstractModel):
+    _name = 'report.product.report_pricelist'
 
+    @api.model
     def _get_titles(self, form):
         lst = []
         vals = {}
         qtys = 1
-
-        for i in range(1,6):
-            if form['qty'+str(i)]!=0:
+        for i in range(1, 6):
+            if form['qty' + str(i)] != 0:
                 vals['qty'+str(qtys)] = str(form['qty'+str(i)]) + ' units'
             qtys += 1
         lst.append(vals)
         return lst
 
+    @api.model
     def _set_quantity(self, form):
-        for i in range(1,6):
-            q = 'qty%d'%i
-            if form[q] >0 and form[q] not in self.quantity:
+        for i in range(1, 6):
+            q = 'qty%d' % i
+            if form[q] > 0 and form[q] not in self.quantity:
                 self.quantity.append(form[q])
             else:
                 self.quantity.append(0)
         return True
 
-    def _get_pricelist(self, pricelist_id):
-        pricelist = self.pool.get('product.pricelist').read(self.cr, self.uid, [pricelist_id], ['name'], context=self.localcontext)[0]
-        return pricelist['name']
+    @api.model
+    def _get_price(self, product_ids):
+        products = []
+        pricelist_obj = self.env['product.pricelist']
+        product_obj = self.env['product.product']
+        for product in product_ids:
+            val = {
+                 'id': product.id,
+                 'name': product.name,
+                 'code': product.code
+            }
+            i = 1
+            for qty in self.quantity:
+                if qty == 0:
+                    val['qty'+str(i)] = 0.0
+                else:
+                    price_dict = self.pricelist.price_get(product.id, qty)
+                    if price_dict[self.pricelist.id]:
+                        price = price_dict[self.pricelist.id]
+                    else:
+                        res = product_obj.browse(product.id)
+                        price = res[0]['list_price']
+                    val['qty' + str(i)] = price
+                i += 1
+            products.append(val)
+        return products
 
-    def _get_currency(self, pricelist_id):
-        pricelist = self.pool.get('product.pricelist').read(self.cr, self.uid, [pricelist_id], ['currency_id'], context=self.localcontext)[0]
-        return pricelist['currency_id'][1]
-
-    def _get_categories(self, products, form):
-        cat_ids=[]
-        res=[]
-        self.pricelist = form['price_list']
-        self._set_quantity(form)
-        pro_ids=[]
+    @api.model
+    def _get_categories(self, products):
+        cat_ids = []
+        res = []
+        pro_ids = []
+        model_obj = self.env[self.model]
         for product in products:
             pro_ids.append(product.id)
             if product.categ_id.id not in cat_ids:
                 cat_ids.append(product.categ_id.id)
-
-        cats = self.pool.get('product.category').name_get(self.cr, self.uid, cat_ids, context=self.localcontext)
+        cats = self.env['product.category'].browse(cat_ids).name_get()
         if not cats:
             return res
         for cat in cats:
-            product_ids=self.pool.get('product.product').search(self.cr, self.uid, [('id', 'in', pro_ids), ('categ_id', '=', cat[0])], context=self.localcontext)
-            products = []
-            for product in self.pool.get('product.product').read(self.cr, self.uid, product_ids, ['name', 'code'], context=self.localcontext):
-                val = {
-                     'id':product['id'],
-                     'name':product['name'],
-                     'code':product['code']
-                }
-                i = 1
-                for qty in self.quantity:
-                    if qty == 0:
-                        val['qty'+str(i)] = 0.0
-                    else:
-                        val['qty'+str(i)]=self._get_price(self.pricelist, product['id'], qty)
-                    i += 1
-                products.append(val)
-            res.append({'name':cat[1],'products': products})
+            product_ids = model_obj.search([('id', 'in', pro_ids), ('categ_id', '=', cat[0])])
+            if self.model == 'product.template':
+                products=[]
+                for product in product_ids:
+                    variants = self._get_price(product.product_variant_ids)
+                    products.append({'name': product.name, 'variants': variants})
+            else:
+                products = self._get_price(product_ids)
+            res.append({'name': cat[1], 'products': products})
         return res
 
-    def _get_price(self, pricelist_id, product_id, qty):
-        sale_price_digits = self.get_digits(dp='Product Price')
-        pricelist = self.pool.get('product.pricelist').browse(self.cr, self.uid, [pricelist_id], context=self.localcontext)[0]
-        price_dict = self.pool.get('product.pricelist').price_get(self.cr, self.uid, [pricelist_id], product_id, qty, context=self.localcontext)
-        if price_dict[pricelist_id]:
-            price = self.formatLang(price_dict[pricelist_id], digits=sale_price_digits, currency_obj=pricelist.currency_id)
-        else:
-            res = self.pool.get('product.product').read(self.cr, self.uid, [product_id])
-            price =  self.formatLang(res[0]['list_price'], digits=sale_price_digits, currency_obj=pricelist.currency_id)
-        return price
+    @api.multi
+    def render_html(self, data):
+        form = data.get('form')
+        report_obj = self.env['report']
+        self.quantity = []
+        self.model = self._context.get('active_model')
+        self._set_quantity(form)
+        self.pricelist = self.env['product.pricelist'].browse(form['price_list'])
+        selected_records = self.env[self.model].browse(data.get('ids'))
+        docargs = {
+            'doc_ids': data.get('ids'),
+            'doc_model': self.model,
+            'docs': selected_records,
+            'time': time,
+            'get_pricelist': self.pricelist.name,
+            'get_currency': self.pricelist.currency_id.name,
+            'get_titles': self._get_titles(form),
+            'get_categories': self._get_categories(selected_records),
+        }
+        return report_obj.render('product.report_pricelist', docargs)
 
-
-class report_product_pricelist(osv.AbstractModel):
-    _name = 'report.product.report_pricelist'
-    _inherit = 'report.abstract_report'
-    _template = 'product.report_pricelist'
-    _wrapped_report_class = product_pricelist
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
