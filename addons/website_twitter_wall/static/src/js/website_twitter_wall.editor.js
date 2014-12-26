@@ -39,7 +39,6 @@
         },
         image_url: function(e) {
             image = '';
-            this.$('.url-error').hide();
             var testRegex = /^https?:\/\/(?:[a-z\-]+\.)+[a-z]{2,6}(?:\/[^\/#?]+)+\.(?:jpe?g|gif|png)$/;
             this.$(".image_upload").val("");
             this.$('.image').attr('src','/website_twitter_wall/static/src/img/document.png');
@@ -50,7 +49,7 @@
                 this.$el.find('.image').attr('src', url);
                 image = url;
             } else {
-                this.$('.url-error').show();
+                this.$('.url-error').removeClass("hidden");
                 this.$('.image_url').focus();
                 e.target.value = "";
                 return;
@@ -74,7 +73,7 @@
                 return;
             }
             this.$('.modal-footer, .modal-body').hide();
-            this.$('.wall-creating').show();
+            this.$('.wall-creating').removeClass("hidden");
             $.ajax({
                 url: '/create_twitter_wall',
                 type: 'post',

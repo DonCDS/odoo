@@ -5,7 +5,6 @@ from time import sleep
 from socket import timeout
 from threading import Thread
 from openerp.tools.translate import _
-from openerp.addons.website_twitter_wall.controllers.oauth import oauth
 from urllib2 import urlopen, Request, quote
 import logging
 

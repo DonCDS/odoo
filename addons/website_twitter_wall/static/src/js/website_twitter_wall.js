@@ -4,6 +4,7 @@ $(document).ready(function() {
         $('header').css("display", "none");
         $('footer').css("display", "none");
     }
+    $('[data-toggle="tooltip"]').tooltip();
     if($("div[name='tweets_for_client']").length) {
         var twitter_wall = new openerp.website.tweet_wall($("#tweet_wall_div"), parseInt($("[wall_id]").attr("wall_id")));
         twitter_wall.start();

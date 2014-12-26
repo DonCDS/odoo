@@ -1,6 +1,3 @@
-.no_display {
-  display: none;
-}
 .full_width {
   width: 100%;
 }
@@ -10,9 +7,6 @@
 .text_ellipsis {
   text-overflow: ellipsis;
   overflow: hidden;
-}
-.full_font {
-  font-size: 100%;
 }
 .wall-arch-subtitle {
   line-height: 2em;
@@ -137,76 +131,6 @@
 .timeline-footer > a {
   cursor: pointer;
   text-decoration: none;
-}
-.tooltip{
-  position: absolute;
-  z-index: 1020;
-  display: block;
-  visibility: visible;
-  padding: 5px;
-  font-size: 11px;
-  opacity: 0;
-  filter: alpha(opacity=0);
-}
-.tooltip.top {
-  margin-top: -2px;
-}
-.tooltip.right {
-  margin-left: 2px;
-}
-.tooltip.bottom {
-  margin-top: 2px;
-}
-.tooltip.left {
-  margin-left: -2px;
-}
-.tooltip.top .tooltip-arrow {
-  bottom: 0;
-  left: 0;
-  margin-left: 0;
-  border-left: 0 solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 0 solid #000;
-}
-.tooltip.left .tooltip-arrow {
-  bottom: 0;
-  left: 0;
-  margin-left: 0;
-  border-left: 0 solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 0 solid #000;
-}
-.tooltip.bottom .tooltip-arrow {
-  bottom: 0;
-  left: 0;
-  margin-left: 0;
-  border-left: 0 solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 0 solid #000;
-}
-.tooltip.right .tooltip-arrow {
-  bottom: 0;
-  left: 0;
-  margin-left: 0;
-  border-left: 0 solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 0 solid #000;
-}
-.tooltip-inner {
-  width: 200px;
-  padding: 3px 8px;
-  color: #fff;
-  text-align: center;
-  text-decoration: none;
-  background-color: #313131;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  border-radius: 0px;
-}
-.tooltip-arrow {
-  position: absolute;
-  width: 0;
-  height: 0;
 }
 .timeline > li.timeline-inverted {
   float: right; 

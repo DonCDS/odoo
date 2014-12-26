@@ -22,11 +22,10 @@ class TwitterWall(models.Model):
     number_view = fields.Integer('# of Views')
     state = fields.Selection([('not_streaming', 'Draft'), ('streaming', 'In Progress'), ('story', 'Story')], string = "State")
     website_published = fields.Boolean(string = 'Visible in Website')
-    user_id = fields.Many2one('res.users', string = 'Created User', default = 1)
+    user_id = fields.Many2one('res.users', string = 'Created User')
     twitter_access_token = fields.Char(string = 'Twitter Access Token key', help = "Twitter Access Token Key")
     twitter_access_token_secret = fields.Char(string = 'Twitter Access Token secret', help = "Twitter Access Token Secret")
     image = fields.Binary(string = 'Image')
-    image_thumb = fields.Binary(string = 'Thumbnail')
 
     def get_api_keys(self):
         twitter_api_key = 'mQP4B4GIFo0bjGW4VB1wMxNJ3'
@@ -61,72 +60,14 @@ class TwitterWall(models.Model):
         self.write({'state': 'streaming'})
         return True
 
-    #TODO: to check, may be useful to place this image in to website module
-    @api.model
-    def crop_image(self, data, type='top', ratio=False, thumbnail_ratio=None, image_format="PNG"):
-        """ Used for cropping image and create thumbnail
-            :param data: base64 data of image.
-            :param type: Used for cropping position possible
-                Possible Values : 'top', 'center', 'bottom'
-            :param ratio: Cropping ratio
-                e.g for (4,3), (16,9), (16,10) etc
-                send ratio(1,1) to generate square image
-            :param thumbnail_ratio: It is size reduce ratio for thumbnail
-                e.g. thumbnail_ratio=2 will reduce your 500x500 image converted in to 250x250
-            :param image_format: return image format PNG,JPEG etc
-        """
-
-        image = Image.open(cStringIO.StringIO(data.decode('base64')))
-        output = io.BytesIO()
-        w, h = image.size
-        new_h = h
-        new_w = w
-
-        if ratio:
-            w_ratio, h_ratio = ratio
-            new_h = (w * h_ratio) / w_ratio
-            new_w = w
-            if new_h > h:
-                new_h = h
-                new_w = (h * w_ratio) / h_ratio
-
-        if type == "top":
-            cropped_image = image.crop((0, 0, new_w, new_h))
-            cropped_image.save(output,format=image_format)
-        elif type == "center":
-            cropped_image = image.crop(((w - new_w)/2, (h - new_h)/2, (w + new_w)/2, (h + new_h)/2))
-            cropped_image.save(output,format=image_format)
-        elif type == "bottom":
-            cropped_image = image.crop((0, h - new_h, new_w, h))
-            cropped_image.save(output,format=image_format)
-        else:
-            raise ValueError('ERROR: invalid value for crop_type')
-        if thumbnail_ratio:
-            thumb_image = Image.open(cStringIO.StringIO(output.getvalue()))
-            thumb_image.thumbnail((new_w/thumbnail_ratio, new_h/thumbnail_ratio), Image.ANTIALIAS)
-            output = io.BytesIO()
-            thumb_image.save(output, image_format)
-        return output.getvalue().encode('base64')
-
     @api.multi
     def create(self, values):
         if values.get('image'):
-            image_thumb = self.crop_image(values['image'], thumbnail_ratio = 4)
-            image = self.crop_image(values['image'])
             values.update({
-                'image_thumb': image_thumb,
-                'image': image
+                'image': values['image']
             })
         wall_id = super(TwitterWall, self).create(values)
         return wall_id
-
-    @api.model
-    def get_thumb_image(self):
-        return "/website/image/website.twitter.wall/%s/image_thumb" % self.id
-
-    @api.model
-    def get_image(self):
-        return "/website/image/website.twitter.wall/%s/image" % self.id
 
     @api.multi
     def stop_incoming_tweets(self):
