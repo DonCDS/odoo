@@ -27,7 +27,10 @@ class res_users(osv.Model):
 
     def _auth_oauth_rpc(self, cr, uid, endpoint, access_token, context=None):
         params = werkzeug.url_encode({'access_token': access_token})
-        if urlparse.urlparse(endpoint)[4]:
+        urlparsed = urlparse.urlparse(endpoint)
+        if urlparsed.scheme != 'https':
+            raise Exception("[WARNING] hacking attempt on Oauth authentification")
+        if urlparsed[4]:
             url = endpoint + '&' + params
         else:
             url = endpoint + '?' + params
