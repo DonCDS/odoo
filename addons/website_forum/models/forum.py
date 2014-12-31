@@ -172,7 +172,7 @@ class Post(models.Model):
     # vote
     vote_ids = fields.One2many('forum.post.vote', 'post_id', string='Votes')
     user_vote = fields.Integer('My Vote', compute='_get_user_vote')
-    vote_count = fields.Integer('Votes', compute='_get_vote_count', store=True)
+    vote_count = fields.Integer('Votes', compute='_get_vote_count', store=True, default=0)
 
     @api.multi
     def _get_user_vote(self):
