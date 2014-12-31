@@ -70,6 +70,98 @@ function reload_favorite_list(result) {
             }
         }
     });
+    
+    instance.web_calendar.QuickCreate.include({
+
+        start: function() {
+            this._super();
+            if(this.dataset.model == 'calendar.event') {
+                this.$el.find('input').attr("placeholder",_t("2pm Meeting or 14:00 Meeting at Location"));
+            }
+        },
+
+        prepare_data_pattern:function(data, data_template) {
+            var message =  data.name;
+            var start_time , stop_time = null;
+
+            var reg_expr = /(\d{1,2}?h$)|(\d{1,2}h(?=\s+))|(\d{1,2}:\d{2}(am|pm)?$)|(\d{1,2}:\d{2}(am|pm)(?=\s+))|(\d{1,2}:\d{2}?$)|(\d{1,2}:\d{2}(?=\s+)|(\d{1,2}([ap]m)(?=\s+))|(\d{1,2}([ap]m)$))/i
+            var reg_value = message.match(reg_expr);
+            var time_range = message.match(/([:\w]+)\s(to)\s([:\w]+)/gi);
+            var location_expr = message.match(/(((at)\s)(?=\w+))|(\s(@)(?=\w+))|(^(@)(?=\w+))/gi);
+
+            var start_date = moment(data_template.start.slice(0,10));
+            var stop_date = moment(data_template.stop.slice(0,10));
+
+            if (location_expr != null) {
+                loc_msg = message
+                var loc_expr = message.match(/(((at)\s)(\w+))|(\s(@)(\w+))|(^(@)(\w+))/gi);
+                for (i = 0; i < loc_expr.length-1; i++) {
+                    loc_data = String(loc_expr[i]).split(location_expr[i])[1];
+                    if (reg_expr.test(loc_data) == true) {
+                        message = message.replace(location_expr[i],'');
+                    }
+                }
+                last_location = location_expr[location_expr.length-1];
+                loc_value = loc_msg.substring(loc_msg.lastIndexOf(last_location)).replace(last_location, '');
+                if (reg_expr.test(loc_value) == false) {
+                    data.location = loc_value;
+                } else {
+                    message = loc_msg.substring(loc_msg.lastIndexOf(last_location)).replace(last_location, '');
+                }
+            }
+
+            if (reg_value != null) {
+                var format = ['hha', 'HH:mm', 'hh:mma', 'HH'];
+                if (time_range != null) {
+                    for (var i = 0; i < time_range.length; i++) {
+                        time = (String(time_range[i]).split('to'));
+                        if (reg_expr.test(String(time[0])) == true && reg_expr.test(String(time[1]))){
+                            start_time = (moment(time[0].trim(), format));
+                            stop_time = (moment(time[1].trim(), format));
+                            if (start_time.hours() > stop_time.hours()) {
+                                stop_date = stop_date.add(1,'days');
+                            }
+                            message = message.replace (time_range[i], '');
+                        }
+                    }
+                }
+
+                if (start_time == null && stop_time == null) {
+                    start_time = (moment(reg_value[0], format));
+                    if (start_time.hours() >= 23 ) {
+                        stop_date = stop_date.add(1,'days')
+                        stop_time = (moment(reg_value[0], format)).add(1, 'hours');
+                    } else if (start_date.valueOf() == stop_date.valueOf()) {
+                        stop_time = (moment(reg_value[0], format)).add(1, 'hours');
+                    } else {
+                        stop_time = (moment(reg_value[0], format));
+                    }
+                    message = message.replace(reg_expr, '');
+                }
+                if (start_time != null && stop_time != null && start_time.isValid() == true && stop_time.isValid() == true) {
+                    start_date_time = (start_date.hours(start_time.hours()),start_date.minutes(start_time.minutes()));
+                    stop_date_time = (stop_date.hours(stop_time.hours()),stop_date.minutes(stop_time.minutes()));
+                    if (start_date_time <=  stop_date_time) {
+                        data.allday = false;
+                        data.start_datetime = (start_date_time).utc().format('YYYY-MM-DD HH:mm:ss').toString();
+                        data.stop_datetime = (stop_date_time).utc().format('YYYY-MM-DD HH:mm:ss').toString();
+                    }
+                    if (message == '') {
+                        message = 'Meeting Name';
+                    }
+                    data.name = message;
+                }
+            }
+        },
+       
+        quick_create: function(data, options) {
+            var self = this;
+            if(this.dataset.model == 'calendar.event') {
+                self.prepare_data_pattern(data, self.data_template);
+            }
+            return this._super.apply(this, arguments)
+        },
+    });
 
     instance.web_calendar.SidebarFilter.include({
         set_distroy_filters: function() {
