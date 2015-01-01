@@ -436,7 +436,10 @@ instance.web_kanban.KanbanView = instance.web.View.extend({
                     var old_group = self.currently_dragging.group;
                     var new_group = ui.item.parents('.oe_kanban_column:first').data('widget');
                     if (!(old_group.title === new_group.title && old_group.value === new_group.value && old_index == new_index)) {
-                        self.on_record_moved(record, old_group, old_index, new_group, new_index);
+                        $.when(self.on_record_moved(record, old_group, old_index, new_group, new_index)).done(function() {
+                            old_group.update_length(-1);
+                            new_group.update_length(1);
+                        });
                     }
                     setTimeout(function() {
                         // A bit hacky but could not find a better solution for Firefox (problem not present in chrome)
@@ -491,18 +494,17 @@ instance.web_kanban.KanbanView = instance.web.View.extend({
     on_record_moved : function(record, old_group, old_index, new_group, new_index) {
         var self = this;
         record.$el.find('[title]').tooltip('destroy');
-        $(old_group.$el).add(new_group.$el).find('.oe_kanban_group_length').hide();
         if (old_group === new_group) {
             new_group.records.splice(old_index, 1);
             new_group.records.splice(new_index, 0, record);
-            new_group.do_save_sequences();
+            return new_group.do_save_sequences();
         } else {
             old_group.records.splice(old_index, 1);
             new_group.records.splice(new_index, 0, record);
             record.group = new_group;
             var data = {};
             data[this.group_by] = new_group.value;
-            this.dataset.write(record.id, data, {}).done(function() {
+            return this.dataset.write(record.id, data, {}).done(function() {
                 record.do_reload();
                 new_group.do_save_sequences();
                 if (new_group.state.folded) {
@@ -854,11 +856,20 @@ instance.web_kanban.KanbanGroup = instance.web.Widget.extend({
         var id = record, self = this;
         self.view.remove_no_result();
         self.trigger("add_record");
+        self.update_length(1);
         this.dataset.read_ids([id], this.view.fields_keys)
             .done(function (records) {
                 self.view.dataset.ids.push(id);
                 self.do_add_records(records, true);
             });
+    },
+    update_length: function(sign) {
+        if (this.group.attributes) {
+            this.group.attributes.length += 1*sign;
+        } else {
+            this.group.length += 1*sign;
+        }
+        this.$el.find(".oe_kanban_group_length").text(this.group.get('length'));
     },
     highlight: function(show){
         if(show){
