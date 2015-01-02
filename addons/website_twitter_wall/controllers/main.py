@@ -1,10 +1,9 @@
 import base64
-import mimetypes
 from urllib2 import Request, urlopen
 from oauth import oauth
 from openerp.addons.web import http
 from openerp.addons.web.http import request
-from token import *
+
 
 class website_twitter_wall(http.Controller):
 
@@ -21,15 +20,7 @@ class website_twitter_wall(http.Controller):
             'user_id': request.uid
         }
         if 'http' in image or 'https' in image:
-            mmtp = mimetypes.guess_type(image, strict = True)
-            if not mmtp[0]:
-                return False
-            ext = mimetypes.guess_extension(mmtp[0])
-            f = open("tmp" + ext, 'wb')
-            req = Request(image, headers = {'User-Agent': 'Mozilla/5.0'})
-            f.write(urlopen(req).read())
-            f.close()
-            values['image'] = open("tmp" + ext, "rb").read().encode("base64").replace("\n", "")
+            values['image'] = base64.encodestring(urlopen(image).read())
         else:
             values['image'] = image
         request.env['website.twitter.wall'].create(values)
@@ -62,7 +53,7 @@ class website_twitter_wall(http.Controller):
         domain = [('wall_id', '=', wall.id)]
         if last_tweet:
             domain += [('id', '>', last_tweet)]
-        tweets = request.env['website.twitter.wall.tweet'].search_read(domain, [], offset = 0, limit = 1, order = 'id desc')
+        tweets = request.env['website.twitter.wall.tweet'].search_read(domain, [], offset=0, limit=1, order='id desc')
         if tweets and tweets[-1].get('id') != last_tweet:
             tweet = tweets[-1]
         return tweet
@@ -74,9 +65,9 @@ class website_twitter_wall(http.Controller):
         if wall.state != 'story':
             wall.write({'state': 'story'})
         domain = [('wall_id', '=', wall.id)]
-        pager = request.website.pager(url = "/twitter_wall/story/%s" % (wall.id), total = tweet_obj.search_count(domain), page = page,
-                                      step = self._tweet_per_page, scope = self._tweet_per_page, url_args = {})
-        tweets = tweet_obj.search(domain, limit = self._tweet_per_page, offset = pager['offset'], order = 'id desc').sudo()
+        pager = request.website.pager(url="/twitter_wall/story/%s" % (wall.id), total=tweet_obj.search_count(domain), page=page,
+                                      step=self._tweet_per_page, scope=self._tweet_per_page, url_args={})
+        tweets = tweet_obj.search(domain, limit=self._tweet_per_page, offset=pager['offset'], order='id desc').sudo()
         values = {
             'wall': wall,
             'tweets': tweets,
@@ -92,7 +83,7 @@ class website_twitter_wall(http.Controller):
         twitter_api_key, twitter_api_secret = wall.get_api_keys()
         auth = oauth(twitter_api_key, twitter_api_secret)
         callback_url = "%s/%s/%s" % (request.env['ir.config_parameter'].get_param('web.base.url'), "twitter_callback", wall.id)
-        HEADER = auth._generate_header(auth.REQUEST_URL, 'HMAC-SHA1', '1.0', callback_url = callback_url)
+        HEADER = auth._generate_header(auth.REQUEST_URL, 'HMAC-SHA1', '1.0', callback_url=callback_url)
         HTTP_REQUEST = Request(auth.REQUEST_URL)
         HTTP_REQUEST.add_header('Authorization', HEADER)
         request_response = urlopen(HTTP_REQUEST, '').read()
@@ -107,8 +98,8 @@ class website_twitter_wall(http.Controller):
         auth = oauth(twitter_api_key, twitter_api_secret)
         access_token_response = oauth._access_token(auth, oauth_token, oauth_verifier)
         values = {
-           'twitter_access_token': access_token_response['oauth_token'],
-           'twitter_access_token_secret': access_token_response['oauth_token_secret']
+            'twitter_access_token': access_token_response['oauth_token'],
+            'twitter_access_token_secret': access_token_response['oauth_token_secret']
         }
         wall.write(values)
         return http.local_redirect('/twitter_walls')
@@ -116,4 +107,4 @@ class website_twitter_wall(http.Controller):
     @http.route(['/twitter_wall/<model("website.twitter.wall"):wall>/delete'], type='http', auth="public", website=True)
     def delete_twitter_wall(self, wall, **kw):
         wall.unlink()
-        return http.local_redirect("/twitter_walls", query = request.params)
+        return http.local_redirect("/twitter_walls", query=request.params)

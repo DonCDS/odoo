@@ -6,6 +6,7 @@ import base64
 from hashlib import sha1
 from urllib2 import urlopen, Request, quote
 
+
 class oauth(object):
 
     def __init__(self, API_key, API_secret):
@@ -30,8 +31,7 @@ class oauth(object):
 
     def _generate_header(self, URL, signature_method, oauth_version, callback_url=None, request_token=None, oauth_verifier=None, params=None, method='POST'):
         self.parameters = {}
-        if params:
-            self.parameters.update(params)
+        if params: self.parameters.update(params)
         if callback_url: self.parameters['oauth_callback'] = callback_url
         if request_token: self.parameters['oauth_token'] = request_token
         if oauth_verifier: self.parameters['oauth_verifier'] = oauth_verifier
@@ -77,7 +77,7 @@ class oauth(object):
             del params['oauth_signature']
         except:
             pass
-        key_values = [(quote(str(k), ''), quote(str(v), '')) for k,v in params.items()]
+        key_values = [(quote(str(k), ''), quote(str(v), '')) for k, v in params.items()]
         key_values.sort()
         return '&'.join(['%s=%s' % (k, v) for k, v in key_values])
 
@@ -85,7 +85,7 @@ class oauth(object):
         return dict(item.split("=") for item in request_response.split("&"))
 
     def _access_token(self, request_token, oauth_verifier):
-        HEADER = self._generate_header(self.ACCESS_URL, 'HMAC-SHA1', '1.0', request_token = request_token, oauth_verifier = oauth_verifier)
+        HEADER = self._generate_header(self.ACCESS_URL, 'HMAC-SHA1', '1.0', request_token=request_token, oauth_verifier=oauth_verifier)
 
         HTTP_REQUEST = Request(self.ACCESS_URL)
         HTTP_REQUEST.add_header('Authorization', HEADER)
@@ -102,14 +102,14 @@ class oauth(object):
         params['screen_name'] = screen_name
         params['include_entities'] = 'true'
         url = "https://api.twitter.com/1.1/users/show.json"
-        HEADER = self._generate_header(url, 'HMAC-SHA1', '1.0', params = params, method = 'GET')
+        HEADER = self._generate_header(url, 'HMAC-SHA1', '1.0', params=params, method='GET')
         HTTP_REQUEST = Request(url + '?' + HEADER)
         request_response = urlopen(HTTP_REQUEST).read()
         return json.loads(request_response)['id_str']
 
     def get_authorise_user_id(self):
         url = "https://api.twitter.com/1.1/account/verify_credentials.json"
-        HEADER = self._generate_header(url, 'HMAC-SHA1', '1.0', method = 'GET')
+        HEADER = self._generate_header(url, 'HMAC-SHA1', '1.0', method='GET')
         HTTP_REQUEST = Request(url + '?' + HEADER)
         request_response = urlopen(HTTP_REQUEST).read()
         return json.loads(request_response)['id_str']

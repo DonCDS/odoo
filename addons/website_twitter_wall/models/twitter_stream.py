@@ -5,12 +5,14 @@ from time import sleep
 from socket import timeout
 from threading import Thread
 from openerp.tools.translate import _
+from openerp.osv import osv
 from urllib2 import urlopen, Request, quote
 import logging
 
 _logger = logging.getLogger(__name__)
 
 STREAM_VERSION = '1.1'
+
 
 class StreamListener(object):
 
@@ -72,6 +74,7 @@ class StreamListener(object):
         https://dev.twitter.com/docs/streaming-apis/messages#Disconnect_messages_disconnect
         """
         return
+
 
 class Stream(object):
 
@@ -141,7 +144,7 @@ class Stream(object):
                     exception = exc
                     break
 
-                if self.listener.on_timeout() == False:
+                if self.listener.on_timeout() is False:
                     break
                 if self.running is False:
                     break
@@ -186,7 +189,7 @@ class Stream(object):
 
             # read the next twitter status object
             if delimited_string.strip().isdigit():
-                next_status_obj = resp.read( int(delimited_string) )
+                next_status_obj = resp.read(int(delimited_string))
                 if self.running:
                     self._data(next_status_obj)
 
@@ -233,6 +236,7 @@ class Stream(object):
         self.listener.on_disconnect(None)
         self.running = False
 
+
 class WallListener(StreamListener):
 
     def __init__(self, base_url, wall):
@@ -247,7 +251,7 @@ class WallListener(StreamListener):
     def on_data(self, data):
         tweet = json.loads(data)
         params = {
-            'params':tweet
+            'params': tweet
         }
         url = "%s/%s/%s" % (self.base_url, 'twitter_wall/push_tweet', self.wall.id)
         req = Request(url, json.dumps(params), {'Content-Type': 'application/json'})
@@ -255,7 +259,7 @@ class WallListener(StreamListener):
         return True
 
     def on_status(self, status):
-        return 
+        return
 
     def on_error(self, status):
         raise osv.except_osv(_('Error!'), _('StreamListener has error :%s.') % (status))

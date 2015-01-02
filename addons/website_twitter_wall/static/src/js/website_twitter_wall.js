@@ -1,8 +1,6 @@
 $(document).ready(function() {
     if(window.location.href.split("/")[3] == "twitter_wall") {
-        $('#oe_main_menu_navbar').css("display","none");
-        $('header').css("display", "none");
-        $('footer').css("display", "none");
+        $('#oe_main_menu_navbar, header, footer').css("display", "none");
     }
     $('[data-toggle="tooltip"]').tooltip();
     $("timeago.timeago").timeago();
