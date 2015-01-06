@@ -17,7 +17,6 @@ class TwitterWall(models.Model):
     description = fields.Text(string='Description')
     tweet_ids = fields.One2many('website.twitter.wall.tweet', 'wall_id', string='Tweets')
     website_id = fields.Many2one('website', string='Website')
-    re_tweet = fields.Boolean(string='Include Re-Tweet ?')
     number_view = fields.Integer('# of Views')
     state = fields.Selection([('not_streaming', 'Draft'), ('streaming', 'In Progress'), ('story', 'Story')], string="State")
     website_published = fields.Boolean(string='Visible in Website')
@@ -25,6 +24,7 @@ class TwitterWall(models.Model):
     twitter_access_token = fields.Char(string='Twitter Access Token key', help="Twitter Access Token Key")
     twitter_access_token_secret = fields.Char(string='Twitter Access Token secret', help="Twitter Access Token Secret")
     image = fields.Binary(string='Image')
+    auth_user = fields.Char(string='Authenticated User id')
 
     def get_api_keys(self):
         twitter_api_key = 'mQP4B4GIFo0bjGW4VB1wMxNJ3'
@@ -41,22 +41,20 @@ class TwitterWall(models.Model):
         if stream_pool.get(self.id):
             return True
 
-        if self.twitter_access_token and self.twitter_access_token_secret:
-            twitter_api_key, twitter_api_secret = self.get_api_keys()
-            auth = oauth(twitter_api_key, twitter_api_secret)
-
-            listner = WallListener(base_url, self)
-
-            auth.set_access_token(self.twitter_access_token, self.twitter_access_token_secret)
-            stream = stream_pool.get(self.id, False)
-            if not stream:
-                stream = Stream(auth, listner)
-            stream_pool[self.id] = stream
-
-            user_ids = auth.get_authorise_user_id()
-            thread.start_new_thread(func, (stream, [user_ids], ))
-
-        self.write({'state': 'streaming'})
+        user_ids = []
+        twitter_api_key, twitter_api_secret = self.get_api_keys()
+        auth = oauth(twitter_api_key, twitter_api_secret)
+        for o in self.env['website.twitter.wall'].search([]):
+            if o.twitter_access_token and o.twitter_access_token_secret:
+                stream = stream_pool.get(o.id, False)
+                if not stream:
+                    listner = WallListener(base_url, self)
+                    auth.set_access_token(o.twitter_access_token, o.twitter_access_token_secret)
+                    stream = Stream(auth, listner)
+                    o.state = 'streaming'
+                stream_pool[o.id] = stream
+                user_ids.append(o.auth_user)
+        thread.start_new_thread(func, (stream, user_ids, ))
         return True
 
     @api.multi
@@ -72,7 +70,8 @@ class TwitterWall(models.Model):
     def stop_incoming_tweets(self):
         if stream_pool.get(self.id):
             stream_pool.get(self.id).disconnect()
-        self.write({'state': 'not_streaming'})
+        for o in self.env['website.twitter.wall'].search([]):
+            o.state = 'not_streaming'
         return True
 
     @api.multi

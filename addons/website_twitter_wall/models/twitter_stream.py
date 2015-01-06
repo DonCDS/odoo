@@ -249,13 +249,14 @@ class WallListener(StreamListener):
         return True
 
     def on_data(self, data):
-        tweet = json.loads(data)
-        params = {
-            'params': tweet
-        }
-        url = "%s/%s/%s" % (self.base_url, 'twitter_wall/push_tweet', self.wall.id)
-        req = Request(url, json.dumps(params), {'Content-Type': 'application/json'})
-        response = urlopen(req)
+        if 'delete' not in data:
+            tweet = json.loads(data)
+            params = {
+                'params': tweet
+            }
+            url = "%s/%s" % (self.base_url, 'twitter_wall/push_tweet')
+            req = Request(url, json.dumps(params), {'Content-Type': 'application/json'})
+            response = urlopen(req)
         return True
 
     def on_status(self, status):

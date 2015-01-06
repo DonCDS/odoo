@@ -42,9 +42,11 @@ class website_twitter_wall(http.Controller):
         wall.start_incoming_tweets()
         return request.website.render("website_twitter_wall.twitter_wall", {'wall_id': wall.id, 'uid': request.session.uid or False})
 
-    @http.route(['/twitter_wall/push_tweet/<model("website.twitter.wall"):wall>'], method=['POST'], type='json', auth='public', website=True)
-    def push_tweet(self, wall, **args):
-        wall.create_tweets(args)
+    @http.route(['/twitter_wall/push_tweet'], method=['POST'], type='json', auth='public', website=True)
+    def push_tweet(self, **args):
+        wall = request.env['website.twitter.wall'].search([('auth_user', '=', args['user']['id_str'])], order='create_date desc')
+        if wall:
+            wall[0].create_tweets(args)
         return True
 
     @http.route('/twitter_wall/pull_tweet/<model("website.twitter.wall"):wall>', type='json', auth="public", website=True)
@@ -99,9 +101,12 @@ class website_twitter_wall(http.Controller):
         access_token_response = oauth._access_token(auth, oauth_token, oauth_verifier)
         values = {
             'twitter_access_token': access_token_response['oauth_token'],
-            'twitter_access_token_secret': access_token_response['oauth_token_secret']
+            'twitter_access_token_secret': access_token_response['oauth_token_secret'],
+            'auth_user': access_token_response['user_id']
         }
         wall.write(values)
+        wall.stop_incoming_tweets()
+        wall.start_incoming_tweets()
         return http.local_redirect('/twitter_walls')
 
     @http.route(['/twitter_wall/<model("website.twitter.wall"):wall>/delete'], type='http', auth="public", website=True)
