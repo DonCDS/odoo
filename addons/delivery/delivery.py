@@ -75,6 +75,7 @@ class delivery_carrier(osv.osv):
             }
         return res
 
+    _order = 'sequence, id'
     _columns = {
         'name': fields.char('Delivery Method', required=True),
         'partner_id': fields.many2one('res.partner', 'Transport Company', required=True, help="The partner that is doing the delivery service."),
@@ -89,6 +90,7 @@ class delivery_carrier(osv.osv):
         'amount': fields.float('Amount', help="Amount of the order to benefit from a free shipping, expressed in the company currency"),
         'use_detailed_pricelist': fields.boolean('Advanced Pricing per Destination', help="Check this box if you want to manage delivery prices that depends on the destination, the weight, the total of the order, etc."),
         'pricelist_ids': fields.one2many('delivery.grid', 'carrier_id', 'Advanced Pricing'),
+        'sequence': fields.integer('Sequence', help="Determine the display order"),
     }
 
     _defaults = {
