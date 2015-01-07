@@ -1,7 +1,4 @@
 $(document).ready(function() {
-    if(window.location.href.split("/")[3] == "twitter_wall") {
-        $('#oe_main_menu_navbar, header, footer').css("display", "none");
-    }
     $('[data-toggle="tooltip"]').tooltip();
     $("timeago.timeago").timeago();
     if($("div[name='tweets_for_client']").length) {
@@ -25,6 +22,9 @@ openerp.website.tweet_wall = openerp.Class.extend({
 
     start: function() {
         var self = this;
+        if(window.location.href.split("/")[3] == "twitter_wall") {
+            $('#oe_main_menu_navbar, header, footer').css("display", "none");
+        }
         setInterval(function() { return self.get_data(); }, this.get_data_duration);
         setInterval(function() { self.process_tweet(); }, this.show_tweet_duation);
     },

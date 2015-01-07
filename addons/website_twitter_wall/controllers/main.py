@@ -62,7 +62,7 @@ class website_twitter_wall(http.Controller):
 
     @http.route(['/twitter_wall/story/<model("website.twitter.wall"):wall>',
                 '/twitter_wall/story/<model("website.twitter.wall"):wall>/page/<int:page>'], type='http', auth="public", website=True)
-    def twitter_wall_archieve(self, wall, page=1):
+    def twitter_wall_story(self, wall, page=1):
         tweet_obj = request.env['website.twitter.wall.tweet']
         if wall.state != 'story':
             wall.write({'state': 'story'})
@@ -78,7 +78,7 @@ class website_twitter_wall(http.Controller):
         }
         if page == 1:
             wall.write({'number_view': wall.number_view + 1})
-        return request.website.render("website_twitter_wall.twitter_wall_archieve", values)
+        return request.website.render("website_twitter_wall.twitter_wall_story", values)
 
     @http.route(['/twitter_wall/authenticate/<model("website.twitter.wall"):wall>'], type='http', auth="public", website=True)
     def authenticate_twitter_wall(self, wall, **kw):
