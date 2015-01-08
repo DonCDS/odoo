@@ -35,11 +35,6 @@
                             <div class="wall-title-text-truncation pull-left">
                                 <h3 t-esc="wall.name" class="mt0 text_ellipsis" />
                             </div>
-                            <div class="btn-group pull-right">
-                                <a t-attf-href="/twitter_wall/story/#{wall.id}" class="btn btn-default" t-if="wall.twitter_access_token" title="Storify" data-toggle="tooltip">
-                                   <i class="fa fa-history" />
-                                </a>
-                            </div>
                         </div>
                         <div class="wall-title-text-truncation full_width">
                             <p t-field="wall.description" class="mb16 text_ellipsis" />
@@ -48,10 +43,6 @@
                             <div t-if="not wall.twitter_access_token and not is_public_user" class="pull-left">
                                 <a t-attf-href="/twitter_wall/authenticate/#{wall.id}"><i class="fa fa-arrow-right" /> Verify with Twitter Account</a>
                             </div>
-                            <h4 class="pull-left">
-                                <span t-if="wall.state == 'streaming'" class="label label-success">Live Event</span>
-                                <span t-if="wall.state == 'story'" class="label label-info">Storify</span>
-                            </h4>
                             <div class="pull-right">
                                 <t t-call="website.publish_management">
                                     <t t-set="object" t-value="wall" />
@@ -96,7 +87,7 @@
                         </div>
                     </div>
                 </div>
-                <nav class="navbar navbar-default" role="navigation">
+                <nav class="navbar navbar-default">
                     <div class="container">
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
@@ -108,26 +99,22 @@
                                 </li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
-                                <a class="btn btn-default mt8" t-attf-href="/twitter_wall/#{wall.id}" title="Full Screen" data-toggle="tooltip" role="button"><i class="fa fa-arrows-alt" /></a>
+                                <a class="btn btn-default mt8" t-attf-href="/twitter_wall/#{wall.id}" title="Full screen and Go into live tweet" data-toggle="tooltip"><i class="fa fa-arrows-alt" /></a>
                             </ul>
                         </div>
                     </div>
                 </nav>
                 <div class="container">
                     <div class="row">
-                        <center>
-                            <ul class="timeline">
-                                <t t-foreach="tweets" t-as="tweet">
-                                    <li t-attf-class="#{tweet_index % 2 and 'timeline-inverted'}">
-                                        <div class="timeline-badge primary">
-                                            <a>
-                                                <i class="fa fa-dot-circle-o" data-toggle="tooltip" t-att-title="tweet.create_date" />
-                                            </a>
-                                        </div>
-                                        <div t-attf-class="#{tweet_index % 2 and 'right-item' or 'left-item'} timeline-panel" t-raw="tweet.html_description" />
-                                    </li>
-                                </t>
-                            </ul>
+                        <center class="col-sm-12">
+                            <t t-foreach="tweets" t-as="tweet">
+                                <div t-raw="tweet.html_description" class="mt32" />
+                                <div t-field="tweet.comment" />
+                            </t>
+                            <div class="text-muted" t-if="not tweets">
+                                <h1>Hey! No tweet found</h1>
+                                <h3>Goto full screen mode to fetch some tweet</h3>
+                            </div>
                         </center>
                     </div>
                     <div class="row text-center">
@@ -151,19 +138,18 @@
                             </center>
                         </div>
                     </div>
-                    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                    <nav class="navbar navbar-default navbar-fixed-bottom">
                         <div class="container">
-                            <div class="container-fluid">
-                                <div class="navbar-header">
-                                    <p class="navbar-text mb0">
-                                        Tweet us: <label class="label label-danger"># opendays</label>
-                                    </p>
+                            <div class="row mt8 text-center">
+                                <div class="col-sm-4 col-md-4 col-xs-12">
+                                    Tweet us: <label class="label label-danger"># opendays</label>
                                 </div>
-                                <ul class="nav navbar-nav navbar-right">
-                                    <li>
-                                        <p class="navbar-text mb0">Twitter wall powered by Odoo.</p>
-                                    </li>
-                                </ul>
+                                <div class="col-sm-4 col-md-4 col-xs-12">
+                                    <a class="btn btn-primary"><i class="fa fa-expand" /></a>
+                                </div>
+                                <div class="col-sm-4 col-md-4 col-xs-12">
+                                    Twitter wall powered by Odoo.
+                                </div>
                             </div>
                         </div>
                     </nav>

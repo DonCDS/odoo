@@ -39,6 +39,8 @@ class website_twitter_wall(http.Controller):
 
     @http.route(['/twitter_wall/<model("website.twitter.wall"):wall>'], type='http', auth="public", website=True)
     def twitter_wall(self, wall):
+        if not wall.twitter_access_token:
+            return False
         wall.start_incoming_tweets()
         return request.website.render("website_twitter_wall.twitter_wall", {'wall_id': wall.id, 'uid': request.session.uid or False})
 
@@ -63,6 +65,8 @@ class website_twitter_wall(http.Controller):
     @http.route(['/twitter_wall/story/<model("website.twitter.wall"):wall>',
                 '/twitter_wall/story/<model("website.twitter.wall"):wall>/page/<int:page>'], type='http', auth="public", website=True)
     def twitter_wall_story(self, wall, page=1):
+        if not wall.twitter_access_token:
+            return False
         tweet_obj = request.env['website.twitter.wall.tweet']
         if wall.state != 'story':
             wall.write({'state': 'story'})

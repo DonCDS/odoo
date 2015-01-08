@@ -90,10 +90,15 @@ class WebsiteTwitterTweet(models.Model):
     tweet_id = fields.Char(string='Tweet Id', size=256)
     tweet_json = fields.Text(string='Tweet Json Data')
     published_date = fields.Datetime(string='Publish on')
+    comment = fields.Html(string="Comment on tweet")
 
     _sql_constraints = [
         ('tweet_uniq', 'unique(wall_id, tweet_id)', 'Duplicate tweet in wall is not allowed !')
     ]
+
+    _defaults = {
+        'comment': '<br/>'
+    }
 
     @api.model
     def _process_tweet(self, wall_id, tweet):
