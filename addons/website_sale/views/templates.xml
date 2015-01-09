@@ -196,7 +196,24 @@
 
 <template id="products_categories" inherit_id="website_sale.products" active="False" customize_show="True" name="Product Categories">
   <xpath expr="//div[@id='products_grid_before']" position="inside">
-      <ul class="nav nav-pills nav-stacked mt16">
+      <ul class="nav nav-pills nav-stacked mt16" id="main_categ">
+          <li t-att-class=" '' if category else 'active' "><a t-att-href="keep('/shop',category=0)">All Products</a></li>
+          <t t-foreach="categories" t-as="c">
+              <t t-call="website_sale.categories_recursive"/>
+          </t>
+      </ul>
+  </xpath>
+  <xpath expr="//div[@id='products_grid_before']" position="attributes">
+      <attribute name="class">col-md-3 hidden-xs</attribute>
+  </xpath>
+  <xpath expr="//div[@id='products_grid']" position="attributes">
+      <attribute name="class">col-md-9</attribute>
+  </xpath>
+</template>
+
+<template id="collaps_products_categories" inherit_id="website_sale.products" active="False" customize_show="True" name="Collapsible category list" priority="17">
+  <xpath expr="//div[@id='products_grid_before']" position="inside">
+      <ul class="nav nav-pills nav-stacked mt16 collapse_categ">
           <li t-att-class=" '' if category else 'active' "><a t-att-href="keep('/shop',category=0)">All Products</a></li>
           <t t-foreach="categories" t-as="c">
               <t t-call="website_sale.categories_recursive"/>

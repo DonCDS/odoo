@@ -1,4 +1,48 @@
 $(document).ready(function () {
+
+$(document).on('click', 'ul li a[data-view-id]', function(event){
+    var view_id = $(this).data('view-id');
+    openerp.jsonRpc('/website/customize_template_get', 'call', { 'key': 'website_sale.products' }).then(
+        function(result) {
+            var template_data = {}
+            _.each(result, function(item){
+                template_data[item.key] = [item.id, item.active]
+            });
+            if(template_data['website_sale.products_categories'][0] == view_id){
+                return openerp.jsonRpc('/web/dataset/call_kw', 'call', {
+                        model: 'ir.ui.view',
+                        method: 'write',
+                        args: [[template_data['website_sale.collaps_products_categories'][0]], {'active': false}],
+                        kwargs: {
+                            context: openerp.website.get_context()
+                        }
+                    }).then( function() {
+                        window.location.reload();
+                    });
+
+            }
+            if(template_data['website_sale.collaps_products_categories'][0] == view_id){
+                return openerp.jsonRpc('/web/dataset/call_kw', 'call', {
+                        model: 'ir.ui.view',
+                        method: 'write',
+                        args: [[template_data['website_sale.products_categories'][0]], {'active': true}],
+                        kwargs: {
+                            context: openerp.website.get_context()
+                        }
+                    }).then( function() {
+                        window.location.reload();
+                    });
+            }
+        });
+});
+
+if($('ul').is('.collapse_categ')){
+    $('.collapse_categ').find('ul').addClass('collapse');
+    $('#main_categ').remove();
+    $('.collapse_categ').find('li.active').parents('ul').addClass('in');
+    $('.collapse_categ').find('.active > ul').addClass('in');
+}
+
 $('.oe_website_sale').each(function () {
     var oe_website_sale = this;
 
