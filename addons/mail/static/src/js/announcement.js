@@ -1,4 +1,5 @@
 openerp_announcement = function(instance) {
+    return;
     instance.web.WebClient.include({
         show_application: function() {
             return $.when(this._super.apply(this, arguments)).then(this.proxy('show_annoucement_bar'));

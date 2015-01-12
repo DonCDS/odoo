@@ -11,7 +11,6 @@ var QWeb = instance.web.qweb,
     _t = instance.web._t;
 
 instance.web.ActionManager = instance.web.Widget.extend({
-    template: "ActionManager",
     init: function(parent) {
         this._super(parent);
         this.inner_action = null;
@@ -606,7 +605,7 @@ instance.web.ViewManager =  instance.web.Widget.extend({
         }
         this._super();
         var $sidebar = this.flags.sidebar ? this.$('.oe-view-manager-sidebar') : undefined,
-            $pager = this.$('.oe-view-manager-pager');
+            $pager = $('.oe-view-manager-pager'); // fixme
 
         this.$breadcrumbs = this.$('.oe-view-title');
         this.$switch_buttons = this.$('.oe-view-manager-switch button');
@@ -642,7 +641,7 @@ instance.web.ViewManager =  instance.web.Widget.extend({
 
         this.search_view_loaded = this.setup_search_view();
         var main_view_loaded = this.switch_mode(default_view, null, default_options);
-            
+
         return $.when(main_view_loaded, this.search_view_loaded);
     },
 

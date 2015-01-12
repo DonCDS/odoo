@@ -43,7 +43,6 @@ from distutils.version import LooseVersion
 from functools import partial
 from pyPdf import PdfFileWriter, PdfFileReader
 
-
 #--------------------------------------------------------------------------
 # Helpers
 #--------------------------------------------------------------------------

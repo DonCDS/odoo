@@ -1,0 +1,341 @@
+//-------------------------------------------------------------------
+// View Manager
+//-------------------------------------------------------------------
+.oe-view-manager-header {
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    //-------------------------------------------
+    // Search
+    //-------------------------------------------
+    // Prevent text selection when toggling the search options
+    .oe_searchview_unfold_drawer {
+        .user-select(none);
+    }
+
+    //-------------------------------------------
+    // Breadcrumb
+    //-------------------------------------------
+    .oe-view-title {
+        font-size: 18px;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    //-------------------------------------------
+    // View Switcher
+    //-------------------------------------------
+    .oe-view-manager-switch {
+        .oe-vm-switch-kanban:before {content: "\f009";}
+        .oe-vm-switch-list:before {content: "";}
+        .oe-vm-switch-form:before {content: "\f044";}
+        .oe-vm-switch-graph:before {content: "\f080";}
+        .oe-vm-switch-calendar:before {content: "\f073";}
+        .oe-vm-switch-gantt:before {content: "\f0ae";}
+        .oe-vm-switch-pivot:before {content: "\f0ce";}
+    }
+
+    .oe-view-manager-sidebar .oe_sidebar_delete_item {
+        padding: 0;
+        display: inline-block;
+    }
+}
+
+
+//-------------------------------------------------------------------
+// SearchView
+//-------------------------------------------------------------------
+.oe_searchview {
+  cursor: text;
+  position: relative;
+  display: none;
+  height: auto;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+.oe_searchview .oe_searchview_unfold_drawer {
+  position: absolute;
+  top: 8px;
+  right: 5px;
+  cursor: pointer;
+}
+.oe_searchview .oe_searchview_search {
+  cursor: pointer;
+  position: absolute;
+  top: 8px;
+  left: 5px;
+}
+.oe_searchview .oe_searchview_facets {
+  min-height: 22px;
+  margin: 2px 20px 0 0;
+}
+.oe_searchview .oe_searchview_facets * {
+  vertical-align: top;
+  display: inline-block;
+  font-size: 100%;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet {
+  margin: 1px 0;
+  font-size: 11px;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet:focus {
+  outline: none;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .label {
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_input {
+  padding: 2px 0 0 6px;
+  font-size: 12px;
+  height: 16px;
+  -webkit-user-select: initial;
+  -moz-user-select: initial;
+  user-select: initial;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_input:focus {
+  outline: none;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_input:first-child {
+  margin-left: 10px;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet {
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  -webkit-font-smoothing: auto;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet:focus {
+  border-color: #a6a6fe;
+  -moz-box-shadow: 0 0 3px 1px #a6a6fe;
+  -webkit-box-shadow: 0 0 3px 1px #a6a6fe;
+  box-shadow: 0 0 3px 1px #a6a6fe;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_values {
+  background: #f0f0fa;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_category, .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value {
+  padding: 0 4px;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_category {
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_category.oe_i {
+  font-size: 16px;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value {
+  border-left: 1px solid #afafb6;
+  color: #4C4C4C;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value:last-child {
+  padding-right: 16px;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value:first-child {
+  border-left: none;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_remove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  color: #8786b7;
+  line-height: 8px;
+  width: 12px;
+  height: 12px;
+  padding-top: 1px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 0 1px 1px white;
+}
+.oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_remove:hover {
+  color: white;
+  background: #8786b7;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+.oe_searchview .oe-autocomplete {
+  display: none;
+  position: absolute;
+  background-color: white;
+  width: 400px;
+  border: 1px solid #afafb6;
+  z-index: 666;
+  margin-top: 2px;
+  cursor: default;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.oe_searchview .oe-autocomplete ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 5px 0px;
+}
+.oe_searchview .oe-autocomplete ul li {
+  padding-left: 20px;
+  text-shadow: 0 0 0 white;
+}
+.oe_searchview .oe-autocomplete ul li span:first-child {
+  margin-right: 5px;
+}
+.oe_searchview .oe-autocomplete ul li span.oe-expand {
+  cursor: pointer;
+}
+.oe_searchview .oe-autocomplete ul li.oe-indent {
+  margin-left: 20px;
+}
+.oe_searchview .oe-autocomplete ul li.oe-selection-focus {
+  background-color: #7c7bad;
+  color: white;
+}
+.oe_searchview .oe-autocomplete ul li.oe-separator {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border-top: 1px solid #afafb6;
+}
+.oe_searchview .oe-autocomplete ul li.oe-separator:last-child {
+  display: none;
+}
+
+
+
+
+
+// .oe-search-options a {
+//   padding-left: 25px;
+//   padding-right: 25px;
+//   width: 100%;
+//   -webkit-user-select: none;
+//   -moz-user-select: none;
+//   user-select: none;
+// }
+// .oe-search-options .oe-apply-filter {
+//   margin-left: 25px;
+// }
+// .oe-search-options .oe-add-filter-menu {
+//   display: none;
+// }
+// .oe-search-options .oe-add-condition {
+//   width: auto;
+//   margin-left: 10px;
+//   padding-left: 0;
+//   padding-right: 10px;
+// }
+// .oe-search-options .oe-group-selector {
+//   margin: 3px 25px;
+//   min-width: -webkit-calc(100% - 40px);
+//   min-width: calc(100% - 40px);
+//   max-width: 250px;
+//   width: auto;
+// }
+// .oe-search-options .divider {
+//   display: none;
+// }
+// .oe-search-options .filters-menu {
+//   overflow: auto;
+//   overflow-x: hidden;
+// }
+// .oe-search-options .filters-menu .divider {
+//   display: list-item;
+// }
+// .oe-search-options .closed-menu a:before {
+//   font-family: FontAwesome;
+//   position: absolute;
+//   left: 12px;
+//   top: 3px;
+//   content: "";
+// }
+// .oe-search-options .open-menu a:before {
+//   font-family: FontAwesome;
+//   position: absolute;
+//   left: 9px;
+//   top: 3px;
+//   content: "";
+// }
+// .oe-search-options .oe-select-group {
+//   margin: 3px 25px;
+// }
+// .oe-search-options .oe-add-group {
+//   display: none;
+// }
+// .oe-search-options .oe-save-name {
+//   display: none;
+//   margin: 3px 25px;
+// }
+// .oe-search-options .oe-save-name span {
+//   white-space: nowrap;
+// }
+// .oe-search-options .oe-save-name span input {
+//   margin-left: 0;
+// }
+// .oe-search-options .searchview_extended_prop_field {
+//   display: inline;
+//   width: -webkic-calc(100% - 20px);
+//   width: calc(100% - 20px);
+// }
+// .oe-search-options .searchview_extended_prop_op {
+//   margin: 3px 0;
+//   width: -webkit-calc(100% - 20px);
+//   width: calc(100% - 20px);
+// }
+// .oe-search-options .searchview_extended_delete_prop {
+//   float: right;
+//   display: inline;
+//   cursor: pointer;
+// }
+// .oe-search-options .searchview_extended_prop_value {
+//   width: -webkit-calc(100% - 20px);
+//   width: calc(100% - 20px);
+// }
+// .oe-search-options .searchview_extended_prop_value > select, .oe-search-options .searchview_extended_prop_value > input {
+//   width: -webkit-calc(100% - 20px);
+//   width: calc(100% - 20px);
+// }
+// .oe-search-options .searchview_extended_prop_value .oe_datepicker_main {
+//   width: -webkit-calc(100% - 20px);
+//   width: calc(100% - 20px);
+// }
+// .oe-search-options .searchview_extended_prop_value .oe_datepicker_master {
+//   width: 100%;
+// }
+// .oe-search-options .searchview_extended_prop_value .fa-calendar {
+//   margin-left: -21px;
+//   cursor: pointer;
+// }
+// .oe-search-options span.remove-filter {
+//   position: absolute;
+//   top: 6px;
+//   right: 10px;
+//   cursor: pointer;
+// }
+// .oe-search-options .dropdown-menu > li {
+//   position: relative;
+//   white-space: nowrap;
+// }
+// .oe-search-options .dropdown-menu li.oe-filter-condition {
+//   white-space: normal;
+//   padding-left: 25px;
+//   padding-right: 10px;
+//   margin-bottom: 5px;
+// }
+// .oe-search-options .dropdown-menu li.oe-filter-condition .o-or-filter {
+//   display: none;
+// }
+// .oe-search-options .dropdown-menu li.oe-filter-condition + li.oe-filter-condition {
+//   margin-top: 10px;
+// }
+// .oe-search-options .dropdown-menu li.oe-filter-condition + li.oe-filter-condition .o-or-filter {
+//   display: block;
+// }
+// .oe-search-options .dropdown-menu .o-or-filter {
+//   position: absolute;
+//   left: 5px;
+//   top: 5px;
+// }
+// .oe-search-options a {
+//   display: inline-block;
+// }

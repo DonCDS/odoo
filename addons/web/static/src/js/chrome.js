@@ -1252,9 +1252,14 @@ instance.web.Client = instance.web.Widget.extend({
         self.notification = new instance.web.Notification(this);
         self.notification.appendTo(self.$el);
         self.loading = new instance.web.Loading(self);
-        self.loading.appendTo(self.$('.openerp_webclient_container'));
+        self.loading.appendTo(self.$('.o-web-client'));
         self.action_manager = new instance.web.ActionManager(self);
-        self.action_manager.replace(self.$('.oe_application'));
+        self.action_manager.setElement(self.$('.o-action-manager'));
+        self.action_manager.start();
+
+        self.$('[data-toggle="offcanvas"]').click(function () {
+            $('.o-web-client-row').toggleClass('js_o-secondary-menu-shown');
+        });
     },
     toggle_bars: function(value) {
         this.$('tr:has(td.navbar),.oe_leftbar').toggle(value);

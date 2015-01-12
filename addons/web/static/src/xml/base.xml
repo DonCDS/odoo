@@ -350,10 +350,10 @@
 </t>
 
 <t t-name="Menu.needaction_counter">
-    <div id="menu_counter" class="badge pull-right">
-        <t t-if="widget.needaction_counter &gt; 99"> 99+ </t>
-        <t t-if="widget.needaction_counter &lt;= 99"> <t t-esc="widget.needaction_counter"/> </t>
-    </div>
+    <span id="menu_counter" class="badge pull-right">
+        <t t-if="widget.needaction_counter &gt; 99">99+</t>
+        <t t-if="widget.needaction_counter &lt;= 99"><t t-esc="widget.needaction_counter"/></t>
+    </span>
 </t>
 
 <t t-name="UserMenu">
@@ -476,51 +476,54 @@
     </div>
 </t>
 
-<div t-name="ActionManager" class="oe_application" />
+<t t-name="ViewManager" >
+    <div class="row o-control-panel">
+        <div  class="oe-view-manager-header col-md-12">
+            <div class="row">
+                <div class="col-md-6 oe-header-title">
+                    <!-- <div t-if="widget.session.debug" class="oe_debug_view btn-group btn-group-sm"/> -->
+                    <ol class="oe-view-title breadcrumb" t-if="widget.flags.display_title !== false"></ol>
+                </div>
+                <div class="oe-view-manager-search-view col-md-6" />
+            </div>
+            <div class="row">
+                <div class="col-md-6 oe-button-column">
+                    <div class="oe-view-manager-buttons">
+                        <t t-foreach="widget.views" t-as="view">
+                            <div t-attf-class="oe-#{view}-buttons"/>
+                        </t>
+                    </div>
+                    <div class="oe-view-manager-sidebar"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="oe-search-options btn-group"/>
+                    <div class="oe-view-manager-switch btn-group pull-right">
+                        <t t-foreach="widget.view_order" t-as="view">
+                            <button type="button"
+                                t-attf-class="btn btn-default fa oe-vm-switch-#{view.type}"
+                                t-att-data-view-type="view.type"
+                                t-att-title="view.label"/>
+                        </t>
+                    </div>
+                    <div class="oe-view-manager-pager btn-group pull-right"/>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div t-name="ViewManager" class="oe-view-manager">
-    <div class="oe-view-manager-header container-fluid">
-        <div class="row">
-            <div class="col-md-6 oe-header-title">
-                <div t-if="widget.session.debug" class="oe_debug_view btn-group btn-group-sm"/>
-                <ol class="oe-view-title breadcrumb" t-if="widget.flags.display_title !== false">
-                </ol>
-            </div>
-            <div class="oe-view-manager-search-view col-md-6" />
-        </div>
-        <div class="row">
-            <div class="col-md-6 oe-button-column">
-                <div class="oe-view-manager-buttons">
-                    <t t-foreach="widget.views" t-as="view">
-                        <div t-attf-class="oe-#{view}-buttons"/>
-                    </t>                    
-                </div>
-                <div class="oe-view-manager-sidebar"></div>
-            </div>
-            <div class="col-md-6">
-                <div class="oe-search-options btn-group"/>
-                <div class="oe-right-toolbar">
-                    <div class="oe-view-manager-pager"></div>
-                    <t t-if="widget.multiple_views">
-                        <div class="oe-view-manager-switch btn-group btn-group-sm">
-                            <t t-foreach="widget.view_order" t-as="view">
-                                <button type="button" t-attf-class="btn btn-default fa oe-vm-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label">
-                                </button>
-                            </t>
-                        </div>
-                    </t>
-                </div>
+    <div class="row o-view-manager">
+        <div class="col-md-12">
+            <div class="oe-view-manager-content">
+                <t t-foreach="widget.views" t-as="view">
+                    <div t-attf-class="oe-view-manager-view-#{view} fade"/>
+                </t>
             </div>
         </div>
     </div>
-    <div class="oe-view-manager-content">
-        <t t-foreach="widget.views" t-as="view">
-            <div t-attf-class="oe-view-manager-view-#{view} fade"/>
-        </t>
-    </div>
-</div>
+</t>
+
 <t t-name="ViewManagerDebug">
-    <button type="button" class="btn btn-default dropdown-toggle fa fa-bug oe-view-manager-debug" data-toggle="dropdown"> <span class="caret"/>
+<!--     <button type="button" class="btn btn-default dropdown-toggle fa fa-bug oe-view-manager-debug" data-toggle="dropdown"> <span class="caret"/>
     </button>
     <ul class="dropdown-menu" role="menu">
         <t t-if="view_manager.active_view.type === 'form'">
@@ -543,7 +546,7 @@
             <li class="divider"/>
             <li><a data-action="leave_debug">Leave Debug Mode</a></li>
         </t>
-    </ul>
+    </ul> -->
 </t>
 <t t-name="ViewManagerDebugViewLog">
     <div class="oe_debug_view_log">
@@ -575,15 +578,11 @@
         </table>
     </div>
 </t>
-<span t-name="ViewPager">
-    <div class="oe_pager_value">
-        <t t-raw="0"/>
-    </div>
-    <div class="btn-group btn-group-sm oe-pager-buttons">
-        <a class="fa fa-chevron-left btn btn-default oe-pager-button" type="button" data-pager-action="previous"></a>
-        <a class="fa fa-chevron-right btn btn-default oe-pager-button" type="button" data-pager-action="next"></a>
-    </div>
-</span>
+<t t-name="ViewPager">
+    <span class="oe_pager_value btn" t-raw="0"/>
+    <a class="fa fa-chevron-left btn btn-default oe-pager-button" type="button" data-pager-action="previous"></a>
+    <a class="fa fa-chevron-right btn btn-default oe-pager-button" type="button" data-pager-action="next"></a>
+</t>
 
 <div t-name="Sidebar" class="oe_sidebar btn-group">
     <t t-foreach="widget.sections" t-as="section">
@@ -730,7 +729,7 @@
     </div>
 </t>
 <t t-name="ListView.pager" t-if="!widget.no_leaf and widget.options.pager !== false" t-call="ViewPager">
-    <span class="oe_list_pager_state"></span>
+    <span class="oe_list_pager_state btn"></span>
 </t>
 <t t-name="ListView.rows" t-foreach="records.length" t-as="index">
     <t t-call="ListView.row">
@@ -763,7 +762,7 @@
 </tr>
 <t t-extend="ListView.buttons">
     <t t-jquery="button.oe_list_add" t-operation="after">
-        <button class="oe_button oe_list_save oe_highlight"
+        <button class="btn btn-sm oe_button oe_list_save oe_highlight"
                 type="button">Save</button>
         <span class="oe_alternative">
             <span class="oe_fade">or</span>
