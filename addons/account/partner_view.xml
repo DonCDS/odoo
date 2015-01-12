@@ -12,12 +12,12 @@
                         <field name="active"/>
                         <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                     </group>
-                    <group>
+                    <group string="Autocompletion on Sales and Purchase Orders">
                         <field name="auto_apply"/>
-                        <field name="sequence"/>
-                        <field name="vat_required" attrs="{'readonly': [('auto_apply', '=', False)]}"/>
-                        <field name="country_id"/>
-                        <field name="country_group_id"/>
+                        <field name="sequence" attrs="{'invisible': [('auto_apply', '=', False)]}"/>
+                        <field name="vat_required" attrs="{'invisible': [('auto_apply', '=', False)]}"/>
+                        <field name="country_id" attrs="{'invisible': [('auto_apply', '=', False)]}"/>
+                        <field name="country_group_id" attrs="{'invisible': [('auto_apply', '=', False)]}"/>
                     </group>
                     <separator string="Taxes Mapping"/>
                     <field name="tax_ids" widget="one2many_list">

@@ -30,17 +30,17 @@ class account_fiscal_position(osv.osv):
     _description = 'Fiscal Position'
     _order = 'sequence'
     _columns = {
-        'sequence': fields.integer('Sequence'),
-        'name': fields.char('Fiscal Position', required=True),
+        'sequence': fields.integer('Sequence', help="Determine the priority, the lower the first to be selected"),
+        'name': fields.char('Fiscal Position Name', required=True),
         'active': fields.boolean('Active', help="By unchecking the active field, you may hide a fiscal position without deleting it."),
         'company_id': fields.many2one('res.company', 'Company'),
         'account_ids': fields.one2many('account.fiscal.position.account', 'position_id', 'Account Mapping', copy=True),
         'tax_ids': fields.one2many('account.fiscal.position.tax', 'position_id', 'Tax Mapping', copy=True),
         'note': fields.text('Notes'),
-        'auto_apply': fields.boolean('Automatic', help="Apply automatically this fiscal position."),
-        'vat_required': fields.boolean('VAT required', help="Apply only if partner has a VAT number."),
-        'country_id': fields.many2one('res.country', 'Countries', help="Apply only if delivery or invoicing country match."),
-        'country_group_id': fields.many2one('res.country.group', 'Country Group', help="Apply only if delivery or invocing country match the group."),
+        'auto_apply': fields.boolean('Activate Autocompletion', help="Apply automatically this fiscal position on the sales order or the purchase order."),
+        'vat_required': fields.boolean('VAT required', help="Apply the fiscal position if and only if the partner has a VAT number."),
+        'country_id': fields.many2one('res.country', 'Country', help="Apply the fiscal position if and only if delivery or invoicing country match."),
+        'country_group_id': fields.many2one('res.country.group', 'Country Group', help="Apply the fiscal position if and only if delivery or invocing country match the group."),
     }
 
     _defaults = {
