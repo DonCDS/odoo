@@ -4,10 +4,6 @@
 .full_padding {
   padding: 10px;
 }
-.text_ellipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
 .wall-story-subtitle {
   line-height: 2em;
   font-size: 120%;

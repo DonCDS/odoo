@@ -58,15 +58,6 @@ class TwitterWall(models.Model):
         return True
 
     @api.multi
-    def create(self, values):
-        if values.get('image'):
-            values.update({
-                'image': values['image']
-            })
-        wall_id = super(TwitterWall, self).create(values)
-        return wall_id
-
-    @api.multi
     def stop_incoming_tweets(self):
         if stream_pool.get(self.id):
             stream_pool.get(self.id).disconnect()
