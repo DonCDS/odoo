@@ -1,37 +1,39 @@
-.define-color-if-not-defined() {
-    @nav-tabs-border-color: #dddddd;
-    @brand-info: #dddddd;
-    @body-bg: #FFFFFF;
-    @brand-primary: #428bca;
-    @link-color: @brand-primary;
-    @panel-footer-bg: #f5f5f5;
-    @nav-link-hover-bg: #FFFFFF;
-    @navbar-default-link-color: #777;
-    @navbar-default-link-hover-color: #333;
-    @navbar-default-bg: #f8f8f8;
-} .define-color-if-not-defined();
-
-.wall-dislay-box {
+// Twitter Walls (Display wall in box)
+.odoo-wall-dislay-box {
     height: 340px;
     width: 100%;
     box-shadow: 1px 1px 5px #888888;
 
-    .wall-text {
+    .odoo-wall-text {
         white-space: nowrap;
         width: 100%;
         text-overflow: ellipsis;
         overflow: hidden;
     }
+
+    .odoo-wall-image-box {
+        max-height: 200px;
+        overflow: hidden;
+        display: block;
+        width: 100%;
+    }
+
+    .odoo-wall-padding {
+        padding: 10px;
+    }
+
+    .odoo-wall-width {
+        width: 100%;
+    }
 }
 
-.wall-image-box {
-    max-height: 200px;
-    overflow: hidden;
-    display: block;
-    width: 100%;
+// Storify View (Cover, Title, Sub-title)
+.odoo-wall-story-cover {
+    height: 500px;
+    background-color: rgba(47,52,64,0.3);
 }
 
-.wall-story-title {
+.odoo-wall-story-title {
     color: #FFF;
     position: absolute;
     text-align: center;
@@ -40,7 +42,7 @@
     right: 0;
 }
 
-.wall-story-subtitle {
+.odoo-wall-story-subtitle {
     color: #FFF;
     position: absolute;
     text-align: center;
@@ -52,18 +54,3 @@
     line-height: 2em;
     font-size: 120%;
 }
-
-.full-width {
-    width: 100%;
-}
-
-.full-padding {
-    padding: 10px;
-}
-
-.cover {
-    height: 500px;
-    background-color: rgba(47,52,64,0.3);
-}
-
-

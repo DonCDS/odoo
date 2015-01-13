@@ -36,15 +36,13 @@
                             <h3>Goto Content menu -> New Twitter Wall</h3>
                         </div>
                         <div t-foreach="walls" t-as="wall" class="col-sm-6 col-md-4">
-                            <div class="wall-dislay-box mt16 mb16">
-                                <span class="wall-image-box">
-                                    <a t-attf-href="/twitter_wall/story/#{wall.id}" title="Storify" data-toggle="tooltip">
-                                        <img t-attf-src="/website/image/website.twitter.wall/#{wall.id}/image/250x250" class="img-responsive full-width" />
-                                    </a>
-                                </span>
-                                <div class="full-padding">
-                                    <h3 t-esc="wall.name" class="mt0 wall-text" />
-                                    <p t-esc="wall.description" class="wall-text" />
+                            <div class="odoo-wall-dislay-box mt16 mb16">
+                                <a t-attf-href="/twitter_wall/story/#{wall.id}" title="Storify" data-toggle="tooltip" class="odoo-wall-image-box">
+                                    <img t-attf-src="/website/image/website.twitter.wall/#{wall.id}/image/250x250" class="img-responsive odoo-wall-width" />
+                                </a>
+                                <div class="odoo-wall-padding">
+                                    <h3 t-esc="wall.name" class="mt0 odoo-wall-text" />
+                                    <p t-esc="wall.description" class="odoo-wall-text" />
                                     <div>
                                         <div t-if="not wall.twitter_access_token and not is_public_user" class="pull-left">
                                             <a t-attf-href="/twitter_wall/authenticate/#{wall.id}"><i class="fa fa-arrow-right" /> Verify with Twitter Account</a>
@@ -73,10 +71,10 @@
             <t t-call="website.layout">
                 <div class="oe_structure" />
                 <div t-attf-style="background-image: url(/website/image/website.twitter.wall/#{wall.id}/image);background-repeat: no-repeat;background-size: 100% 100%;">
-                    <div class="cover">
+                    <div class="odoo-wall-story-cover">
                         <div class="container">
-                            <h1 class="mt32 wall-story-title" t-esc="wall.name" />
-                            <p class="mt32 wall-story-subtitle" t-esc="wall.description" />
+                            <h1 class="mt32 odoo-wall-story-title" t-esc="wall.name" />
+                            <p class="mt32 odoo-wall-story-subtitle" t-esc="wall.description" />
                         </div>
                     </div>
                 </div>
@@ -84,12 +82,8 @@
                     <div class="container">
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
-                                <li>
-                                    <p class="navbar-text mb0"><timeago class="timeago" t-att-title="wall.create_date" /></p>
-                                </li>
-                                <li>
-                                    <p class="navbar-text mb0" t-esc="'%s Total views' % wall.number_view" />
-                                </li>
+                                <li class="navbar-text mb0"><timeago class="timeago" t-att-title="wall.create_date" /></li>
+                                <li class="navbar-text mb0" t-esc="'%s Total views' % wall.number_view" />
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
                                 <a class="btn btn-default mt8" t-attf-href="/twitter_wall/#{wall.id}" title="Live tweet" data-toggle="tooltip"><i class="fa fa-arrows-alt" /></a>
