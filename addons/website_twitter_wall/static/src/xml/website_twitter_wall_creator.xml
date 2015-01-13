@@ -55,7 +55,7 @@
                     <div class="modal-footer">
                         <a class="btn btn-primary draft">Create Draft</a>
                         <a class="btn btn-primary save">Create and Publish</a>
-                        <button class="btn btn-default" data-dismiss="modal" data-action="discard">Cancel</button>
+                        <button class="btn" data-dismiss="modal" data-action="discard">Cancel</button>
                     </div>
                 </div>
             </div>

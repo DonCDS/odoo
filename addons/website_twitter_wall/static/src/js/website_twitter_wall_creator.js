@@ -25,9 +25,9 @@
         image_upload: function(e) {
             var self = this;
             this.error("");
-            this.$el.find("div.error-dialog").remove();
+            this.$el.find(".error-dialog").remove();
             image = '';
-            this.$el.find('input.image_url').val("");
+            this.$el.find('.image_url').val("");
             this.$el.find('.image').attr('src','/website_twitter_wall/static/src/img/document.png');
             var fileName = e.target.files[0];
             var fr = new FileReader();
@@ -43,7 +43,7 @@
             this.$el.find(".image_upload").val("");
             this.$el.find('.image').attr('src','/website_twitter_wall/static/src/img/document.png');
             this.error("");
-            this.$el.find("div.error-dialog").remove();
+            this.$el.find(".error-dialog").remove();
             var url = e.target.value;
             if (testRegex.test(url)) {
                 this.$el.find('.image').attr('src', url);
@@ -90,7 +90,7 @@
             });
         },
         error: function (msg) {
-            this.$el.find(".error_msg").html("<div class='error-dialog alert alert-danger alert-dismissible' role='alert'>"+ msg +"</div>");
+            this.$el.find(".error_msg").html("<div class='error-dialog alert alert-danger'>"+ msg +"</div>");
         },
     });
 })();

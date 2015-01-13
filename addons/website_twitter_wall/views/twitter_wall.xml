@@ -43,18 +43,14 @@
                                 <div class="odoo-wall-padding">
                                     <h3 t-esc="wall.name" class="mt0 odoo-wall-text" />
                                     <p t-esc="wall.description" class="odoo-wall-text" />
-                                    <div>
-                                        <div t-if="not wall.twitter_access_token and not is_public_user" class="pull-left">
-                                            <a t-attf-href="/twitter_wall/authenticate/#{wall.id}"><i class="fa fa-arrow-right" /> Verify with Twitter Account</a>
-                                        </div>
-                                        <div class="pull-right">
-                                            <t t-call="website.publish_management">
-                                                <t t-set="object" t-value="wall" />
-                                                <t t-set="publish_edit" t-value="True" />
-                                                <li><a t-attf-href="/twitter_wall/#{wall.id}/delete">Delete</a></li>
-                                            </t>
-                                        </div>
-                                    </div>
+                                    <a t-if="not wall.twitter_access_token and not is_public_user" class="pull-left" t-attf-href="/twitter_wall/authenticate/#{wall.id}">
+                                        <i class="fa fa-arrow-right" /> Verify with Twitter Account
+                                    </a>
+                                    <t class="pull-right" t-call="website.publish_management">
+                                        <t t-set="object" t-value="wall" />
+                                        <t t-set="publish_edit" t-value="True" />
+                                        <li><a t-attf-href="/twitter_wall/#{wall.id}/delete">Delete</a></li>
+                                    </t>
                                 </div>
                             </div>
                         </div>
