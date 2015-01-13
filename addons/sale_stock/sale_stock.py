@@ -71,6 +71,13 @@ class sale_order(osv.osv):
             res[sale.id] = self.pool.get('stock.picking').search(cr, uid, [('group_id', '=', sale.procurement_group_id.id)], context=context)
         return res
 
+    def _count_all(self, cr, uid, ids, field_name, arg, context=None):
+        res = super(sale_order,self)._count_all(cr, uid, ids, field_name, arg, context=context)
+        for sale in self.browse(cr, uid, ids, context=context):
+            picking_ids = [picking.id for picking in sale.picking_ids if picking.picking_type_id.code == 'outgoing']
+            res[sale.id]['delivery_count'] = len(picking_ids)
+        return res
+
     def _prepare_order_line_procurement(self, cr, uid, order, line, group_id=False, context=None):
         vals = super(sale_order, self)._prepare_order_line_procurement(cr, uid, order, line, group_id=group_id, context=context)
         location_id = order.partner_shipping_id.property_stock_customer.id
@@ -104,6 +111,7 @@ class sale_order(osv.osv):
             }),
         'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', required=True, readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
         'picking_ids': fields.function(_get_picking_ids, method=True, type='one2many', relation='stock.picking', string='Picking associated to this sale'),
+        'delivery_count': fields.function(_count_all, type='integer', string='Delivery Orders', multi="delivery"),
     }
     _defaults = {
         'warehouse_id': _get_default_warehouse,
@@ -135,8 +143,8 @@ class sale_order(osv.osv):
         #compute the number of delivery orders to display
         pick_ids = []
         for so in self.browse(cr, uid, ids, context=context):
-            pick_ids += [picking.id for picking in so.picking_ids]
-            
+            pick_ids += [picking.id for picking in so.picking_ids if picking.picking_type_id.code == 'outgoing']
+
         #choose the view_mode accordingly
         if len(pick_ids) > 1:
             result['domain'] = "[('id','in',[" + ','.join(map(str, pick_ids)) + "])]"
