@@ -2,7 +2,7 @@
 <openerp>
     <data>
 
-        <!-- Add  -->
+        <!-- Add js file for create new tweet -->
         <template id="assets_editor" inherit_id="website.assets_editor" name="Twitter wall Editor">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall_creator.js" />
@@ -16,11 +16,11 @@
             </xpath>
         </template>
 
+        <!-- Add js, less file for twitter -->
         <template id="assets_frontend" inherit_id="website.assets_frontend" name="Slide">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.js" />
                 <link type="text/less" href="/website_twitter_wall/static/src/less/website_twitter_wall.less" rel="stylesheet" t-ignore="true" />
-                <link type="text/stylesheet" rel="stylesheet" href="/website_twitter_wall/static/src/css/website_twitter_wall.css" />
             </xpath>
         </template>
 
@@ -30,6 +30,7 @@
                 <div class="oe_structure" />
                 <div class="container">
                     <div class="row">
+                        <!-- When no wall is there diplay hint -->
                         <div class="text-center text-muted" t-if="not walls">
                             <h1>Hey! No twitter wall found</h1>
                             <h3>Goto Content menu -> New Twitter Wall</h3>
@@ -38,10 +39,10 @@
                             <div class="wall-dislay-box mt16 mb16">
                                 <span class="wall-image-box">
                                     <a t-attf-href="/twitter_wall/story/#{wall.id}" title="Storify" data-toggle="tooltip">
-                                        <img t-attf-src="/website/image/website.twitter.wall/#{wall.id}/image/250x250" class="img-responsive full_width" />
+                                        <img t-attf-src="/website/image/website.twitter.wall/#{wall.id}/image/250x250" class="img-responsive full-width" />
                                     </a>
                                 </span>
-                                <div class="full_padding">
+                                <div class="full-padding">
                                     <h3 t-esc="wall.name" class="mt0 wall-text" />
                                     <p t-esc="wall.description" class="wall-text" />
                                     <div>
@@ -103,6 +104,7 @@
                                 <div t-raw="tweet.html_description" class="mt32" />
                                 <div t-field="tweet.comment" />
                             </t>
+                            <!-- When no tweet is there display hint -->
                             <div class="text-muted" t-if="not tweets">
                                 <h1>Hey! No tweet found</h1>
                                 <h3>Goto live tweet for fetch some tweet</h3>
