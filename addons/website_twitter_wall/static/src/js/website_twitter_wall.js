@@ -21,7 +21,9 @@ openerp.website.tweet_wall = openerp.Class.extend({
     // Hide header and footer, Start to get and display tweet based on interval time
     start: function() {
         var self = this;
-        $('#oe_main_menu_navbar, header, footer').css("display", "none");
+        $('#oe_main_menu_navbar, header, footer, .options').css("display", "none");
+        $(".navbar").on("mouseover", function(){$(".options").show();});
+        $(".navbar").on("mouseleave", function(){$(".options").hide();});
         setInterval(function() { return self.get_data(); }, this.interval_time);
         setInterval(function() { self.process_tweet(); }, this.interval_time);
     },
