@@ -114,7 +114,7 @@
                 <t t-set="head">
                     <script src="//platform.twitter.com/widgets.js" charset="utf-8" />
                 </t>
-                <div class="full_screen" name="tweets_for_client">
+                <div name="tweets_for_client">
                     <div class="container" t-att-wall_id="wall_id">
                         <div class="row">
                             <center>
