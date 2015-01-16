@@ -96,6 +96,7 @@
             'click .oe_planner div[id^="planner_page"] a[href^="#planner_page"]': 'change_page',
             'click .oe_planner li a[href^="#planner_page"]': 'change_page',
             'click .oe_planner div[id^="planner_page"] button[data-pageid^="planner_page"]': 'mark_as_done',
+            'hide.bs.modal':'on_close'
         },
         init: function(parent, planner) {
             this._super(parent);
@@ -284,6 +285,9 @@
             }
             self.update_planner(page_id);
         },
+        on_close:function(){
+            this.trigger("hide.bs.modal");
+        }
     });
 
     // add planner launcher to the systray
