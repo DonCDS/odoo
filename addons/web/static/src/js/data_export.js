@@ -56,7 +56,7 @@ instance.web.DataExport = instance.web.Widget.extend({
             return $(this).val();
         }).get();
 
-        domain=this.action.params.domain;
+        var domain = this.action.params.domain;
         self.$el.find(".oe_model_name").text(this.model_name);
         var got_fields = new $.Deferred();
         if (!export_fields.length) {
