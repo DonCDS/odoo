@@ -442,7 +442,8 @@ var Tour = {
         return (step &&
             (!step.element || ($(step.element).size() && $(step.element).is(":visible") && !$(step.element).is(":hidden"))) &&
             (!step.waitNot || !$(step.waitNot).size()) &&
-            (!step.waitFor || $(step.waitFor).size()));
+            (!step.waitFor || $(step.waitFor).size())) &&
+	     (!step.waitFunction || typeof step.waitFunction !== "function" || step.waitFunction());
     },
     waitNextStep: function () {
         var state = Tour.getState();

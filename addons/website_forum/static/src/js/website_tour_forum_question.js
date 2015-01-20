@@ -22,8 +22,9 @@
             },
             {
                 title:     "Question",
-                waitNot:   'input[name=post_name]:not([value!=""])',
-                element:   '.note-editor',
+                waitFunction: function() {return $("input[name=post_name]").filter(function() {return (this.value != '');}).length;},
+                element:   '.note-editable p',
+                sampleText: 'First Question',
                 placement: 'top',
                 content:   "Put your question here.",
             },
@@ -37,7 +38,7 @@
             },
             {
                 title:     "Post Question",
-                waitNot:   'input[id=s2id_autogen2]:not([value!=Tags])',
+                waitFunction: function() {return $("input[id=s2id_autogen2]").filter(function() {return (this.value != 'Tags');}).length;},
                 element:   'button:contains("Post Your Question")',
                 placement: 'bottom',
                 content:   "Click to post your question.",
@@ -50,7 +51,8 @@
             },
             {
                 title:     "Answer",
-                element:   '.note-editor',
+                element:   '.note-editable p',
+                sampleText: 'First Answer',
                 placement: 'top',
                 content:   "Put your answer here.",
             },
