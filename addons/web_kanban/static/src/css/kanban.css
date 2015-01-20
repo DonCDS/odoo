@@ -427,7 +427,24 @@
   padding: 0 2px;
   line-height: 14px;
 }
-.openerp .oe_kanban_view .oe_kanban_footer_left .oe_kanban_mail_new {
+.openerp .oe_kanban_view .oe_kanban_bottom_left {
+  float: left;
+  position: relative;
+  top: 2px;
+}
+.openerp .oe_kanban_view .oe_kanban_bottom_left > span {
+  margin-top: 2px;
+  display: inline-block;
+  background: #E6E6E6;
+  border: 1px solid #B9B9B9;
+  color: #666;
+  padding: 0 2px;
+  line-height: 16px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.openerp .oe_kanban_view .oe_kanban_bottom_left .oe_kanban_mail_new {
   line-height: 18px;
   background-color: #8a89ba;
   color: white;
