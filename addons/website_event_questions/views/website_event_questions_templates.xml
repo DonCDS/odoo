@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="registration_attendee_details_questions" inherit_id="website_event.registration_attendee_details" name="Registration Attendee Details with questions">
+    <data>
+        <!-- Generic questions -->
+        <xpath expr="//div[@class='container']/t[1]" position="before">
+            <div class="row" t-if="event.general_question_ids">
+                <div class="col-md-3" t-foreach='event.general_question_ids' t-as='question'>
+                    <strong><t t-esc='question.title'/></strong>
+                </div>
+            </div>
+            <div class="row" t-if="event.general_question_ids">
+                <div class="col-md-3" t-foreach='event.general_question_ids' t-as='question'>
+                    <select t-attf-name="0-answer_ids-#{question.id}" class="form-control" required="true">
+                        <t t-foreach='question.answer_ids' t-as="answer">
+                            <option t-esc='answer.name' t-att-value='answer.id'/>
+                        </t>
+                    </select>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//t[@name='attendee_loop']" position="after">
+            <t t-foreach="range(1, ticket['quantity'] + 1)" t-as="att_counter" name="attendee_question_loop">
+                <t t-set="counter" t-value="counter + 1"/>
+                <div class="row">
+                    <div class="col-md-3" t-foreach='event.specific_question_ids' t-as='question'>
+                        <strong><t t-esc="question.title"/></strong>
+                    </div>
+                </div>
+                <div class="row mb4">
+                    <div class="col-md-3" t-foreach='event.specific_question_ids' t-as='question'>
+                        <select t-attf-name="#{counter}-answer_ids-#{question.id}" class="form-control" required="true">
+                            <t t-foreach='question.answer_ids' t-as="answer">
+                                <option t-esc='answer.name' t-att-value='answer.id'/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Attendee-specific questions -->
+<!--         <xpath expr="//div[@name='attendee_container']" position="inside">
+            <div t-if="event.question_ids" class="container">
+                <div class="row" t-foreach='event.question_ids' t-as='question'>
+                    <div class="col-md-3"><t t-esc='question.title'/></div>
+                    <div class="col-md-3">
+                        <select t-attf-name="#{counter}-answer_ids-#{question.id}" required="true">
+                            <t t-foreach='question.answer_ids' t-as="answer">
+                                <option t-esc='answer.name' t-att-value='answer.id'/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </xpath> -->
+    </data>
+</template>
+
+</odoo>
