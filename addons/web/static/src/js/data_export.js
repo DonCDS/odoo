@@ -57,7 +57,6 @@ instance.web.DataExport = instance.web.Widget.extend({
         }).get();
 
         var domain = this.action.params.domain;
-        self.$el.find(".oe_model_name").text(this.model_name);
         var got_fields = new $.Deferred();
         if (!export_fields.length) {
             self.hide_buttons();

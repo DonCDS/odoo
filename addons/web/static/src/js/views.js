@@ -1422,24 +1422,23 @@ instance.web.View = instance.web.Widget.extend({
     do_search: function(domain, context, group_by) {
     },
     on_sidebar_export: function() {
-        var self= this;
-        if (!(self.get_selected_ids().length)) {
-            this.do_warn(_t("Warning"), _t("You must select at least one record."));
-        } else {
-            self.do_action({
-                type: 'ir.actions.client',
-                tag: 'export',
-                flags: {new_window: true},
-                params: {
-                    model: self.dataset.model,
-                    dataset: self.dataset,
-                    domain: self.get_active_domain(),
-                    selected_ids: self.get_selected_ids(),
-                    context: self.getParent().action.context,
-                    view: self.ViewManager.action.name,
-                }
-            });
+        var selected_ids = this.get_selected_ids();
+        if (selected_ids.length == 0) {
+            return this.do_warn(_t("Warning"), _t("You must select at least one record."));
         }
+        this.do_action({
+            type: 'ir.actions.client',
+            tag: 'export',
+            flags: {new_window: true},
+            params: {
+                model: this.dataset.model || "",
+                dataset: this.dataset || [],
+                domain: this.get_active_domain() || [],
+                selected_ids: selected_ids || [],
+                context: this.getParent().action.context || [],
+                view: this.ViewManager.action.name || self.name,
+            }
+        });
     },
     sidebar_eval_context: function () {
         return $.when({});
