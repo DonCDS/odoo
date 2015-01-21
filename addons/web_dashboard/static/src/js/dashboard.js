@@ -94,30 +94,34 @@
 
     });
 
-    instance.web.dashboard.DashboardPlanner = openerp.planner.PlannerManager.extend({
+    instance.web.dashboard.DashboardPlanner = openerp.planner.PlannerLauncher.extend({
         template: 'DashboardPlanner',
          events: {
-            'click .proress_title': 'open_planner',
+            'click .proress_title': 'setup',
         },
         init: function(parent, data){
             this.data = data;
             this.parent = parent;
             return this._super.apply(this, arguments);
         },
-        open_planner:function(e){
-            var self= this;
+        start: function() {
+            var self = this;
+            return self.fetch_application_planner().done(function(apps) {
+                self.planner_apps = apps;
+                return apps;
+            });
+        },
+        setup: function(e){
+            var self = this;
+            this.planner = planner;
             var menu_id = $(e.currentTarget).attr('data-menu-id');
-            self.planner_launcher && self.planner_launcher.destroy();
-            if (_.contains(_.keys(self.planner_apps), menu_id.toString())) {
-                self.planner_launcher = new instance.planner.PlannerLauncher(self, self.planner_apps[menu_id]);
-                var dialog = new instance.planner.PlannerDialog(self, self.planner_apps[menu_id]);
-                dialog.appendTo(document.body);
-                dialog.on("hide.bs.modal", self, function(percent){
+            this.planner = self.planner_by_menu[menu_id];
+            this.dialog = new instance.planner.PlannerDialog(this.parent, this.planner);
+            this.dialog.appendTo(document.body);
+            this.dialog.$('#PlannerModal').modal('toggle');
+            this.dialog.on("hide.bs.modal", self, function(percent){
                     self.parent.do_reload();
                 });
-                dialog.$('#PlannerModal').modal('toggle');
-            }
-
         },
     });
 
