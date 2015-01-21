@@ -528,7 +528,7 @@
   background-image: -webkit-radial-gradient(circle, #eee 0%, #ccc 40%, #bbb 100%);
   background-image: -moz-radial-gradient(#eee 0%, #ccc 40%, #bbb 100%);
   background-image: -ms-radial-gradient(#eee 0%, #ccc 40%, #bbb 100%);
-  background-image: radial-gradient(circle, #eee 0%, #ccc 40%, #bbb 100%);
+  background-image: radial-gradient(circle, #eeeeee 0%, #cccccc 40%, #bbbbbb 100%);
 }
 .openerp .oe_kanban_status_green {
   background: green;
@@ -954,7 +954,7 @@
 .openerp .oe-view-manager .oe-view-manager-debug {
   margin-right: 5px;
 }
-.openerp .oe-view-manager-header {
+.openerp .oe-header-content {
   background-color: #f0eeee;
   border-bottom: 1px solid #afafb6;
   -webkit-flex-shrink: 0;
@@ -964,140 +964,140 @@
   -moz-user-select: none;
   user-select: none;
 }
-.openerp .oe-view-manager-header .oe-button-column {
+.openerp .oe-header-content .oe-button-column {
   height: 30px;
 }
-.openerp .oe-view-manager-header .dropdown-menu li {
+.openerp .oe-header-content .dropdown-menu li {
   position: relative;
 }
-.openerp .oe-view-manager-header .dropdown-menu li a {
+.openerp .oe-header-content .dropdown-menu li a {
   padding: 3px 25px;
 }
-.openerp .oe-view-manager-header .dropdown-menu .oe_searchview_custom_public a:after, .openerp .oe-view-manager-header .dropdown-menu .oe-share-filter:after {
+.openerp .oe-header-content .dropdown-menu .oe_searchview_custom_public a:after, .openerp .oe-header-content .dropdown-menu .oe-share-filter:after {
   font-family: FontAwesome;
   content: "";
   color: #666;
   margin-left: 3px;
 }
-.openerp .oe-view-manager-header .selected {
+.openerp .oe-header-content .selected {
   display: block;
 }
-.openerp .oe-view-manager-header .selected a {
+.openerp .oe-header-content .selected a {
   font-weight: bold;
 }
-.openerp .oe-view-manager-header .selected a:before {
+.openerp .oe-header-content .selected a:before {
   font-family: FontAwesome;
   position: absolute;
   left: 6px;
   top: 3px;
   content: "";
 }
-.openerp .oe-view-manager-header .oe-right-toolbar {
+.openerp .oe-header-content .oe-right-toolbar {
   float: right;
 }
-.openerp .oe-view-manager-header .oe-right-toolbar > div {
+.openerp .oe-header-content .oe-right-toolbar > div {
   display: inline-block;
 }
-.openerp .oe-view-manager-header .row:first-child {
+.openerp .oe-header-content .row:first-child {
   padding-top: 3px;
   padding-bottom: 3px;
 }
-.openerp .oe-view-manager-header .row:last-child {
+.openerp .oe-header-content .row:last-child {
   padding-bottom: 10px;
 }
-.openerp .oe-view-manager-header .oe_tag {
+.openerp .oe-header-content .oe_tag {
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
   border-radius: 0px;
 }
-.openerp .oe-view-manager-header .oe-view-title {
+.openerp .oe-header-content .oe-view-title {
   font-size: 18px;
   padding-left: 0;
   margin: 0;
   background-color: #f0eeee;
 }
-.openerp .oe-view-manager-header .oe-view-title li {
+.openerp .oe-header-content .oe-view-title li {
   -moz-user-select: initial;
   -webkit-user-select: initial;
   user-select: initial;
 }
-.openerp .oe-view-manager-header .oe-view-manager-search-view {
+.openerp .oe-header-content .oe-header-search-view {
   padding-top: 5px;
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch button {
+.openerp .oe-header-content .oe-header-switch-buttons button {
   width: 34px;
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-kanban:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-kanban:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-list:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-list:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-form:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-form:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-graph:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-graph:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-calendar:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-calendar:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-gantt:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-gantt:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-pivot:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-pivot:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-switch .oe-vm-switch-tree:before {
+.openerp .oe-header-content .oe-header-switch-buttons .oe-header-switch-tree:before {
   content: "";
 }
-.openerp .oe-view-manager-header .oe-view-manager-buttons {
+.openerp .oe-header-content .oe-header-buttons {
   display: inline-block;
 }
-.openerp .oe-view-manager-header .oe-view-manager-buttons > div {
+.openerp .oe-header-content .oe-header-buttons > div {
   display: none;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar {
+.openerp .oe-header-content .oe-header-sidebar {
   display: inline-block;
   float: right;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .oe_form_binary_form {
+.openerp .oe-header-content .oe-header-sidebar .oe_form_binary_form {
   cursor: pointer;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .oe_form_binary_form span {
+.openerp .oe-header-content .oe-header-sidebar .oe_form_binary_form span {
   padding: 3px 20px;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .oe_form_binary_form input.oe_form_binary_file {
+.openerp .oe-header-content .oe-header-sidebar .oe_form_binary_form input.oe_form_binary_file {
   width: 100%;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .oe_form_binary_form:hover {
+.openerp .oe-header-content .oe-header-sidebar .oe_form_binary_form:hover {
   background-color: #f5f5f5;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .oe_file_attachment {
+.openerp .oe-header-content .oe-header-sidebar .oe_file_attachment {
   padding: 3px 20px;
   display: inline-block;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .oe_sidebar_delete_item {
+.openerp .oe-header-content .oe-header-sidebar .oe_sidebar_delete_item {
   padding: 0;
   display: inline-block;
 }
-.openerp .oe-view-manager-header .oe-view-manager-sidebar .dropdown-menu li a {
+.openerp .oe-header-content .oe-header-sidebar .dropdown-menu li a {
   width: 100%;
 }
-.openerp .oe-view-manager-header .oe_form_buttons {
+.openerp .oe-header-content .oe_form_buttons {
   padding: 0;
 }
-.openerp .oe-view-manager-header .oe_form_buttons_view > button {
+.openerp .oe-header-content .oe_form_buttons_view > button {
   float: left;
 }
-.openerp .oe-view-manager-header .oe_form_buttons_view > button:last-child {
+.openerp .oe-header-content .oe_form_buttons_view > button:last-child {
   float: right;
   margin-left: 4px;
 }
-.openerp .oe-view-manager-header .oe-pager-buttons {
+.openerp .oe-header-content .oe-pager-buttons {
   min-height: 30px;
 }
-.openerp .oe_view_manager_inline > .oe-view-manager-header, .openerp .oe_view_manager_inlineview > .oe-view-manager-header {
+.openerp .oe_view_manager_inline > .oe-header-content, .openerp .oe_view_manager_inlineview > .oe-header-content {
   display: none;
 }
 .openerp .o-modal-header > div {

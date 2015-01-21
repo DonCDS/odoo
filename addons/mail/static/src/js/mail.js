@@ -1983,7 +1983,7 @@ openerp.mail = function (session) {
                 options = { $buttons: this.$('.oe-search-options') };
             this.searchview = new session.web.SearchView(this, ds_msg, false, defaults || {}, options);
             this.searchview.on('search_data', this, this.do_searchview_search);
-            this.searchview.appendTo(this.$('.oe-view-manager-search-view')).then(function () {
+            this.searchview.appendTo(this.$('.oe-header-search-view')).then(function () {
                 self.searchview.toggle_visibility(true);
             });
             if (this.searchview.has_defaults) {

@@ -478,33 +478,33 @@
 
 <div t-name="ActionManager" class="oe_application" />
 
-<div t-name="ViewManager" class="oe-view-manager">
-    <div class="oe-view-manager-header container-fluid">
+<div t-name="HeaderWidget" class="oe-header">
+    <div class="oe-header-content container-fluid">
         <div class="row">
             <div class="col-md-6 oe-header-title">
                 <div t-if="widget.session.debug" class="oe_debug_view btn-group btn-group-sm"/>
                 <ol class="oe-view-title breadcrumb" t-if="widget.flags.display_title !== false">
                 </ol>
             </div>
-            <div class="oe-view-manager-search-view col-md-6" />
+            <div class="oe-header-search-view col-md-6" />
         </div>
         <div class="row">
             <div class="col-md-6 oe-button-column">
-                <div class="oe-view-manager-buttons">
+                <div class="oe-header-buttons">
                     <t t-foreach="widget.views" t-as="view">
                         <div t-attf-class="oe-#{view}-buttons"/>
                     </t>                    
                 </div>
-                <div class="oe-view-manager-sidebar"></div>
+                <div class="oe-header-sidebar"></div>
             </div>
             <div class="col-md-6">
                 <div class="oe-search-options btn-group"/>
                 <div class="oe-right-toolbar">
-                    <div class="oe-view-manager-pager"></div>
+                    <div class="oe-header-pager"></div>
                     <t t-if="widget.multiple_views">
-                        <div class="oe-view-manager-switch btn-group btn-group-sm">
+                        <div class="oe-header-switch-buttons btn-group btn-group-sm">
                             <t t-foreach="widget.view_order" t-as="view">
-                                <button type="button" t-attf-class="btn btn-default fa oe-vm-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label">
+                                <button type="button" t-attf-class="btn btn-default fa oe-header-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label">
                                 </button>
                             </t>
                         </div>
@@ -513,6 +513,9 @@
             </div>
         </div>
     </div>
+</div>
+
+<div t-name="ViewManager" class="oe-view-manager">
     <div class="oe-view-manager-content">
         <t t-foreach="widget.views" t-as="view">
             <div t-attf-class="oe-view-manager-view-#{view} fade"/>
@@ -536,7 +539,7 @@
             <li><a data-action="translate">Technical Translation</a></li>
             <li><a data-action="manage_views">Manage Views</a></li>
             <li><a data-action="edit" data-model="ir.ui.view" t-att-data-id="view.fields_view.view_id">Edit <t t-esc="_.str.capitalize(view.fields_view.type)"/> View</a></li>
-            <li t-if="view_manager.searchview"><a data-action="edit" data-model="ir.ui.view" t-att-data-id="view_manager.searchview.view_id">Edit SearchView</a></li> 
+            <li t-if="view_manager.header.searchview"><a data-action="edit" data-model="ir.ui.view" t-att-data-id="view_manager.header.searchview.view_id">Edit SearchView</a></li> 
             <li t-if="view_manager.action"><a data-action="edit" t-att-data-model="view_manager.action.type" t-att-data-id="view_manager.action.id">Edit Action</a></li> 
             <li><a data-action="edit_workflow">Edit Workflow</a></li>
             <li><a data-action="print_workflow">Print Workflow</a></li>

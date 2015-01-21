@@ -45,6 +45,6 @@
     user-select: none;
 }
 
-.oe-view-manager-switch .oe-vm-switch-diagram:before {
+.oe-header-switch-buttons .oe-header-switch-diagram:before {
   content: "";
 }

@@ -827,7 +827,7 @@ $sheet-padding: 16px
                     display: block
         .oe-view-manager-debug
             margin-right: 5px
-    .oe-view-manager-header
+    .oe-header-content
         background-color: rgb(240, 238, 238)
         border-bottom: 1px solid #afafb6
         -webkit-flex-shrink: 0
@@ -878,32 +878,32 @@ $sheet-padding: 16px
                 -moz-user-select: initial
                 -webkit-user-select: initial
                 user-select: initial
-        .oe-view-manager-search-view
+        .oe-header-search-view
             padding-top: 5px
-        .oe-view-manager-switch
+        .oe-header-switch-buttons
             button
                 width: 34px
-            .oe-vm-switch-kanban:before
+            .oe-header-switch-kanban:before
                 content: "\f009"
-            .oe-vm-switch-list:before
+            .oe-header-switch-list:before
                 content: ""
-            .oe-vm-switch-form:before
+            .oe-header-switch-form:before
                 content: "\f044"
-            .oe-vm-switch-graph:before
+            .oe-header-switch-graph:before
                 content: "\f080"
-            .oe-vm-switch-calendar:before
+            .oe-header-switch-calendar:before
                 content: "\f073"
-            .oe-vm-switch-gantt:before
+            .oe-header-switch-gantt:before
                 content: "\f0ae"
-            .oe-vm-switch-pivot:before
+            .oe-header-switch-pivot:before
                 content: "\f0ce"
-            .oe-vm-switch-tree:before
+            .oe-header-switch-tree:before
                 content: "\f036"
-        .oe-view-manager-buttons
+        .oe-header-buttons
             display: inline-block
             > div
                 display: none
-        .oe-view-manager-sidebar
+        .oe-header-sidebar
             display: inline-block
             float: right
             .oe_form_binary_form
@@ -937,7 +937,7 @@ $sheet-padding: 16px
         .oe-pager-buttons
             min-height: 30px
     .oe_view_manager_inline, .oe_view_manager_inlineview
-        > .oe-view-manager-header
+        > .oe-header-content
             display: none
 
         // }}}
