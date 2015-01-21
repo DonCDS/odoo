@@ -27,7 +27,7 @@
             this._super(parent);
             this.planner_launcher = parent;
             this.planner = planner;
-            //this.cookie_name = this.planner['planner_application'] + '_last_page';
+            this.cookie_name = this.planner['planner_application'] + '_last_page';
             this.set('progress', 0);
         },
         start: function() {
@@ -53,7 +53,7 @@
         // ui
         _setup_view: function(){
             var self = this;
-            return instance.jsonRpc('planner/render', 'call', {'view_id': self.planner.view_id[0], 'planner_app': self.planner.planner_application}).then(function(res) {
+            return instance.jsonRpc('/planner/render', 'call', {'view_id': self.planner.view_id[0], 'planner_app': self.planner.planner_application}).then(function(res) {
                 self.$('.content_page').html(res);
                 // add footer to each page
                 self.add_pages_footer();
@@ -62,11 +62,10 @@
                 self.planner.data = _.defaults(self.planner.data, actual_vals);
                 // set the default value
                 self._set_values(self.planner.data);
-                //TODO DKA: show last opened page
-                //var last_open_page = (openerp.session.get_cookie(self.cookie_name)) ? openerp.session.get_cookie(self.cookie_name) : self.planner.data['last_open_page'] || false;
-                // if (last_open_page) {
-                //     self._switch_page(last_open_page);
-                // }
+                var last_open_page = (openerp.get_cookie(self.cookie_name)) ? openerp.get_cookie(self.cookie_name) : self.planner.data['last_open_page'] || false;
+                if (last_open_page) {
+                    self._switch_page(last_open_page);
+                }
                 // Call resize function at the beginning
                 self.resize_dialog();
                 self.$el.on('keyup', "textarea", function() {
@@ -115,8 +114,14 @@
             this.$(".oe_planner div[id^='planner_page']").removeClass('visible');
             this.$(".oe_planner div[id="+page_id+"]").addClass('visible');
             this.planner.data['last_open_page'] = page_id;
-            //TODO DKA: Last Open Page
-            //openerp.session.set_cookie(this.cookie_name, page_id, 8*60*60); // create cookie for 8h
+            //TODO: Remove me when set_cookie method available on openerp instance
+            //create a cookie for 8h
+            document.cookie = [
+                this.cookie_name + '=' + page_id,
+                'path=/',
+                'max-age=' + 8*60*60,
+                'expires=' + new Date(new Date().getTime() + 8*60*60*1000).toGMTString()
+            ].join(';');
         },
         // planner data functions
         _get_values: function(page_id){
