@@ -15,11 +15,12 @@ class Linkedin(http.Controller):
         url_return = state.get('f')
         scope = state.get('d')
         linkedin_obj = request.env['linkedin']
-        api_key = linkedin_obj.get_param_parameter('web.linkedin.apikey')
-        secret_key = linkedin_obj.get_param_parameter('web.linkedin.secretkey')
+        config_obj = request.env['ir.config_parameter'].sudo()
+        api_key = config_obj.get_param('web.linkedin.apikey')
+        secret_key = config_obj.get_param('web.linkedin.secretkey')
         uri = linkedin_obj.get_uri_oauth(a="accessToken")
         response_code = kw.get('code')
-        base_url = linkedin_obj.get_param_parameter('web.base.url')
+        base_url = config_obj.get_param('web.base.url')
         params = {
             'grant_type': 'authorization_code',
             'code': response_code,
@@ -64,6 +65,8 @@ class Linkedin(http.Controller):
 
     @http.route("/linkedin/sync_linkedin_contacts", type='json', auth='user')
     def sync_linkedin_contacts(self, **post):
+        if not post:
+            return False
         return request.env['linkedin'].with_context(post.get('local_context')).sync_linkedin_contacts(post.get('from_url'))
 
 

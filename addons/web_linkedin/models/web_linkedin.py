@@ -111,7 +111,7 @@ class linkedin(models.AbstractModel):
             'response_type': 'code',
             'client_id': api_key,
             'state': True,
-            'redirect_uri': self.get_param_parameter('web.base.url') + '/linkedin/authentication',
+            'redirect_uri': self.env['ir.config_parameter'].sudo().get_param('web.base.url') + '/linkedin/authentication',
         }
 
         url = self.get_uri_oauth(a='authorization') + "?%s" % werkzeug.url_encode(params)
@@ -369,8 +369,9 @@ class linkedin(models.AbstractModel):
     def _get_authorize_uri(self, from_url, scope=False):
         """ This method return the url needed to allow this instance of OpenErp to access linkedin application """
         state_obj = dict(d=scope, f=from_url)
-        base_url = self.get_param_parameter('web.base.url')
-        client_id = self.get_param_parameter('web.linkedin.apikey')
+        config_obj = self.env['ir.config_parameter'].sudo()
+        base_url = config_obj.get_param('web.base.url')
+        client_id = config_obj.get_param('web.linkedin.apikey')
 
         params = {
             'response_type': 'code',
@@ -395,18 +396,16 @@ class linkedin(models.AbstractModel):
             return True
         return False
 
-    def get_param_parameter(self, parameter):
-        return self.env['ir.config_parameter'].sudo().get_param(parameter)
-
     @api.model
     def test_linkedin_keys(self):
-        res = self.get_param_parameter('web.linkedin.apikey') and self.get_param_parameter('web.linkedin.secretkey') and True
+        config_obj = self.env['ir.config_parameter'].sudo()
+        res = config_obj.get_param('web.linkedin.apikey') and config_obj.get_param('web.linkedin.secretkey') and True
         if res:
             return {'is_key_set': res}
         if not self.env['res.users'].has_group('base.group_system'):
             return {'show_warning': True}
         action = self.env['ir.model.data'].get_object_reference('base_setup', 'action_sale_config')[1]
-        base_url = self.get_param_parameter('web.base.url')
+        base_url = config_obj.get_param('web.base.url')
         return {'redirect_url': base_url + '/web?#action=' + str(action)}
 
     @api.multi
