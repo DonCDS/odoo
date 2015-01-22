@@ -14,6 +14,9 @@
             'click .install_new_apps': 'new_apps',
         },
         start:function(){
+            this.load();
+        },
+        load:function(){
             var self = this;
             openerp.jsonRpc("/dashboard/info", 'call', {}).then(function (data) {
                 self.$el.find('#apps').append(QWeb.render("DashboardApps", data));
@@ -26,8 +29,9 @@
             this.do_action('base.open_module_tree');
         },
         do_reload:function(){
-            this.$el.remove();
-            this.do_action('web_dashboard.main');
+            this.$el.find('.col > div').children().remove();
+            this.load();
+            $('.loader').addClass("hidden");
         },
         show_loading:function(message){
             $('.loader .text').text(_t(message));
