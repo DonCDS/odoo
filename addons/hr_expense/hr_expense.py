@@ -317,7 +317,7 @@ class hr_expense_expense(osv.osv):
                 is_price_include = tax_obj.read(cr,uid,tax['id'],['price_include'],context)['price_include']
                 if is_price_include:
                     ## We need to deduce the price for the tax
-                    res[-1]['price'] = (res[-1]['price'] - tax['amount']) or 0.0
+                    res[-1]['price'] = res[-1]['price'] - tax['amount']
                     # tax amount countains base amount without the tax
                     base_tax_amount = (base_tax_amount - tax['amount']) * tax['base_sign']
                 else:
