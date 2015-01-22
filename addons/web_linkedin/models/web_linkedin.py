@@ -5,14 +5,14 @@ import logging
 import requests
 import simplejson
 import urllib2
-from urlparse import urlparse, urlunparse
+from urlparse import urlparse, urlunparse,urljoin
 import werkzeug.urls
 
 from openerp import models, fields, api, _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.exceptions import Warning, AccessError
 
-BASE_API_URL = "https://api.linkedin.com/v1"
+BASE_API_URL = "https://api.linkedin.com"
 COMPANY_FIELDS = ["id", "name", "logo-url", "description", "industry", "website-url", "locations", "universal-name"]
 PEOPLE_FIELDS = ["id", "picture-url", "public-profile-url", "first-name", "last-name", "formatted-name", "location", "phone-numbers", "im-accounts", "main-address", "headline", "positions", "summary", "specialties", "email-address"]
 _logger = logging.getLogger(__name__)
@@ -138,7 +138,7 @@ class linkedin(models.AbstractModel):
             params = {
                 'oauth2_access_token': self.env.user.linkedin_token
             }
-            connection_uri = "/people/~/connections:{people_fields}".format(people_fields='(' + ','.join(PEOPLE_FIELDS) + ')')
+            connection_uri = urljoin(BASE_API_URL, "/v1/people/~/connections:(%s)" % (','.join(PEOPLE_FIELDS)))
             status, res = self.send_request(connection_uri, params=params, headers=headers, type="GET")
             return self.update_contacts(res) if not isinstance(res, str) else False
         return {'status': 'need_auth', 'url': self._get_authorize_uri(from_url=from_url, scope=True)}
@@ -234,7 +234,7 @@ class linkedin(models.AbstractModel):
         }
 
         #Profile Information of current user
-        profile_uri = "/people/~:(first-name,last-name)"
+        profile_uri = urljoin(BASE_API_URL, "/v1/people/~:(first-name,last-name)")
         status, res = self.with_context(kw.get('local_context') or {}).send_request(profile_uri, params=params, headers=headers, type="GET")
         result_data['current_profile'] = res
 
@@ -267,11 +267,11 @@ class linkedin(models.AbstractModel):
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain', 'x-li-format': 'json'}
         #search by universal-name
         if kw.get('search_uid'):
-            universal_search_uri = "/companies/universal-name={company_name}:{company_fields}".format(company_name=kw['search_uid'], company_fields='(' + ','.join(COMPANY_FIELDS) + ')')
+            universal_search_uri = urljoin(BASE_API_URL, "/v1/companies/universal-name=%s:(%s)" % (kw['search_uid'], ','.join(COMPANY_FIELDS)))
             status, universal_company = self.with_context(kw.get('local_context') or {}).send_request(universal_search_uri, params=params, headers=headers, type="GET")
         #Companies search
         search_params = dict(params.copy(), keywords=kw.get('search_term', "") or "", start=offset, count=limit)
-        company_search_uri = "/company-search:(companies:{company_fields})".format(company_fields='(' + ','.join(COMPANY_FIELDS) + ')')
+        company_search_uri = urljoin(BASE_API_URL, "/v1/company-search:(companies:(%s))" % (','.join(COMPANY_FIELDS)))
         status, companies = self.with_context(kw.get('local_context') or {}).send_request(company_search_uri, params=search_params, headers=headers, type="GET")
         if companies and companies['companies'].get('values') and universal_company:
             companies['companies']['values'].append(universal_company)
@@ -299,7 +299,7 @@ class linkedin(models.AbstractModel):
             #but generated url may not have proper public url and may raise 400 or 410 status hence added a warning in response and handle warning at client side
             try:
                 public_profile_url = werkzeug.url_quote_plus("http://www.linkedin.com/pub/%s" % (kw['search_uid']))
-                profile_uri = "/people/url={public_profile_url}:{people_fields}".format(public_profile_url=public_profile_url, people_fields='(' + ','.join(PEOPLE_FIELDS) + ')')
+                profile_uri = urljoin(BASE_API_URL, "/v1/people/url=%s:(%s)" % (public_profile_url, ','.join(PEOPLE_FIELDS)))
                 status, public_profile = self.with_context(kw.get('local_context') or {}).send_request(profile_uri, params=params, headers=headers, type="GET")
 
             except urllib2.HTTPError, e:
@@ -310,7 +310,7 @@ class linkedin(models.AbstractModel):
         search_params = dict(params.copy(), keywords=kw.get('search_term', "") or "", start=offset, count=limit)
         #Note: People search is allowed to only vetted API access request, please go through following link
         #https://help.linkedin.com/app/api-dvr
-        people_search_uri = "/people-search:(people:{people_fields})".format(people_fields='(' + ','.join(PEOPLE_FIELDS) + ')')
+        people_search_uri = urljoin(BASE_API_URL, "/v1/people-search:(people:(%s))" % (','.join(PEOPLE_FIELDS)))
         status, people = self.with_context(kw.get('local_context') or {}).send_request(people_search_uri, params=search_params, headers=headers, type="GET")
         if people and people['people'].get('values') and public_profile:
             people['people']['values'].append(public_profile)
@@ -326,23 +326,23 @@ class linkedin(models.AbstractModel):
                 'current-company': 'true',
                 'count': limit
             }
-            people_criteria_uri = "/people-search:(people:{people_fields})".format(people_fields='(' + ','.join(PEOPLE_FIELDS) + ')')
+            people_criteria_uri = urljoin(BASE_API_URL, "/v1/people-search:(people:(%s))" % (','.join(PEOPLE_FIELDS)))
             status, res = self.send_request(people_criteria_uri, params=params, headers=headers, type="GET")
             return res
         else:
             return {'status': 'need_auth', 'url': self._get_authorize_uri(from_url=from_url)}
 
-    def send_request(self, uri, pre_uri=BASE_API_URL, params={}, headers={}, type="GET"):
+    def send_request(self, uri, params={}, headers={}, type="GET"):
         result = ""
         status = ""
         try:
             if type.upper() == "GET":
                 data = werkzeug.url_encode(params)
-                req = urllib2.Request(pre_uri + uri + "?" + data)
+                req = urllib2.Request(uri + "?" + data)
                 for header_key, header_val in headers.iteritems():
                     req.add_header(header_key, header_val)
             elif type.upper() == 'POST':
-                req = urllib2.Request(pre_uri + uri, params, headers)
+                req = urllib2.Request(uri, params, headers)
             else:
                 raise ('Method not supported [%s] not in [GET, POST]!' % (type))
             request = urllib2.urlopen(req)
