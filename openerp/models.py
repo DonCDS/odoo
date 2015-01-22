@@ -590,61 +590,48 @@ class BaseModel(object):
         # determine the module that introduced the model
         original_module = pool[name]._original_module if name in parents else cls._module
 
-        # build the class hierarchy for the model
+        # determine all the classes the model should inherit from
+        bases = [cls]
         for parent in parents:
             if parent not in pool:
                 raise TypeError('The model "%s" specifies an unexisting parent class "%s"\n'
                     'You may need to add a dependency on the parent class\' module.' % (name, parent))
-            parent_model = pool[parent]
+            bases += type(pool[parent]).__bases__
 
-            # do no use the class of parent_model, since that class contains
-            # inferred metadata; use its ancestor instead
-            parent_class = type(parent_model).__base__
+        # determine the attributes of the model's class
+        inherits = {}
+        depends = {}
+        constraints = []
+        sql_constraints = []
 
-            inherits = dict(parent_class._inherits)
-            inherits.update(cls._inherits)
+        for base in reversed(bases):
+            inherits.update(base._inherits)
 
-            depends = dict(parent_class._depends)
-            for m, fs in cls._depends.iteritems():
-                depends[m] = depends.get(m, []) + fs
+            for mname, fnames in base._depends.iteritems():
+                depends[mname] = depends.get(mname, []) + fnames
 
-            old_constraints = parent_class._constraints
-            new_constraints = cls._constraints
-            # filter out from old_constraints the ones overridden by a
-            # constraint with the same function name in new_constraints
-            constraints = new_constraints + [oldc
-                for oldc in old_constraints
+            # filter out from constraints the ones overridden by a constraint
+            # with the same function name in base._constraints
+            constraints = base._constraints + [oldc
+                for oldc in constraints
                 if not any(newc[2] == oldc[2] and same_name(newc[0], oldc[0])
-                           for newc in new_constraints)
+                           for newc in base._constraints)
             ]
 
-            sql_constraints = cls._sql_constraints + \
-                              parent_class._sql_constraints
+            sql_constraints += base._sql_constraints
 
-            attrs = {
-                '_name': name,
-                '_register': False,
-                '_inherits': inherits,
-                '_depends': depends,
-                '_constraints': constraints,
-                '_sql_constraints': sql_constraints,
-            }
-            cls = type(name, (cls, parent_class), attrs)
-
-        # introduce the "registry class" of the model;
-        # duplicate some attributes so that the ORM can modify them
-        attrs = {
+        # build the actual class of the model
+        cls = type(name, tuple(bases), {
             '_name': name,
             '_register': False,
             '_columns': {},             # filled by _setup_fields()
             '_defaults': {},            # filled by Field._determine_default()
-            '_inherits': dict(cls._inherits),
-            '_depends': dict(cls._depends),
-            '_constraints': list(cls._constraints),
-            '_sql_constraints': list(cls._sql_constraints),
+            '_inherits': inherits,
+            '_depends': depends,
+            '_constraints': constraints,
+            '_sql_constraints': sql_constraints,
             '_original_module': original_module,
-        }
-        cls = type(cls._name, (cls,), attrs)
+        })
 
         # instantiate the model, and initialize it
         model = object.__new__(cls)
@@ -802,9 +789,10 @@ class BaseModel(object):
 
         # retrieve new-style fields (from above registry class) and duplicate
         # them (to avoid clashes with inheritance between different models)
+        for attr in getattr(cls, '_fields', {}):
+            delattr(cls, attr)
         cls._fields = {}
-        above = cls.__bases__[0]
-        for attr, field in getmembers(above, Field.__instancecheck__):
+        for attr, field in getmembers(cls, Field.__instancecheck__):
             cls._add_field(attr, field.new())
 
         # introduce magic fields
