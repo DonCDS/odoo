@@ -570,13 +570,12 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
         _.each(this.views, function (view) {
             // Expose header elements to the views so that they can insert stuff in them
             view.options = _.extend(view.options, {
-                $buttons : self.$('.oe-' + view.type + '-buttons'),
+                $buttons : !self.flags.headless ? self.$('.oe-' + view.type + '-buttons') : undefined,
                 $sidebar : self.$sidebar,
                 $pager : self.$pager,
             }, self.flags, self.flags[view.type], view.options);
-            // show options.$buttons as views will put their $buttons inside it
-            // and call show/hide on them
-            view.options.$buttons.show();
+            // Show $buttons as views will put their own buttons inside it and show/hide them
+            if (view.options.$buttons) view.options.$buttons.show();
             self.$('.oe-header-switch-' + view.type).tooltip();
         });
 

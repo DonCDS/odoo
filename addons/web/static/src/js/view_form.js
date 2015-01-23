@@ -4326,9 +4326,10 @@ instance.web.form.FieldOne2Many = instance.web.form.AbstractField.extend({
 });
 
 instance.web.form.One2ManyViewManager = instance.web.ViewManager.extend({
-    template: 'One2Many.viewmanager',
     init: function(parent, dataset, views, flags) {
-        this._super(parent, dataset, views, _.extend({}, flags, {$sidebar: false}));
+        // Only display the HeaderWidget when there are several views to display
+        var flags = _.extend({}, flags, {$sidebar: false, headless: (views.length <= 1)});
+        this._super(parent, dataset, views, flags);  
         this.registry = instance.web.views.extend({
             list: 'instance.web.form.One2ManyListView',
             form: 'instance.web.form.One2ManyFormView',
