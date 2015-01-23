@@ -65,7 +65,7 @@
             var self = this;
             this.planner = planner;
             this.dialog = new instance.planner.PlannerDialog(this, planner);
-            this.$(".oe_planner_progress").tooltip({html: true, title: this.planner.tooltip_planner, placement: 'bottom', delay: {'show': 500}});
+            this.$(".oe_planner_progress").tooltip({html: true, placement: 'bottom', delay: {'show': 500}}).attr('data-original-title', this.planner.tooltip_planner);
             this.dialog.on("planner_progress_changed", this, function(percent){
                 self.update_parent_progress_bar(percent);
             });
@@ -250,9 +250,15 @@
             var vals = this._get_values(page_id);
             this.planner.data = _.extend(this.planner.data, vals);
             // re compute the progress percentage
-            var mark_btn = this.$(".oe_planner button[id^='mark_button']");
-            var marked_btn = this.$(".oe_planner button[id^='mark_button'].fa-check-square-o");
-            var percent = parseInt((marked_btn.length+1) / (mark_btn.length+1) * 100);
+            var mark_btn = this.$(".oe_planner button[id^='mark_button']").length;
+            var marked_btn = this.$(".oe_planner button[id^='mark_button'].fa-check-square-o").length;
+            var percent;
+            if (mark_btn == marked_btn) {
+                percent = 100;
+            }
+            else {
+                percent = parseInt((marked_btn) / (mark_btn+1) * 100);
+            }
             this.set('progress', percent);
             this.planner.progress = percent;
             // save data and progress in database
@@ -267,7 +273,7 @@
             var btn = $(ev.currentTarget);
             var page_id = btn.attr('data-pageid');
             var active_menu = self.$(".oe_planner li a[href=#"+page_id+"] span");
-            var active_page = self.$(".oe_planner div[id^='planner_page'].panel-collapse.collapse.in");
+            var active_page = self.$(".oe_planner div[id^='planner_page'].planner-page.show");
 
             var next_button = self.$(".oe_planner a[data-parent="+page_id+"]");
             if (!btn.hasClass('fa-check-square-o')) {

@@ -99,7 +99,7 @@
                             <span class="fa fa-fw"/>Welcome
                         </a>
                     </li>
-                    <h4><i class="fa fa-trophy"></i> Prepare</h4>
+                    <h4><i class="fa fa-flag-checkered"></i> Prepare</h4>
                     <li>
                         <a href="#planner_page2">
                             <span class="fa fa-fw"/>Objectives
@@ -120,7 +120,7 @@
                             <span class="fa fa-fw"/>Kanban Stages
                         </a>
                     </li>
-                    <h4><i class="fa fa-tag"></i> Implement</h4>
+                    <h4><i class="fa fa-cogs"></i> Implement</h4>
                     <li>
                         <a href="#planner_page6">
                             <span class="fa fa-fw"/>Tasks &amp; Issues
@@ -141,7 +141,7 @@
                             <span class="fa fa-fw"/>Get more Apps
                         </a>
                     </li>
-                    <h4><i class="fa fa-magnet"></i> Deploy</h4>
+                    <h4><i class="fa fa-rocket"></i> Deploy</h4>
                     <li>
                         <a href="#planner_page10">
                             <span class="fa fa-fw"/>Responsibilities
@@ -157,7 +157,7 @@
                             <span class="fa fa-fw"/>Invite Users
                         </a>
                     </li>
-                    <h4><i class="fa fa-magic"></i> Improve</h4>
+                    <h4><i class="fa fa-book"></i> Improve</h4>
                     <li>
                         <a href="#planner_page13">
                             <span class="fa fa-fw"/>Organize Meetings
@@ -174,37 +174,37 @@
             <!--Planner Pages-->
             <div class="pages col-sm-8 col-md-9 col-xs-12">
 
-                <div id="planner_page1" class="planner-page visible">
-                    <h1>Welcome!</h1>
-
-                    <p><i>Congratulations on choosing Odoo Project to help runnning your company more efficiently!</i>
-                    </p>
-
-                    <p><i>Odoo Project is a super fast and easy way to make your activities and tasks visible to everyone in your company. Follow how things progress, see when things are stuck, know who's in charge, everything in one place.</i></p>
-
-                    <p><i>But because change is never easy, we've created this Planner to guide you.
-                    For example, you'll understand why you shouldn’t use Odoo to plan, but instead to collaborate, or why organizing your projects by role is wrong.</i></p>
-
-                    <p><i>This whole process might take you a few hours, but don't worry, you can take a break and return to it at any time: your progress is automatically saved.</i></p>
-
-                    <p class="last"><i>Good luck!</i></p>
-
-                    <div class="row fabien">
-                        <div class="col-xs-12">
-                            <img class="item" src="/planner/static/src/img/fabien_pinckaers.jpg" />
-                            <div class="item">
-                                <img class="signature" src="/planner/static/src/img/fabien_signature.png" />
-                                <address>
-                                    For the Odoo Team,<br/>
-                                    Fabien Pinckaers, Founder
-                                </address>
-                            </div>
-                        </div>
-                    </div>
+              <div id="planner_page1" class="planner-page show">
+                  <h1>Welcome.</h1>
+                  <i><p>
+                    Congratulations on choosing Odoo Project to help running your company more efficiently!
+                  </p><p>
+                    Odoo Project is a super fast and easy way to make your activities and tasks visible to 
+                    everyone in your company. Follow how things progress, see when things are stuck, know 
+                    who's in charge, everything in one place.
+                  </p><p>
+                    But because change is never easy, we've created this Planner to guide you.<br/>
+                    For example, you'll understand why you shouldn’t use Odoo to plan, but instead to 
+                    collaborate, or why organizing your projects by role is wrong.
+                  </p><p>
+                    This whole process might take you a few hours, but don't worry, you can take a break and 
+                    return to it at any time: your progress is automatically saved.
+                  </p>
+                  <p class="mb32">
+                    Good luck!
+                  </p></i>
+                  <img src="/planner/static/src/img/fabien_pinckaers.jpg" class="pull-left mb32"/>
+                  <div class="pull-left" style="margin-left: 10px">
+                      <img class="signature mb8" src="/planner/static/src/img/fabien_signature.png"/>
+                      <address>
+                          For the Odoo Team,<br/>
+                          Fabien Pinckaers, Founder
+                      </address>
+                  </div>
                 </div>
 
                 <div id="planner_page2" class="planner-page">
-                    <h1>Your objectives</h1>
+                    <h1>Your Objectives</h1>
                     <p class="text-muted">
                         It's essential to be clear about why you want to use Odoo Project and what your goals are.
                         Indeed, there are many ways to manage a project; to find the best one for you, you need know exactly what you want to achieve. And later on, we will hopefully transform your objectives into real improvements for your company.
@@ -218,10 +218,10 @@
 
                                     <h5><strong>What do you expect</strong> from using Odoo Project?:</h5>
 
-                                    <a class="pull-right" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                    <a class="pull-right" data-toggle="collapse" data-parent="#accordion" href=".collapseOne">
                                         <i class="fa fa-question-circle"></i>
                                     </a>
-                                    <div id="collapseOne" class="panel-collapse collapse help">
+                                    <div class="collapse help collapseOne">
                                         <h5>Examples</h5>
                                         <ul>
                                             <li> More efficient communication between employees</li>
@@ -237,9 +237,9 @@
                                     </div>
                                 </li>
 
-                                <li><span>#1</span><textarea id="input_element_exp1" value="" line="1" type="text"/></li>
-                                <li><span>#2</span><textarea id="input_element_exp2" value="" line="1" type="text"/></li>
-                                <li><span>#3</span><textarea id="input_element_exp3" value="" line="1" type="text"/></li>
+                                <li><span>#1</span><textarea id="input_element_obj1" value="" line="1" type="text"/></li>
+                                <li><span>#2</span><textarea id="input_element_obj2" value="" line="1" type="text"/></li>
+                                <li><span>#3</span><textarea id="input_element_obj3" value="" line="1" type="text"/></li>
                             </ul>
                         </div>
 
@@ -248,18 +248,18 @@
 
                 <div id="planner_page3" class="planner-page">
                     <h1>Your Activities</h1>
-                    <p class="text-muted">The Odoo Project app can be used to manage many activities, from the developpment of a new product to the daily operation of a customer support. With a little creativity, it can even be used to manage your marketing communications or personal projects.But just because it can be done doesn't mean it's a good idea: let's start by helping you understand what can be a good project.</p>
+                    <p class="text-muted">The Odoo Project app can be used to manage many activities, from the developpment of a new product to the daily operation of a customer support. With a little creativity, it can even be used to manage your marketing communications or personal projects. But just because it can be done doesn't mean it's a good idea: let's start by helping you understand what can be a good project.</p>
 
                     <div class="row">
                         <div class="notebook-container col-md-12 col-xs-12">
                             <ul class="notebook">
                                 <div class="lines"></div>
                                 <li class="header">
-                                    <h5><strong>What activities</strong> would you like to manage?</h5>
-                                    <a class="pull-right" data-toggle="collapse" data-parent="#accordion" href="#collapseActivity">
+                                    <h5><strong>What Activities</strong> would you like to manage?</h5>
+                                    <a class="pull-right" data-toggle="collapse" data-parent="#accordion" href=".collapseActivity">
                                         <i class="fa fa-question-circle"></i>
                                     </a>
-                                    <div id="collapseActivity" class="panel-collapse collapse help">
+                                    <div class="collapse help collapseActivity">
                                         <h5>Examples</h5>
                                         <ul>
                                             <li> Customer support tickets</li>
@@ -269,9 +269,9 @@
                                         </ul>
                                     </div>
                                 </li>
-                                <li><span>#1</span><textarea id="input_element_kpi1" value="" line="1" type="text"/></li>
-                                <li><span>#2</span><textarea id="input_element_kpi2" value="" line="1" type="text"/></li>
-                                <li><span>#3</span><textarea id="input_element_kpi3" value="" line="1" type="text"/></li>
+                                <li><span>#1</span><textarea id="input_element_act1" value="" line="1" type="text"/></li>
+                                <li><span>#2</span><textarea id="input_element_act2" value="" line="1" type="text"/></li>
+                                <li><span>#3</span><textarea id="input_element_act3" value="" line="1" type="text"/></li>
                             </ul>
                         </div>
                     </div>
@@ -279,7 +279,7 @@
 
                <div id="planner_page4" class="planner-page">
                     <h1>Your Projects </h1>
-                    <p class="text-muted">Depending on what you need and how you want to manage, there are several ways to do things in Odoo.First, choose if you want to think in terms of tasks or issues. Then, activate Timesheets if you need them.</p>
+                    <p class="text-muted">Depending on what you need and how you want to manage, there are several ways to do things in Odoo. First, choose if you want to think in terms of tasks or issues. Then, activate Timesheets if you need them.</p>
                     <h4>1. Learn about Tasks, Issues and Timesheets.</h4>
                     <section class="container-fluid">
                         <div class="row">
@@ -321,7 +321,8 @@
                                             <p>Issues have a specific mechanism called escalation. For example, if the  'Support' team can't solve an issue, they can escalate it to a 'Support level 2' project.</p>
                                             <p>To use Issues, activate 'Track issues and bugs' in your
                                             <a t-att-href="prepare_backend_url(
-                                            'project.action_config_settings')" target="_blank">Project Settings.</a></p>
+                                            'project.action_config_settings')" target="_blank">Project Settings.</a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -339,14 +340,14 @@
                                         <p>
                                             Timesheets can be used for several purposes:
                                         </p>
-                                        <li> <strong>Getting reports</strong> on what your employees are working on</li>
+                                        <p><li> <strong>Getting reports</strong> on what your employees are working on</li>
                                         <li> <strong>Getting statistics</strong> on how much time a task takes to be completed</li>
-                                        <li> <strong>Invoicing your customers</strong> on Time &amp; Material projects.</li>
+                                        <li> <strong>Invoicing your customers</strong> on Time &amp; Material projects</li></p>
                                         <p>To use Timesheets, go to your <a t-att-href="prepare_backend_url(
-                                            'project.action_config_settings')" target="_blank">Project Settings</a> and activate:
-                                        <li>for Tasks: 'Record timesheet lines per tasks'</li>
+                                            'project.action_config_settings')" target="_blank">Project Settings</a> and activate:</p>
+                                        <p><li>for Tasks: 'Record timesheet lines per tasks'</li>
                                         <li>for Issues: 'Invoice working time on issues</li></p>
-                                        <p>You can learn more about Timesheets in the Timesheets section of this planner.</p>
+                                        <p>You can learn more about Timesheets in the <a href="#planner_page7">Timesheets section</a> of this planner.</p>
                                     </div>
                                 </div>
                             </div>
@@ -354,43 +355,44 @@
 
                         <div class="row">
                             <div class="notebook-container col-md-12 col-xs-12">
+                                <h4>2. Now, take some time to list <strong>the Projects you'll need:</strong></h4>
                                 <ul class="notebook">
                                     <div class="lines"></div>
                                     <li class="header">
-                                        <h5> Now, take some time to list <strong>the Projects you'll need:</strong></h5>
+                                        <h5>Your Projects: </h5>
                                     </li>
                                     <li><span>#1</span>
                                     <div class="small">
-                                        <input id="input_element_exp1" value="" line="1" type="text"/>
-                                        <input type="radio" id="input_element_rowtask1" name="row1"/>Tasks
+                                        <input class="user_project" data-id="input_element_user_prj1" id="input_element_prj1" value="" line="1" type="text"/>
+                                        <input type="radio" id="input_element_rowtask1" name="row1" checked="checked"/>Tasks
                                         <input type="radio" id="input_element_rowissue1" name="row1"/>Issues
                                         <input type="checkbox" id="input_element_rowtime1" name="rowtime1"/>with Timesheet
                                     </div></li>
                                     <li><span>#2</span>
                                     <div class="small">
-                                        <input id="input_element_exp2" value="" line="1" type="text"/>
-                                        <input type="radio" id="input_element_rowtask2" name="row2"/>Tasks
+                                        <input class="user_project" data-id="input_element_user_prj2" id="input_element_prj2" value="" line="1" type="text"/>
+                                        <input type="radio" id="input_element_rowtask2" name="row2" checked="checked"/>Tasks
                                         <input type="radio" id="input_element_rowissue2" name="row2"/>Issues
                                         <input type="checkbox" id="input_element_rowtime2" name="rowtime2"/>with Timesheet
                                     </div></li>
                                     <li><span>#3</span>
                                     <div class="small">
-                                        <input id="input_element_exp3" value="" line="1" type="text"/>
-                                        <input type="radio" id="input_element_rowtask3" name="row3"/>Tasks
+                                        <input class="user_project" data-id="input_element_user_prj3" id="input_element_prj3" value="" line="1" type="text"/>
+                                        <input type="radio" id="input_element_rowtask3" name="row3" checked="checked"/>Tasks
                                         <input type="radio" id="input_element_rowissue3" name="row3"/>Issues
                                         <input type="checkbox" id="input_element_rowtime3" name="rowtime3"/>with Timesheet
                                     </div></li>
                                     <li><span>#4</span>
                                     <div class="small">
-                                        <input id="input_element_exp4" value="" line="1" type="text"/>
-                                        <input type="radio" id="input_element_rowtask4" name="row4"/>Tasks
+                                        <input class="user_project" data-id="input_element_user_prj4" id="input_element_prj4" value="" line="1" type="text"/>
+                                        <input type="radio" id="input_element_rowtask4" name="row4" checked="checked"/>Tasks
                                         <input type="radio" id="input_element_rowissue4" name="row4"/>Issues
                                         <input type="checkbox" id="input_element_rowtime4" name="rowtime4"/>with Timesheet
                                     </div></li>
-                                    <li><span>#3</span>
+                                    <li><span>#5</span>
                                     <div class="small">
-                                        <input id="input_element_exp5" value="" line="1" type="text"/>
-                                        <input type="radio" id="input_element_rowtask5" name="row5"/>Tasks
+                                        <input class="user_project" data-id="input_element_user_prj5" id="input_element_prj5" value="" line="1" type="text"/>
+                                        <input type="radio" id="input_element_rowtask5" name="row5" checked="checked"/>Tasks
                                         <input type="radio" id="input_element_rowissue5" name="row5"/>Issues
                                         <input type="checkbox" id="input_element_rowtime5" name="rowtime5"/>with Timesheet
                                     </div></li>
@@ -400,12 +402,12 @@
 
                         <table class="table">
                             <thead>
-                                <th><h3><span class="fa fa-thumbs-o-up"/> The <strong>Right Way</strong></h3></th>
-                                <th><h3><span class="fa fa-thumbs-o-down"/> The <strong> Wrong Way</strong></h3></th>
+                                <th><h4><span class="fa fa-thumbs-o-up"/> The <strong>Right Way</strong> to use projects:</h4></th>
+                                <th><h4><span class="fa fa-thumbs-o-down"/> The <strong> Wrong Way</strong> to use projects:</h4></th>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td> Managing a group of people, a team or a department (example: R &amp; D team, HR Department, etc.)</td>
+                                    <td> Managing a group of people, a team or a department (example: R&amp;D team, HR Department, etc.)</td>
                                     <td> Don't create a Project for each of your customers - this will be too complicated to manage properly.</td>
                                 </tr>
                                 <tr>
@@ -420,15 +422,10 @@
                         </table>
 
                         <div class="row">
-                            <div class="col-md-7 col-xs-12">
+                            <div class="col-md-12 col-xs-12">
                                 <div class="well well-lg footer-well">
-                                    <span><strong>Need help with defining your Projects?</strong></span>
-                                </div>
-                            </div>
-                            <div class="col-md-5 col-xs-12">
-                                <div class="well well-lg footer-well">
-                                    <strong>Contact us now:</strong><br/>
-                                    <a href="https://www.odoo.com/page/live-chat" target="_blank" style="margin-right:10px"><span class="fa fa-comment-o"/> Live Chat on</a><br/>
+                                    <strong>Need help with defining your Projects? Contact us now.</strong><br/>
+                                    <a href="https://www.odoo.com/page/live-chat" target="_blank" style="margin-right:10px"><span class="fa fa-comment-o"/> Live Chat on</a>
                                     <a href="mailto:info@odoo.com?subject=Project%20Planner"><span class="fa fa-envelope-o"/> Email Our Project Expert</a>
                                 </div>
                             </div>
@@ -445,9 +442,10 @@
                     <div class="row">
                         <div class="notebook-container col-md-12 col-xs-12">
                             <ul class="notebook columns">
-                                <li class="row header">
-                                    <div class="col-xs-12 col-md-4 col-md-push-8 fa fa-lightbulb-o">
-                                        <select id="input_element_pipeline">
+                              <li class="row header">
+                                    <h5 class="col-xs-12 col-md-7"><strong>Stages and Requirements</strong> for next stage:</h5>
+                                    <div class="col-xs-12 col-md-5">
+                                        <select id="input_element_kanban_stage_pipeline">
                                             <option value="basic_management">Basic Management</option>
                                             <option value="development_process">Development Process</option>
                                             <option value="marketing_department">Marketing Department</option>
@@ -456,26 +454,40 @@
                                             <option value="repair_workshop">Repair Workshop</option>
                                         </select>
                                     </div>
-                                    <h5 class="col-xs-12 col-md-8 col-md-pull-4"><strong>Stages and requirements</strong> for next stage:</h5>
                                 </li>
                                 <li class="row"><span>#1</span>
                                     <input class="col-xs-12 col-sm-4" id="input_element_stage_0" type="text" value="Ideas"/>
-                                    <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_7" type="text"/>
+                                    <input class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_7" type="text" value="Idea is fully explained"/>
                                 </li>
                                 <li class="row">
                                     <span>#2</span>
                                     <input class="col-xs-12 col-sm-4" id="input_element_stage_1" type="text" value="To Do"/>
-                                    <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_8" type="text"/>
+                                    <input class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_8" type="text" value="Idea has been transformed into concrete actions"/>
                                 </li>
                                 <li class="row">
                                     <span>#3</span>
                                     <input class="col-xs-12 col-sm-4" id="input_element_stage_2" type="text" value="Done"/>
-                                    <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_9" type="text"/>
+                                    <input class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_9" type="text" value="Task is completed"/>
                                 </li>
                                 <li class="row">
                                     <span>#4</span>
                                     <input class="col-xs-12 col-sm-4" id="input_element_stage_3" type="text" value="Cancelled"/>
-                                    <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_10" type="text"/>
+                                    <input class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_10" type="text" value="Reason for cancellation has been documented"/>
+                                </li>
+                                <li class="row">
+                                    <span>#5</span>
+                                    <input class="col-xs-12 col-sm-4" id="input_element_stage_4" type="text"/>
+                                    <input class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_11" type="text"/>
+                                </li>
+                                <li class="row">
+                                    <span>#6</span>
+                                    <input class="col-xs-12 col-sm-4" id="input_element_stage_5" type="text"/>
+                                    <input class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_12" type="text"/>
+                                </li>
+                                <li class="row">
+                                    <span>#7</span>
+                                    <input class="col-xs-12 col-sm-4" id="input_element_stage_6" type="text"/>
+                                    <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_13" type="text"/>
                                 </li>
                                 <div class="lines"></div>
                             </ul>
@@ -516,56 +528,55 @@
                     <section>
                         <div class="container-fluid paragraphs mb2">
                             <div class="row">
-                                <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe02c;" /></div>
-                                <div class="col-sm-7 col-md-6">
-                                    <p><strong>Define a Naming Convention</strong><br/>
+                                <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe02c;" /></div>
+                                <div class="col-sm-6 col-md-5">
+                                    <p><strong>1. Define a Naming Convention</strong><br/>
                                         Add keywords in the 'Task summary' field, for example [Customer name] or [Website]. This will help you navigate and search through the dozens of tasks in your project.
                                     </p>
                                 </div>
-                                <div class="col-sm-4 col-md-4">
-                                    <img class="item" src="/planner_project/static/src/img/task.png" />
+                                <div class="col-sm-5 col-md-5">
+                                    <img src="/planner_project/static/src/img/task.png" />
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe075;" /></div>
+                                <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe075;" /></div>
                                 <div class="col-sm-11 col-md-10">
-                                    <p><strong>Add a Deadline</strong><br/>
+                                    <p><strong>2. Add a Deadline</strong><br/>
                                         The deadline will help you determine if a task or issue is progressing as expected, and to anticipate its next update.
                                     </p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe055;" /></div>
+                                <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe055;" /></div>
                                 <div class="col-sm-11 col-md-10">
-                                    <p><strong>Use Tags</strong><br/>
+                                    <p><strong>3. Use Tags</strong><br/>
                                         Tags  are complementary to your project stages: they can work as a second  level categorization which is very useful if you have a lot of Tasks or Issues to manage. Also, it becomes very easy to find Tasks or Issues by typing  the Tag into the main Search bar.
                                     </p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe007;" /></div>
+                                <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe007;" /></div>
                                 <div class="col-sm-11 col-md-10">
-                                    <p><strong>Use Status Indicator</strong><br/>
-                                        The Status indicator helps you manage Tasks and Issues by attributing them one of 3 different colour: Grey, Green or Red.The meaning of these Status can be freely configured, for example:
+                                    <p><strong>4. Use Status Indicator</strong><br/>
+                                        The Status indicator helps you manage Tasks and Issues by attributing them one of 3 different colour: Grey, Green or Red. The meaning of these Status can be freely configured, for example:
                                         <li>Grey: the Task is in progress (someone is working on it)</li>
-                                        <li> Green: the Task is ready for next stage (the job for this stage is complete)</li>
-                                        <li>Red: the Task is blocked (there's a problem)</li>
-                                        To configure these Kanban Status, got to the  'Project Stages'  and click on a Stage.
-                                    </p>
+                                        <li>Green: the Task is ready for next stage (the job for this stage is complete)</li>
+                                        <li>Red: the Task is blocked (there's a problem)</li></p>
+                                    <p>To configure these Kanban Status, got to the 'Project Stages' and click on a Stage.</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe017;" /></div>
+                                <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe017;" /></div>
                                 <div class="col-sm-11 col-md-10">
-                                    <p><strong>Set Priorities</strong><br/>
+                                    <p><strong>5. Set Priorities</strong><br/>
                                         The <i class="fa fa-star"/> is used to indicate priority: in Kanban view, priority Tasks or Issues will be displayed on top.This is especially useful if you use a Scrum methodology to indicate the tasks for the week.Similarly to Status, you can change the meaning of the Star indicator from the Project Stages tab.
                                     </p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe001;" /></div>
+                                <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe001;" /></div>
                                 <div class="col-sm-11 col-md-10">
-                                    <p><strong> Have Clear Responsibilities</strong><br/>
+                                    <p><strong>6. Have Clear Responsibilities</strong><br/>
                                         The person assigned to a task is responsible for its progress and their avatar is displayed in Kanban view for quick reference.Of course, responsibility for a task can change depending on its stage.
                                     </p>
                                 </div>
@@ -573,34 +584,34 @@
                         </div>
 
                         <div class="alert alert-info info_icon" role="alert">
-                            <span class="fa fa-lightbulb-o fa-lg"/><br/>
-                                <li><strong>A great feature in Odoo is the integration of a Collaborative Notepad called Etherpad.</strong><br/>
-                                It replaces the standard Description area in Tasks and Issues, and is extremely useful for several cases:</li>
-                                <li><strong>You have different users writing Tasks descriptions</strong><br/>
-                                It can quickly become messy if everyone uses his own layout. Etherpad will allow you to create a basic template with a few titles and bullet points, making it much easier for everyone.</li>
-                                <li><strong>You organize distant meetings</strong><br/>
-                                Etherpad allows users to simultaneously edit a text document, see all of the edits in real-time and with the ability to display each author's text in their own color.</li>
-                                <li><strong>You have to manage versions and track changes</strong><br/>
-                                Etherpad auto-saves the document at regular, short intervals, and users can permanently save specific versions at any time.Plus, a "time slider" feature allows anyone to explore the history of the pad.</li>
-                                <li>To use Collaborative Notepads, simply activate the corresponding option in your <a t-att-href="prepare_backend_url('project.view_config_settings')" target="_blank">Project Settings.</a></li>
+                            <span class="fa fa-lightbulb-o fa-lg"/>
+                                <p><strong>A great feature in Odoo is the integration of a Collaborative Notepad called Etherpad.</strong><br/>
+                                It replaces the standard Description area in Tasks and Issues, and is extremely useful for several cases.</p><br/>
+                                <p><li><strong>You have different users writing Tasks descriptions</strong><br/>
+                                It can quickly become messy if everyone uses his own layout. Etherpad will allow you to create a basic template with a few titles and bullet points, making it much easier for everyone.</li></p><br/>
+                                <p><li><strong>You organize distant meetings</strong><br/>
+                                Etherpad allows users to simultaneously edit a text document, see all of the edits in real-time and with the ability to display each author's text in their own color.</li></p><br/>
+                                <p><li><strong>You have to manage versions and track changes</strong><br/>
+                                Etherpad auto-saves the document at regular, short intervals, and users can permanently save specific versions at any time.Plus, a "time slider" feature allows anyone to explore the history of the pad.</li></p><br/>
+                                <p><strong>To use Collaborative Notepads</strong>, simply activate the corresponding option in your <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings.</a></p>
                         </div>
 
-                    <div class="row">
-                        <div class="col-md-12 col-xs-12 ">
-                            <div class="well well-lg footer-well">
-                                <strong>Recommended actions:</strong>
-                                <li>
-                                    <a t-att-href="prepare_backend_url(
-                                        'project.action_view_task')"
-                                        target="_blank">
-                                        Create at least 3 tasks</a> using the above recommendations
-                                </li>
-                                <li>
-                                    Create a task by sending an email to a project alias, with one of your colleagues in copy
-                                </li>
+                        <div class="row">
+                            <div class="col-md-12 col-xs-12 ">
+                                <div class="well well-lg footer-well">
+                                    <strong>Recommended actions:</strong>
+                                    <li>
+                                        <a t-att-href="prepare_backend_url(
+                                            'project.action_view_task')"
+                                            target="_blank">
+                                            Create at least 3 tasks</a> using the above recommendations
+                                    </li>
+                                    <li>
+                                        Create a task by sending an email to a project alias, with one of your colleagues in copy
+                                    </li>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </section>
                 </div>
 
@@ -611,71 +622,78 @@
                     Fortunately, Odoo has may solutions to make them as efficient and painless as possible!<br/></p>
                     <section class="container-fluid">
                         <div class="row">
-                            <h3><strong>Enter you activities</strong> (every day)</h3><br/>
-                                <div class="col-md-4 col-xs-12">
-                                    <div class="panel panel-success">
-                                        <div class="panel-heading">
-                                            <span class="panel-title">
-                                                <span class="fa fa-tasks"/>
-                                                <strong> Directly in Odoo</strong><br/>
-                                            </span>
-                                        </div>
-                                        <div class="panel-body">
-                                            <li>For employees, the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.ir_actions_server_timsheet_sheet', 'form')" target="_blank">Current Timesheet </a> view of the HR module is the main tool to check, modify and confirm Timesheets.</li>
-                                            <li>Alternatively, Timesheets can be added directly from Tasks by activating <strong>'Log work activities on tasks'</strong> in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a></li>
-                                            <li>Or, if you are using Issues, by activating 'Invoice working time on issues', also in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a></li>
-                                        </div>
+                            <h3><strong>Enter you activities</strong> (every day)</h3>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <span class="panel-title">
+                                            <span class="fa fa-tasks"/>
+                                            <strong> Directly in Odoo</strong>
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-xs-12">
-                                    <div class="panel panel-success">
-                                        <div class="panel-heading">
-                                            <span class="panel-title">
-                                                <span class="fa fa-puzzle-piece"/>
-                                                <strong> Via Chrome extension</strong><br/>
-                                            </span>
-                                         </div>
-                                        <div class="panel-body">
-                                            We've developed a super simple and efficient Chrome extension to enter your timesheets:<br/>
-                                            <li> Runs outside Odoo, always available</li>
-                                            <li> Start / Stop a timer in one click</li>
-                                            <li> Plan your activities for the day</li>
-                                            <li> View statistics for the week</li>
-                                            <li> Get full synchronization with Odoo</li><br/>
-                                            <img class="item" src="/planner_project/static/src/img/chrome.png" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-xs-12">
-                                    <div class="panel panel-success">
-                                        <div class="panel-heading">
-                                            <span class="panel-title">
-                                                <span class="fa fa-mobile"/>
-                                                <strong> From your Mobile phone</strong><br/>
-                                            </span>
-                                         </div>
-                                        <div class="panel-body">
-                                            <p>The same features as the Chrome extension, but on your mobile phone!</p>
-                                            <p>Extra useful for when you're with a customer or in a meeting.</p>
-                                            <img class="item" src="/planner_project/static/src/img/google.png" />
-                                        </div>
+                                    <div class="panel-body">
+                                        <li>For employees, the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.ir_actions_server_timsheet_sheet', 'form', 'hr_timesheet_sheet')" target="_blank">Current Timesheet </a> view of the HR module is the main tool to check, modify and confirm Timesheets.</li><br/>
+                                        <li>Alternatively, Timesheets can be added directly from Tasks by activating <strong>'Log work activities on tasks'</strong> in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a></li><br/>
+                                        <li>Or, if you are using Issues, by activating 'Invoice working time on issues', also in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a></li>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <h3><strong>Validate your Timesheets</strong> (every week)</h3><br/>
-                                At the end of the week, each employee should review their entries for the week and makes sure the entries are correctly encoded.This can be done from the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.ir_actions_server_timsheet_sheet', 'form')" target="_blank">Current Timesheet</a> view of the Human Resources module.<br/> 
-                                Once a Timesheet is confirmed by an employee, it needs to be validated by a manager in the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.act_hr_timesheet_sheet_form')" target="_blank">Timesheets to Validate</a> view.
+                            <div class="col-md-4 col-xs-12">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <span class="panel-title">
+                                            <span class="fa fa-puzzle-piece"/>
+                                            <strong> Via Chrome extension</strong>
+                                        </span>
+                                     </div>
+                                    <div class="panel-body">
+                                        We've developed a super simple and efficient Chrome extension to enter your timesheets:<br/><br/>
+                                        <li> Runs outside Odoo, always available</li>
+                                        <li> Start / Stop a timer in one click</li>
+                                        <li> Plan your activities for the day</li>
+                                        <li> View statistics for the week</li>
+                                        <li> Get full synchronization with Odoo</li><br/>
+                                        <img src="/planner_project/static/src/img/chrome.png" />
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row">
-                                <h3><strong>Invoice your customers</strong> (every month)</h3><br/>
+                            <div class="col-md-4 col-xs-12">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <span class="panel-title">
+                                            <span class="fa fa-mobile"/>
+                                            <strong> From your Mobile phone</strong>
+                                        </span>
+                                     </div>
+                                    <div class="panel-body">
+                                        <p>The same features as the Chrome extension, but on your mobile phone!</p>
+                                        <p>Extra useful for when you're with a customer or in a meeting.</p>
+                                        <a href="https://play.google.com/store/apps/details?id=org.bhc.android">
+                                            <img alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h3><strong>Validate your Timesheets</strong> (every week)</h3>
+                            <div class="col-md-12 col-xs-12">
+                                At the end of the week, each employee should review their entries for the week and makes sure the entries are correctly encoded. This can be done from the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.ir_actions_server_timsheet_sheet', 'form', 'hr_timesheet_sheet')" target="_blank">Current Timesheet</a> view of the Human Resources module.<br/> 
+                                Once a Timesheet is confirmed by an employee, it needs to be validated by a manager in the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.act_hr_timesheet_sheet_form', 'form', 'hr_timesheet_sheet')" target="_blank">Timesheets to Validate</a> view.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h3><strong>Invoice your customers</strong> (every month)</h3>
+                            <div class="col-md-12 col-xs-12">
                                 If you work on a Time &amp; Material project, you'll probably want to extract a Timesheet of the tasks and issues to invoice directly to the customer. To do that:<br/>
-                                1. Activate 'Allow invoicing based on timesheets' from the <a t-att-href="prepare_backend_url('hr.action_human_resources_configuration')" target="_blank">Human Resources Settings</a>
-                                2. This will add an Invoice Tasks menu in the Project module, that can be used to select the Timesheet to invoice.
+                                <li> Activate 'Allow invoicing based on timesheets' from the <a t-att-href="prepare_backend_url('hr.action_human_resources_configuration', 'form', 'hr')" target="_blank">Human Resources Settings</a></li>
+                                <li> This will add an Invoice Tasks menu in the Project module, that can be used to select the Timesheet to invoice.</li>
                             </div>
-                            <div class="row">
-                                <h3><strong>Analyze reports</strong> (every a year)</h3><br/>
-                                It's usually a good idea to take time to analyze your tasks and issues once a year.Here are some KPIs you should take a look at. Ask yourself 'How can they be improved?'<br/>
+                        </div>
+                        <div class="row">
+                            <h3><strong>Analyze reports</strong> (every a year)</h3>
+                            <div class="col-md-12 col-xs-12">
+                                <p>It's usually a good idea to take time to analyze your tasks and issues once a year.Here are some KPIs you should take a look at. Ask yourself 'How can they be improved?'</p>
                                 <p><strong>For tasks:</strong>
                                 <li>What is the number of missed deadlines?</li>
                                 <li>What is the difference between initial time estimation and final time spent?</li></p>
@@ -686,24 +704,20 @@
                                 <li>What is their average number of working hours over the year?</li>
                                 <li>What is their average number of tasks or issues worked on / closed ?</li></p>
                             </div>
-                            <div class="row">
-                                <div class="col-md-8 col-xs-12">
-                                    <div class="well well-lg footer-well">
-                                        <span>
-                                            Need help with Timesheets management?
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-xs-12">
-                                    <div class="well well-lg footer-well">
-                                        <strong>Contact us now:</strong><br/>
-                                        <a href="https://www.odoo.com/page/live-chat" target="_blank" style="margin-right:10px">
-                                            <span class="fa fa-comment-o"/> Live Chat on</a><br/>
-                                        <a href="mailto:info@odoo.com?subject=Project%20Planner">
-                                            <span class="fa fa-envelope-o"/> Email Our Project Expert</a>
-                                    </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-xs-12">
+                                <div class="well well-lg footer-well">
+                                    <strong>Need help with Timesheets management? Contact us now:</strong><br/>
+                                    <a href="https://www.odoo.com/page/live-chat" target="_blank" style="margin-right:10px">
+                                        <span class="fa fa-comment-o"/> Live Chat on
+                                    </a>
+                                    <a href="mailto:info@odoo.com?subject=Project%20Planner">
+                                        <span class="fa fa-envelope-o"/> Email Our Project Expert
+                                    </a>
                                 </div>
                             </div>
+                        </div>
                     </section>
                 </div>
 
@@ -743,7 +757,7 @@
                                     </div>
                                     <div class="panel-body">
                                         <p>
-                                            We can automate steps in your workflow, for example:.
+                                            We can automate steps in your workflow, for example:
                                         </p>
                                         <li> Send an alert when a task is stuck in red for more than a few days</li>
                                         <li> Send an automatic confirmation to all issue emails sent to your customer support</li>
@@ -801,7 +815,8 @@
                                 <p>Create bills automatically based on Time &amp; Material.</p>
                                 <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'account_voucher')"
                                     class="btn odoo_purple btn_install" target="_blank">
-                                    <span class="fa fa-arrow-circle-o-down"/> Install now</a>
+                                    <span class="fa fa-arrow-circle-o-down"/> Install now
+                                </a>
                             </div>
                             <div class="text-center col-md-4 col-xs-6">
                                 <span class="fa fa-file-o fa-4x"></span>
@@ -810,7 +825,8 @@
                                 <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'note')"
                                     class="btn odoo_purple btn_install"
                                     target="_blank">
-                                    <span class="fa fa-arrow-circle-o-down"/> Install now</a>
+                                    <span class="fa fa-arrow-circle-o-down"/> Install now
+                                </a>
                             </div>
                         </div>
                     </section>
@@ -819,62 +835,57 @@
                 <div id="planner_page10" class="planner-page">
                     <h1>Responsibilities</h1>
                     <p class="text-muted">
-                        A project usually involves many stakeholders, be it the project's sponsor, resources, customers or external contractors.But the most important person in a project is usually the Project Manager.<br/>
-                        In Odoo, the Project Managers have the responsability of managing the Kanban view: they ensure smooth progression of the projects, minimal downtime between stages and optimal work distribution between resources.
-                    </p><br/>
+                        A project usually involves many stakeholders, be it the project's sponsor, resources, customers or external contractors. But the most important person in a project is usually the Project Manager.<br/>
+                        In Odoo, the Project Managers have the responsability of managing the Kanban view: they ensure smooth progression of the projects, minimal downtime between stages and optimal work distribution between resources.</p>
+                    <p class="text-muted">
+                        Even if there is no specific field in Odoo, it's important to define a person responsible for each stage of your Project.<br/>
+                        This person will have the responsibility for validating each stage and ensuring that the requirements to move to the next stage are met.
+                    </p>
                     <div class="row">
-                        <div class="col-md-12 col-xs-12">
-                            <div class="alert alert-info info_icon" role="alert">
-                            <span class="fa fa-lightbulb-o fa-lg"/>
-                            Even if there is no specific field in Odoo, it's important to define a person responsible for each stage of your Project.<br/>
-                            This person will have the responsibility for validating each stage and ensuring that the requirements to move to the next stage are met.
-                            </div>
-                        </div>
                         <div class="notebook-container col-md-12 col-xs-12">
                             <ul class="notebook columns">
                                 <li class="row header">
-                                    <div class="col-xs-12 col-md-6 col-md-push-6">
-                                        Person Responsible
-                                    </div>
-                                    <h5 class="col-xs-12 col-md-6 col-md-pull-6">
-                                        <select id="input_element_pipeline">
+                                    <h5 class="col-xs-12 col-md-7 col-md-push-5">Person Responsible</h5>
+                                    <div class="col-xs-12 col-md-5 col-md-pull-7">
+                                        <select id="person_responsible_pipeline">
                                             <option>User's Project #1</option>
                                             <option>User's Project #2</option>
                                             <option>User's Project #3</option>
-                                        </select></h5>
+                                        </select>
+                                    </div>
                                 </li>
                                 <li class="row"><span>#1</span>
-                                    <div class="col-xs-12 col-md-6">Analysis</div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <input type="text" id="input_element_user_prj1"/>
+                                    </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#2</span>
-                                    <div class="col-xs-12 col-md-6">Specification</div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <input type="text" id="input_element_user_prj2"/>
+                                    </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#3</span>
-                                    <div class="col-xs-12 col-md-6">Design</div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <input type="text" id="input_element_user_prj3"/>
+                                    </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#4</span>
-                                    <div class="col-xs-12 col-md-6">Developement</div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <input type="text" id="input_element_user_prj4"/>
+                                    </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#5</span>
-                                    <div class="col-xs-12 col-md-6">Testing</div>
-                                    <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
-                                </li>
-                                <li class="row">
-                                    <span>#6</span>
-                                    <div class="col-xs-12 col-md-6">Done</div>
-                                    <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
-                                </li>
-                                <li class="row">
-                                    <span>#7</span>
-                                    <div class="col-xs-12 col-md-6">Cancelled</div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <input type="text" id="input_element_user_prj5"/>
+                                    </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <div class="lines"></div>
@@ -895,53 +906,97 @@
                     <p class="text-muted">Managing notifications is essential: too few and you risk missing critical information, too many and you will be  overloaded with unnecessary information. The trick is to find the right balance between the projects, stages and tasks you want to be informed about. Fortunately, Odoo Project has many levels of notifications and messages you can choose from.</p>
                     <div class="container-fluid paragraphs ">
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe051;" /></div>
-                            <div class="col-sm-8 col-md-7">
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe051;" /></div>
+                            <div class="col-sm-7 col-md-7">
                                 <p>
                                     <strong>Follow only what you need</strong><br/>
-                                    The simplest way to use notifications is to follow a whole Project: you will then receive all the selected notifications for all the Project's new and existing and new Tasks or Issues.</p>
+                                    The simplest way to use notifications is to follow a whole Project: you will then receive all the selected notifications for all the Project's new and existing and new Tasks or Issues.
+                                </p>
                                 <p>
                                     Don't hesitate to select only the events you are interested in!
                                 </p>
                                 <p>Another good way to limit the number of notifications you receive is to only follow your Project's 'Task Assigned' events.  Then you'll be notified when a Task or Issue is created, and can  manually decide if you want to be notified for its other events too.</p>
                             </div>
-                            <div class="col-sm-3 col-md-2">
+                            <div class="col-sm-4 col-md-3">
                                 <img class="signature" src="/planner_project/static/src/img/subtype.png" />
+                                <form class="inputbox">
+                                    <div class="checkbox">
+                                        <label>
+                                          <input type="checkbox"/> Discussions
+                                        </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                          <input type="checkbox"/> Task Assigned
+                                        </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                          <input type="checkbox"/> Task Blocked
+                                        </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                          <input type="checkbox"/> Task Ready for next Stage
+                                        </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                          <input type="checkbox"/> Stage Changed
+                                        </label>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe04a;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe04a;" /></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Rely on the Chatter</strong><br/>
-                                    Below every Task and Issue (or more generally, below every Document in Odoo) is an area called Chatter.</p>
-                                <p>
-                                    It's for logging every change, event or message related to the Document.
-                                </p><br/>
+                                    Below every Task and Issue (or more generally, below every Document in Odoo) is an area called Chatter.
+                                </p>
+                                <p>It's for logging every change, event or message related to the Document.</p>
                                 <p>So if you're looking for the history of a Task, or the latest message on an Issue, simply go to the corresponding Document and you'll find it!</p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe035;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe035;" /></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Be careful about the messages you send</strong><br/>
-                                    Sending a message through Odoo will automatically send an email containing your message to all the followers including internal employees, external users or customers.</p>
-                                <p>
-                                    An  internal message will not send any email notification, but your message will still be displayed to every user that has access to the page.
+                                    Sending a message through Odoo will automatically send an email containing your message to all the followers including internal employees, external users or customers.
                                 </p>
+                                <p>An internal message will not send any email notification, but your message will still be displayed to every user that has access to the page.</p>
                                 <p>If you want to limit access for certain users or customers, simply use the Privacy / Visibility settings in the Project Settings.</p>
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-12 col-md-push-4">
-                                <img class="signature" src="/planner_project/static/src/img/send.png" /><br/>
-                                <input type="radio" id="input_element_msg1" name="msg1"/>Public Project<br/>
-                                <input type="radio" id="input_element_msg2" name="msg1"/>Customer related projects: visible through Portal<br/>
-                                <input type="radio" id="input_element_msg3" name="msg1"/>Internal Project: all employees can access<br/>
-                                <input type="radio" id="input_element_msg4" name="msg1"/>Private Project: followers only
+                            <div class="form-group">
+                                <img src="/planner_project/static/src/img/header.png"/>
+                                <div class="radio">
+                                    <label>
+                                    <input type="radio" name="msg" checked="checked"/> Public Project
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                    <input type="radio" name="msg"/> Customer related projects: visible through Portal
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                    <input type="radio" name="msg"/> Internal Project: all employees can access
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                    <input type="radio" name="msg"/> Private Project: followers only
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe01f;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe01f;" /></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Create tasks and issues by email</strong><br/>
@@ -950,17 +1005,21 @@
                                     This is particularly useful to manage help and support: all incoming email  from customers will be transformed into an issue that you'll be able to track easily!
                                 </p>
                             </div>
-                            <div class="col-sm-12 col-md-12">
-                                <table class="table table-bordered"><tr>
-                                <td><label>Email Alias</label></td>
-                                <td>projectname@yourcompany.com</td>
-                                </tr><tr>
-                                <td><label>Incoming Email create</label></td>
-                                <td>Issues</td>
-                                </tr><tr>
-                                <td><label>Accept Emails from</label></td>
-                                <td>Everyone</td>
-                                </tr></table>
+                            <div class="col-sm-8 col-md-8 col-md-push-2">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td><label>Email Alias</label></td>
+                                        <td>projectname@yourcompany.com</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label>Incoming Email create</label></td>
+                                        <td>Issues</td>
+                                    </tr>
+                                    <tr>
+                                        <td><label>Accept Emails from</label></td>
+                                        <td>Everyone</td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                         <div class="alert alert-info info_icon" role="alert">
@@ -1003,7 +1062,7 @@
                     </p>
                     <div class="container-fluid paragraphs ">
                         <div class="row">
-                            <div class="hidden-xs hidden-sm col-md-2 icon"><span  data-icon="&#xe001;" /></div>
+                            <div class="hidden-xs hidden-sm col-md-2 icon"><span data-icon="&#xe001;"/></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Ask participants to prepare</strong><br/>
@@ -1014,7 +1073,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="hidden-xs hidden-sm col-md-2 icon"><span  data-icon="&#xe003;" /></div>
+                            <div class="hidden-xs hidden-sm col-md-2 icon"><span data-icon="&#xe003;"/></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Prepare yourself as well</strong><br/>
@@ -1025,24 +1084,23 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="hidden-xs hidden-sm col-md-2 icon"><span  data-icon="&#xe04c;" /></div>
+                            <div class="hidden-xs hidden-sm col-md-2 icon"><span data-icon="&#xe04c;"/></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Start with an answer.</strong><br/>
-                                    The worst question to ask is, "What did you do this week?" It invariably  generates unnecessary, time-consuming dialogue from team members. Plus,  you should already know what everyone on the team did during the week.</p>
+                                    The worst question to ask is, "What did you do this week?" It invariably  generates unnecessary, time-consuming dialogue from team members. Plus, you should already know what everyone on the team did during the week.</p>
                                 <p>
                                     For example, risk and issue owners should come prepared to share the status of their item and, ideally, a path to resolution.
                                 </p><br/>
-                                <p>It is better to start with a "project answer," such as: "We are two weeks late", "We are at planned budget" or "We are 50% complete with the process model".  Also if you can, start the meeting on a positive note, such as milestones that have been met or are ahead of schedule. This will make participants feel motivated to engage in the conversation.</p>
+                                <p>It is better to start with a "project answer", such as: "We are two weeks late", "We are at planned budget" or "We are 50% complete with the process model". Also if you can, start the meeting on a positive note, such as milestones that have been met or are ahead of schedule. This will make participants feel motivated to engage in the conversation.</p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="hidden-xs hidden-sm col-md-2 icon"><span  data-icon="&#xe04f;" /></div>
+                            <div class="hidden-xs hidden-sm col-md-2 icon"><span data-icon="&#xe04f;"/></div>
                             <div class="col-xs-12 col-md-10">
                                 <strong> Prepare an agenda (and keep to it)</strong>
                                 <p>Be aware of the team’s productivity and time: try to keep meetings to one hour or less.</p>
-                                <p>Use separate meetings to solve big issues or issues that aren’t important for the entire team.</p>
-                                <br/>
+                                <p>Use separate meetings to solve big issues or issues that aren’t important for the entire team.</p><br/>
                                 <li><strong> Roll call (5 min)</strong>
                                 Let everyone know who is in attendance before starting. This is important  for remote team members who have dialled in and will save you time later.</li>
                                 <li><strong> New business issues (5 min)</strong>
@@ -1051,7 +1109,7 @@
                                 Walk through your project plan and allow each team member to provide a brief status of assignments due this week and tasks planned for the next two  weeks. You want to know whether tasks are on track and if any will miss  their projected deadline. You also want to allow the team member to share  any special considerations that might affect other tasks or members of  the project. Carefully manage this part because some team members will  want to pontificate and spend more time than is really needed. Remember, you’re the project manager.</li>
                                 <li><strong> Critical items (10 min)</strong>
                                 Upon completing the project status review session, summarize the critical items. </li>
-                                <li><strong> Q &amp; A and discussion time (10 min)</strong>
+                                <li><strong> Q&amp;A and discussion time (10 min)</strong>
                                 Always give your team time to ask questions on issues that were not discussed. This gives you another opportunity to reinforce key points that you've picked up during the week or discovered during the meeting.</li>
                                 <li><strong> Summary and follow-up items (5 min)</strong>
                                 Always wrap up with a project status summary and a list of action items  dentified in the meeting to help move the project along.</li>
@@ -1060,7 +1118,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="hidden-xs hidden-sm col-md-2 icon"><span  data-icon="&#xe01e;" /></div>
+                            <div class="hidden-xs hidden-sm col-md-2 icon"><span data-icon="&#xe01e;"/></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Follow every meeting with a recap email</strong><br/>
@@ -1069,7 +1127,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="hidden-xs hidden-sm col-md-2 icon"><span  data-icon="&#xe075;" /></div>
+                            <div class="hidden-xs hidden-sm col-md-2 icon"><span data-icon="&#xe075;"/></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
                                     <strong>Choose the right day</strong><br/>
@@ -1089,18 +1147,19 @@
                                 <div class="panel panel-success">
                                     <div class="panel-heading">
                                         <span class="panel-title">
-                                            <span class="fa fa-laptop"/>
+                                            <span class="fa fa-thumb-tack"/>
                                             <strong> Exercise 1</strong><br/>
                                             <span class="small">Check Workload</span>
                                         </span>
                                      </div>
                                      <div class="panel-body">
                                         <p>
-                                         <strong>Exercise:</strong> Try to get a view of the workload for this week for all your employees (planned hours).
+                                            <strong>Exercise:</strong> Try to get a view of the workload for this week for all your employees (planned hours).
                                         </p>
-                                        <li><a t-att-href="prepare_backend_url(
-                                                'project.action_project_task_user_tree')"
-                                                target="_blank">Tasks analysis</a></li>
+                                        <li>
+                                            <a t-att-href="prepare_backend_url('project.action_project_task_user_tree')"
+                                                target="_blank">Tasks analysis</a>
+                                        </li>
                                     </div>
                                 </div>
                             </div>
@@ -1108,18 +1167,18 @@
                                 <div class="panel panel-success">
                                     <div class="panel-heading">
                                         <span class="panel-title">
-                                            <span class="fa fa-laptop"/>
+                                            <span class="fa fa-thumb-tack"/>
                                             <strong> Exercise 2</strong><br/>
                                             <span class="small">Delay to close an Issue</span>
                                         </span>
                                      </div>
                                      <div class="panel-body">
                                         <p>
-                                         <strong>Exercise:</strong> Try to create a graph with the monthly evolution of the 'Average delay to close'  of Issues.
+                                            <strong>Exercise:</strong> Try to create a graph with the monthly evolution of the 'Average delay to close'  of Issues.
                                         </p>
-                                        <li><a t-att-href="prepare_backend_url(
-                                                'project_issue.action_project_issue_report')"
-                                                target="_blank">Issues analysis</a></li>
+                                        <li>
+                                            <a t-att-href="prepare_backend_url('project_issue.action_project_issue_report', '', 'project_issue')" target="_blank">Issues analysis</a>
+                                        </li>
                                     </div>
                                 </div>
                             </div>
@@ -1127,9 +1186,9 @@
                         <div class="row">
                             <div class="col-md-12 col-xs-12">
                                 <div class="alert alert-info info_icon" role="alert">
-                                <span class="fa fa-lightbulb-o fa-lg"/>
-                                <li>You can save your reports to for easy reuse later</li>
-                                <li>You can even include any report in your dashboard for permanent access!</li>
+                                    <span class="fa fa-lightbulb-o fa-lg"/>
+                                    <li>You can save your reports to for easy reuse later</li>
+                                    <li>You can even include any report in your dashboard for permanent access!</li>
                                 </div>
                             </div>
                         </div>
@@ -1157,8 +1216,7 @@
                       <h1>Congratulations, you're done !</h1>
                       <h3 class="mb1">We hope this process helped you implement our project management application.</h3>
                       <h4 class="mb2">Don't hesitate to <a href="mailto:info@odoo.com?subject=Project%20Planner">send us an email</a> to describe<br/> your experience or to suggest improvements !</h4>
-
-                      <p>Happy Selling!<br/>- The Odoo Team</p>
+                      <p>- The Odoo Team</p>
                       <img src="/planner/static/src/img/odoo_logo.png"/>
                     </div>
                 </div>
@@ -1171,7 +1229,7 @@
         <field name="name">Project Management planner</field>
         <field name="view_id" ref="project_planner"/>
         <field name="menu_id" ref="base.menu_main_pm"/>
-        <field name="progress">0</field>
+        <field name="progress">5</field>
         <field name="planner_application">planner_project</field>
         <field name="tooltip_planner"><![CDATA[
             Learn how to better organize your company using Projects, Tasks, Issues and Timesheets.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'PROJECT Planner',
+    'name': 'Project Planner',
     'summary': 'Help to configure application',
     'version': '1.0',
     'category': 'Planner',
