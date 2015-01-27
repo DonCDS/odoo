@@ -148,11 +148,38 @@
                     event.preventDefault();
                 }
             });
+            this.$snippet.on('snippet-drag-start', this.dragging_snippet_start);
+            this.$snippet.on('snippet-drag-end', this.dragging_snippet_end);
+        },
+
+        dragging_snippet_start: function(event, $snippet){
+            $.each($(".o_parent_menu"), function(index,value){
+                if(!this.getElementsByTagName('ul').length){
+                    $(this.getElementsByTagName('a')[0]).append('<span class="caret"></span>');
+                    $(this.getElementsByTagName('a')[0]).addClass('dropdown-toggle');
+                    $(this.getElementsByTagName('a')[0]).attr('data-toggle','dropdown');
+                    $(this.getElementsByTagName('a')[0]).attr('href','#');
+                    $(this.getElementsByTagName('a')[0]).after('<ul class="dropdown-menu o_editable_menu" role="menu"><li class="o_editable"></li></ul>');
+                }
+            });
+            $(".o_parent_menu").droppable({
+                over:function(){
+                        if(! $(this).hasClass('oe_current_dropdown')){
+                            $('.oe_current_dropdown').removeClass("open oe_current_dropdown");
+                            $(this).addClass("open oe_current_dropdown");
+                        }
+                    }
+            });
+        },
+
+        dragging_snippet_end: function(event, $snippet){
+            $('.oe_current_dropdown').removeClass("open oe_current_dropdown");
         },
 
         _get_snippet_url: function () {
             return '/website/snippets';
         },
+
         _add_check_selector : function (selector, no_check) {
             var self = this;
             var selector = selector.split(/\s*,/).join(":not(.o_snippet_not_selectable), ") + ":not(.o_snippet_not_selectable)";
@@ -512,6 +539,10 @@
                     var $selector_children = $();
                     var vertical = false;
                     var temp = website.snippet.templateOptions;
+
+                    $toInsert = $base_body.clone();
+                   self.$snippet.trigger('snippet-drag-start', $toInsert);
+
                     for (var k in temp) {
                         if ($base_body.is(temp[k].base_selector)) {
                             if (temp[k]['drop-near']) {
@@ -524,8 +555,6 @@
                             }
                         }
                     }
-
-                    $toInsert = $base_body.clone();
 
                     if (!$selector_siblings.length && !$selector_children.length) {
                         console.debug($snippet.find(".oe_snippet_thumbnail_title").text() + " have not insert action: data-drop-near or data-drop-in");
@@ -587,6 +616,7 @@
 
                         setTimeout(function () {
                             self.$snippet.trigger('snippet-dropped', $target);
+                            self.$snippet.trigger('snippet-drag-end', $target);
 
                             website.snippet.start_animation(true, $target);
 

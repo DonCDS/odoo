@@ -8,6 +8,7 @@
       <li><a href="#snippet_content" data-toggle="tab">Content</a></li>
       <li><a href="#snippet_feature" data-toggle="tab">Features</a></li>
       <li><a href="#snippet_effect" data-toggle="tab">Effects</a></li>
+      <li><a href="#snippet_menu" data-toggle="tab">Menu</a></li>
     </ul>
     <div class="tab-content">
 
@@ -756,6 +757,18 @@
 
 </div>
 
+<div id="snippet_menu" class="tab-pane">
+
+    <div name="Column" class="o_block_menu_column">
+        <div class="o_menu">
+            <p>
+                Test snippet
+            </p>
+        </div>
+    </div>
+
+</div>
+
 <div id="snippet_options" class="hidden">
 
     <t t-call="website.snippet_options"/>
@@ -931,6 +944,12 @@
         data-selector="blockquote, .well, .panel-default, .oe_share, .o_image_floating"
         data-drop-near="p, h1, h2, h3, blockquote, .well, .panel-default, .oe_share"
         data-drop-in=".content">
+    </div>
+
+    <div data-js='menu'
+        data-selector=".o_menu"
+        data-drop-in=".o_editable_menu"
+        data-no-check="true">
     </div>
 
     <div data-js='separator'

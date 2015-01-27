@@ -725,6 +725,18 @@ class website(osv.osv):
 class website_menu(osv.osv):
     _name = "website.menu"
     _description = "Website Menu"
+
+    def _has_grandchild(self, cr, uid, ids, name, args, context):
+        res = dict.fromkeys(ids, False)
+
+        for menu in self.browse(cr, uid, ids, context=context):
+            res[menu.id] = False
+            if menu.child_id:
+                for child in menu.child_id:
+                    if child.child_id:
+                        res[menu.id] = True
+        return res
+
     _columns = {
         'name': fields.char('Menu', required=True, translate=True),
         'url': fields.char('Url'),
@@ -736,6 +748,7 @@ class website_menu(osv.osv):
         'child_id': fields.one2many('website.menu', 'parent_id', string='Child Menus'),
         'parent_left': fields.integer('Parent Left', select=True),
         'parent_right': fields.integer('Parent Right', select=True),
+        'has_grandchild': fields.function(_has_grandchild, type='boolean'),
     }
 
     def __defaults_sequence(self, cr, uid, context):
