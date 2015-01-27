@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_frontend" inherit_id="website.assets_frontend" name="Contract Manager">
+      <xpath expr="." position="inside">
+          <link rel='stylesheet' href='/website_contract/static/src/css/website_contract.less'/>
+      </xpath>
+    </template>
+
+    <template id="contract" name="Contracts">
+        <t t-call="website_portal.account">
+            <div class="row">
+                Contract: <t t-esc="account.name"/><br/>
+                Valid until: <t t-esc="account.date"/><br/>
+                Billing/renewal: <t t-esc="account.recurring_interval"/><br/>
+
+                Subtotal: <br/>
+                Taxes: <br/>
+                Total: <br/>
+
+                Invoice Admin:<br/>
+
+                Contract reference: <t t-esc="account.code"/><br/>
+            </div>
+            <div class="row">
+                <div class="oe_plan_selector">
+                    <t t-foreach="account_templates" t-as="template">
+                        <div class="oe_tile br-primary">
+                            <div class="oe_tile_title">
+                                <t t-esc="template.name"/>
+                            </div>
+                            <div class="oe_tile_content">
+                                Add some details to your contract content.
+                            </div>
+                            <div class="oe_tile_bline">
+                                <t t-value="template.total_cost"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+            <div class="row">
+                Terms and conditions: <t t-esc="account.description"/>
+            </div>
+        </t>
+    </template>
+
+
+</odoo>

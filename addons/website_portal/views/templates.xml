@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_frontend" inherit_id="website.assets_frontend" name="Account Manager">
+      <xpath expr="." position="inside">
+          <link rel='stylesheet' href='/website_portal/static/src/css/website_portal.less'/>
+      </xpath>
+    </template>
+
+    <template id="account" name="Account">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row">
+                        <h1 class="text-center">Your Account</h1>
+                        <h2 class="text-center"><small>Manage your contracts and sales documents</small></h2>
+                    </div>
+                    <div class="col-md-9">
+                        <t t-if="inst_analytic" >
+                            <t t-call="website_portal.contracts" />
+                        </t>
+                        <t t-if="inst_sale">
+                            <t t-call="website_portal.quotations" />
+                            <t t-call="website_portal.sale_orders" />
+                            <t t-call="website_portal.invoices" />
+                        </t>
+                    </div>
+                    <div class="col-md-3">
+                        <t t-call="website_portal.contact" />
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="contact" name="Contact">
+        <h3>Your Contacts</h3><hr/>
+        <t t-if="sales_rep">
+            <h5><t t-esc="sales_rep.name"/></h5>
+            <p t-esc="sales_rep.phone"/>
+            <p t-esc="sales_rep.company_id.name"/>
+            <p t-esc="sales_rep.city"/>
+        </t>
+
+    </template>
+
+    <template id="contracts" name="Contracts">
+            <h3>Your Subscriptions</h3><hr/>
+            <table class="table table-hover">
+                <thead>
+                    <th>Name</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                </thead>
+                <t t-foreach="cust_accounts" t-as="account">
+                    <tr>
+                        <td><a href="#"><t t-esc="account.name"/></a></td>
+                        <td>XX#/month</td>
+                        <td><button type="button" class="btn btn-primary btn-xs" disabled="disabled"><t t-esc="account.state"/></button></td>
+                    </tr>
+                </t>
+            </table>
+    </template>
+
+    <template id="quotations" name="Quotations">
+        <h3>Current Quotations</h3><hr/>
+        <table class="table table-hover">
+            <thead>
+                <th>Quotation #</th>
+                <th>Order Date</th>
+                <th>Total</th>
+            </thead>
+            <t t-foreach="cust_quotations" t-as="quotation">
+                <tr>
+                    <td><a href="#"><t t-esc="quotation.name"/></a></td>
+                    <td><t t-esc="quotation.date_order"/></td>
+                    <td><t t-esc="quotation.amount_total"/></td>
+                </tr>
+            </t>
+        </table>
+    </template>
+
+    <template id="sale_orders" name="Sale Oders">
+        <h3>Your Orders</h3><hr/>
+        <table class="table table-hover">
+            <thead>
+                <th>Sale Order #</th>
+                <th>Confirmation Date</th>
+                <th>Total</th>
+                <th>Status</th>
+            </thead>
+            <t t-foreach="cust_orders" t-as="order">
+                <tr>
+                    <td><a href="#"><t t-esc="order.name"/></a></td>
+                    <td><t t-esc="order.date_confirm"/></td>
+                    <td><t t-esc="order.amount_total"/></td>
+                    <td><t t-esc="order.state"/></td>
+                </tr>
+            </t>
+        </table>
+    </template>
+
+    <template id="invoices" name="Invoices and Payments"> 
+        <h3>Your Invoices and Payments</h3><hr/>
+    </template>
+
+
+</odoo>
