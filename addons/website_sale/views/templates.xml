@@ -9,6 +9,7 @@
       <link rel='stylesheet' href='/website_sale/static/src/css/website_sale.css'/>
       <link rel='stylesheet' href='/website_sale/static/src/css/website_mail.css'/>
       <script type="text/javascript" src="/website_sale/static/src/js/website_sale.js"></script>
+      <script type="text/javascript" src="/website_sale/static/src/js/website_sale_rating.js"></script>
       <script type="text/javascript" src="/website_sale/static/src/js/website_sale_payment.js"></script>
       <script type="text/javascript" src="/website_sale/static/src/js/website_sale_validate.js"></script>
       <script type="text/javascript" src="/website_sale/static/src/js/website_sale_tour_buy.js"></script>
@@ -309,7 +310,8 @@
           <div class="row">
             <div class="col-sm-7 col-md-7 col-lg-7">
                 <span itemprop="image" t-field="product.image" t-field-options='{"widget": "image", "class": "product_detail_img"}'/>
-            </div><div class="col-sm-5 col-md-5 col-lg-4 col-lg-offset-1">
+            </div>
+            <div class="col-sm-5 col-md-5 col-lg-4 col-lg-offset-1" id="product_details">
                 <h1 itemprop="name" t-field="product.name">Product Name</h1>
                 <span itemprop="url" style="display:none;" t-esc="'/shop/product/%s' % slug(product)"/>
 
@@ -513,6 +515,97 @@
       </t>
     </p>
   </xpath>
+</template>
+
+
+<template id="rating_product_card" inherit_id="website_sale.product" customize_show="True" name="Rating Card for a Product">
+    <xpath expr="//div[@id='product_details']" position="inside">
+      <style>
+        .rating-average { margin-top:0px;font-size: 54px; }
+        .stars {display: inline-block;}
+        .stars i {margin: 0px;}
+        .progress { margin-bottom: 5px;}
+        .progress-bar { text-align: left; }
+        .rating-desc .col-md-3 {padding-right: 0px;}
+        .sr-only { margin-left: 5px;overflow: visible;clip: auto; }
+      </style>
+        <div class="row rating-card">
+            <div class="col-xs-12 col-md-6 text-center">
+                <h1 class="rating-average">4.0</h1>
+                <div class="stars">
+                  <h3>
+                    <i class="fa fa-star-o"></i>
+                    <i class="fa fa-star-o"></i>
+                    <i class="fa fa-star-o"></i>
+                    <i class="fa fa-star-o"></i>
+                    <i class="fa fa-star-o"></i>
+                  </h3>
+                </div>
+                <div>
+                    <i class="fa fa-user"></i> 1,050,008 votes
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="row rating-desc">
+                    <div class="col-xs-3 col-md-3 text-right">
+                        <i class="fa fa-star">5</i>
+                    </div>
+                    <div class="col-xs-8 col-md-9">
+                        <div class="progress progress-striped">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                                aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                <span class="sr-only">80%</span>
+                            </div>
+                        </div>
+                    </div><!-- end 5 -->
+                    <div class="col-xs-3 col-md-3 text-right">
+                        <i class="fa fa-star">4</i>
+                    </div>
+                    <div class="col-xs-8 col-md-9">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                                aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                <span class="sr-only">60%</span>
+                            </div>
+                        </div>
+                    </div><!-- end 4 -->
+                    <div class="col-xs-3 col-md-3 text-right">
+                        <i class="fa fa-star">3</i>
+                    </div>
+                    <div class="col-xs-8 col-md-9">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20"
+                                aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                                <span class="sr-only">40%</span>
+                            </div>
+                        </div>
+                    </div><!-- end 3 -->
+                    <div class="col-xs-3 col-md-3 text-right">
+                        <i class="fa fa-star">2</i>
+                    </div>
+                    <div class="col-xs-8 col-md-9">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="20"
+                                aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                <span class="sr-only">20%</span>
+                            </div>
+                        </div>
+                    </div><!-- end 2 -->
+                    <div class="col-xs-3 col-md-3 text-right">
+                        <i class="fa fa-star">1</i>
+                    </div>
+                    <div class="col-xs-8 col-md-9">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80"
+                                aria-valuemin="0" aria-valuemax="100" style="width: 15%">
+                                <span class="sr-only">15%</span>
+                            </div>
+                        </div>
+                    </div><!-- end 1 -->
+                </div><!-- end row -->
+            </div>
+        </div>
+    </xpath>
 </template>
 
 <!-- Product options: OpenChatter -->
