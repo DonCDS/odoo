@@ -12,7 +12,7 @@ class website_account(http.Controller):
     def account(self):
         res_modules = request.env['ir.module.module']
         # checking if analytic and sale are installed
-        inst_analytic = (res_modules.search([('name','=','analytic')]).state == 'installed')
+        inst_analytic = (res_modules.search([('name','=','account_analytic_analysis')]).state == 'installed')
         inst_sale = (res_modules.search([('name','=','sale')]).state == 'installed')
         partner = request.env.user.partner_id
         values = {}
@@ -26,6 +26,7 @@ class website_account(http.Controller):
 
         if inst_sale:
             res_sale_order = request.env['sale.order']
+            res_invoices = request.env['account.invoice']
             cust_quotations = res_sale_order.search(['&','|',('partner_id.id','=',partner.id),('partner_id.id','=',partner.commercial_partner_id.id),('state','=','sent')])
             cust_orders = res_sale_order.search([
                 '&',
@@ -34,17 +35,26 @@ class website_account(http.Controller):
                 ('partner_id.id','=',partner.commercial_partner_id.id),
                 ('state','in',['progress','manual','shipping_except','invoice_except'])
                 ])
+            cust_invoices = res_invoices.search([
+                '&',
+                '|',
+                ('partner_id.id','=',partner.id),
+                ('partner_id.id','=',partner.commercial_partner_id.id),
+                ('state','in',['open','paid','cancelled'])
+                ])
+
             values['cust_quotations'] = cust_quotations
             values['cust_orders'] = cust_orders
+            values['cust_invoices'] = cust_invoices
 
         # get customer sales rep
         if partner.user_id:
-            sales_rep = parner.user_id
+            sales_rep = partner.user_id
         elif partner.commercial_partner_id and partner.commercial_partner_id.user_id:
             sales_rep = partner.commercial_partner_id.user_id
         else:
             sales_rep = False
         values['sales_rep'] = sales_rep
+        values['company'] = request.website.company_id
 
-        print values
         return request.website.render("website_portal.account", values)

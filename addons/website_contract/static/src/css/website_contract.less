@@ -1,19 +1,12 @@
-.oe_tile {
-    border-radius: 3px;
-    border-color: @gray-light;
-    border: 1px solid;
-    display: inline-block;
-    overflow: hidden;
-    width: 250px;
-    height: 150px;
-
-    &:hover {
-        box-shadow: 0 0 5px 0 @gray-dark;
-    }
-}
-
-.oe_tile_title {
-    font-size: 2rem;
-    .bg-primary();
+/* centered columns styles */
+.row-centered {
     text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
 }

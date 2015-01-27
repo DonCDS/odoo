@@ -8,41 +8,119 @@
     </template>
 
     <template id="contract" name="Contracts">
-        <t t-call="website_portal.account">
-            <div class="row">
-                Contract: <t t-esc="account.name"/><br/>
-                Valid until: <t t-esc="account.date"/><br/>
-                Billing/renewal: <t t-esc="account.recurring_interval"/><br/>
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>Contract Details</h3>
+                            <div class="col-md-5 col-md-offset-1">
+                                <h4>Status</h4>
+                                <p><strong>Current status: </strong>
+                                    <t t-if="account.state == 'open'">
+                                        <span class="label label-success"><i class="fa fa-fw fa-check"/> Running</span>
+                                    </t>
+                                    <t t-if="account.state == 'pending'">
+                                        <span class="label label-warning"><i class="fa fa-fw fa-refresh"/> To Renew</span>
+                                    </t>
+                                    <t t-if="account.state == 'close'">
+                                        <span class="label label-default"><i class="fa fa-fw fa-remove"/> Closed</span>
+                                    </t>
+                                    <t t-if="account.state == 'cancelled'">
+                                        <span class="label label-danger"><i class="fa fa-fw fa-ban"/> Cancelled</span>
+                                    </t>
+                                </p>
+                                <p><strong>Valid until: </strong><t t-esc="account.date"/></p>
+                                <p><strong>Billing/renewal: </strong>
+                                    Every 
+                                    <t t-esc="account.recurring_interval"/>
+                                    <t t-if="account.recurring_rule_type=='daily'">
+                                        day(s)
+                                    </t>
+                                    <t t-if="account.recurring_rule_type=='weekly'">
+                                        week(s)
+                                    </t>
+                                    <t t-if="account.recurring_rule_type=='monthly'">
+                                        month(s)
+                                    </t>
+                                    <t t-if="account.recurring_rule_type=='yearly'">
+                                        years(s)
+                                    </t>
+                                </p>
+                                <p><strong>Next invoice date: </strong><t t-esc="account.recurring_next_date"/></p>
+                                <br/>
 
-                Subtotal: <br/>
-                Taxes: <br/>
-                Total: <br/>
-
-                Invoice Admin:<br/>
-
-                Contract reference: <t t-esc="account.code"/><br/>
-            </div>
-            <div class="row">
-                <div class="oe_plan_selector">
-                    <t t-foreach="account_templates" t-as="template">
-                        <div class="oe_tile br-primary">
-                            <div class="oe_tile_title">
-                                <t t-esc="template.name"/>
+                                <p><strong>Subtotal: </strong>82.64 €</p>
+                                <p><strong>Taxes: </strong>17.36 €</p>
+                                <p><strong>Total: </strong>100 €</p>
                             </div>
-                            <div class="oe_tile_content">
-                                Add some details to your contract content.
-                            </div>
-                            <div class="oe_tile_bline">
-                                <t t-value="template.total_cost"/>
+                            <div class="col-md-5">
+                                <h4>Invoice Address</h4>
+                                    <div t-field="account.partner_id" t-field-options='{
+                                        "widget": "contact",
+                                        "fields": [
+                                            "name",
+                                            "address",
+                                            "phone",
+                                            "mobile",
+                                            "fax",
+                                            "email"]}'/>
+
+                                <h4>Technical Contact</h4>
+                                <div t-field="account.manager_id" t-field-options='{
+                                        "widget": "contact",
+                                        "fields": [
+                                            "name",
+                                            "address",
+                                            "phone",
+                                            "email"]}'/>
                             </div>
                         </div>
-                    </t>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>Your Plan</h3>
+                            <div class="row row-centered">
+                                <t t-foreach="account_templates" t-as="template">
+                                    <t t-call="website_contract.template_panel"/>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <h3>Active Options</h3>
+                            <p>There are no active options.</p>
+                        </div>
+                        <div class="col-md-12">
+                            <h3>Add Options</h3>
+                            <p>There are no other options available.</p>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>Terms and conditions</h3>
+                            <t t-raw="terms"/>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                Terms and conditions: <t t-esc="account.description"/>
-            </div>
         </t>
+    </template>
+
+    <template id="template_panel">
+        <div class="col-centered col-md-3">
+            <div t-att-class="'panel panel-primary' if (account.template_id.id == template.id) else 'panel panel-default'">
+                <div class="panel-heading">
+                    <h3 class="panel-title text-center" t-esc="template.name"/>
+                </div>
+                <div class="panel-body">
+                    Add some details to your contract content.
+                </div>
+                <div class="panel-footer">
+                    <p class="text-center" t-value="template.total_cost"/>
+                </div>
+            </div>
+        </div>
     </template>
 
 
