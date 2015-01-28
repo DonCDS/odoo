@@ -21,6 +21,7 @@
 
 # decorator makes wrappers that have the same API as their wrapped function;
 # this is important for the openerp.api.guess() that relies on signatures
+from collections import MutableMapping
 from decorator import decorator
 from inspect import getargspec
 
@@ -28,6 +29,38 @@ import lru
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class cache_with_prefix(MutableMapping):
+    """ LRU cache wrapper that automatically prefixes all keys (tuples). """
+    __slots__ = ['cache', 'prefix']
+
+    def __init__(self, cache, prefix):
+        self.cache = cache
+        self.prefix = prefix
+
+    def __len__(self):
+        return len(self.cache)
+
+    def __iter__(self):
+        n = len(self.prefix)
+        for key in self.cache:
+            yield key[n:]
+
+    def __getitem__(self, key):
+        return self.cache[self.prefix + key]
+
+    def __setitem__(self, key, val):
+        self.cache[self.prefix + key] = val
+
+    def __delitem__(self, key):
+        del self.cache[self.prefix + key]
+
+    def clear(self):
+        self.cache.clear_prefix(self.prefix)
+
+    def clear_prefix(self, prefix):
+        self.cache.clear_prefix(self.prefix + prefix)
 
 
 class ormcache(object):
@@ -52,12 +85,7 @@ class ormcache(object):
                 (100*float(self.stat_hit))/(self.stat_miss+self.stat_hit))
 
     def lru(self, model):
-        ormcache = model._ormcache
-        try:
-            d = ormcache[self.method]
-        except KeyError:
-            d = ormcache[self.method] = lru.LRU(self.size)
-        return d
+        return cache_with_prefix(model._ormcache, (self.method,))
 
     def lookup(self, method, *args, **kwargs):
         d = self.lru(args[0])

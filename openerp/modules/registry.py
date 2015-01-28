@@ -105,6 +105,11 @@ class Registry(Mapping):
         return self.models[model_name]
 
     @lazy_property
+    def cache(self):
+        from openerp.tools import cache_with_prefix
+        return cache_with_prefix(RegistryManager.cache, (self.db_name,))
+
+    @lazy_property
     def pure_function_fields(self):
         """ Return the list of pure function fields (field objects) """
         fields = []
@@ -198,13 +203,11 @@ class Registry(Mapping):
         This clears the caches associated to methods decorated with
         ``tools.ormcache`` or ``tools.ormcache_multi`` for all the models.
         """
-        for model in self.models.itervalues():
-            model.clear_caches()
+        self.cache.clear()
         # Special case for ir_ui_menu which does not use openerp.tools.ormcache.
         ir_ui_menu = self.models.get('ir.ui.menu')
         if ir_ui_menu is not None:
             ir_ui_menu.clear_cache()
-
 
     # Useful only in a multi-process context.
     def reset_any_cache_cleared(self):
@@ -287,6 +290,7 @@ class RegistryManager(object):
 
     """
     _registries = None
+    _cache = None
     _lock = threading.RLock()
     _saved_lock = None
 
@@ -306,6 +310,15 @@ class RegistryManager(object):
 
             cls._registries = LRU(size)
         return cls._registries
+
+    @classproperty
+    def cache(cls):
+        with cls.lock():
+            if cls._cache is None:
+                # we allocate one cache entry per 32KB of memory
+                size = max(8192, int(config['limit_memory_soft'] / 32768))
+                cls._cache = LRU(size)
+            return cls._cache
 
     @classmethod
     def lock(cls):

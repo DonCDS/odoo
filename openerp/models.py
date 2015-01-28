@@ -64,7 +64,7 @@ from .api import Environment
 from .exceptions import except_orm, AccessError, MissingError, ValidationError
 from .osv import fields
 from .osv.query import Query
-from .tools import lazy_property, ormcache
+from .tools import lazy_property, ormcache, cache_with_prefix
 from .tools.config import config
 from .tools.misc import CountingStream, DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
 from .tools.safe_eval import safe_eval as eval
@@ -807,8 +807,8 @@ class BaseModel(object):
         # register constraints and onchange methods
         cls._init_constraints_onchanges()
 
-        # prepare ormcache, which must be shared by all instances of the model
-        cls._ormcache = {}
+        # make ormcache easily accessible for all instances of the model
+        cls._ormcache = cache_with_prefix(pool.cache, (cls._name,))
 
     @api.model
     @ormcache()
