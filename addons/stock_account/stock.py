@@ -260,8 +260,12 @@ class stock_picking(osv.osv):
         else:
             account_id = partner.property_account_payable.id
             payment_term = partner.property_supplier_payment_term.id or False
+        if not move.origin:
+            origin = move.picking_id.name
+        else:
+            origin = move.picking_id.name + ', ' + move.origin
         return {
-            'origin': move.picking_id.name,
+            'origin': origin,
             'date_invoice': context.get('date_inv', False),
             'user_id': user_id,
             'partner_id': partner.id,
@@ -285,7 +289,6 @@ class stock_picking(osv.osv):
 
             key = (partner, currency_id, company.id, user_id)
             invoice_vals = self._get_invoice_vals(cr, uid, key, inv_type, journal_id, move, context=context)
-
             if key not in invoices:
                 # Get account and payment terms
                 invoice_id = self._create_invoice_from_picking(cr, uid, move.picking_id, invoice_vals, context=context)
@@ -293,7 +296,10 @@ class stock_picking(osv.osv):
             else:
                 invoice = invoice_obj.browse(cr, uid, invoices[key], context=context)
                 if not invoice.origin or invoice_vals['origin'] not in invoice.origin.split(', '):
-                    origin = filter(None, [invoice.origin, invoice_vals['origin']])
+                    list1 = invoice.origin.split(' ,')
+                    list2 = invoice_vals['origin'].split(' ,')
+                    origin = list1 + list(set(list2) - set(list1))
+                    origin = filter(None, origin)
                     invoice.write({'origin': ', '.join(origin)})
 
             invoice_line_vals = move_obj._get_invoice_line_vals(cr, uid, move, partner, inv_type, context=context)
