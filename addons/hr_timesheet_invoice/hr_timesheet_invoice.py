@@ -174,22 +174,18 @@ class account_analytic_line(osv.osv):
         partner_ids = []
         currency_id = False
         # prepare for iteration on journal and accounts
-        for line in self.pool.get('account.analytic.line').browse(cr, uid, ids, context=context):
+        for line in invoice_line_obj.browse(cr, uid, ids, context=context):
             # check if currency is the same in different accounts when grouping by partner
             if not currency_id :
-                if line.account_id.pricelist_id and line.account_id.pricelist_id.currency_id:
-                    currency_id = line.account_id.pricelist_id.currency_id.id
+                currency_id = line.account_id.pricelist_id.currency_id.id
             if line.account_id.pricelist_id and line.account_id.pricelist_id.currency_id:
-                if line.account_id.pricelist_id.currency_id.id <> currency_id and data['group_by_partner']:
-                    raise osv.except_osv(_('Error!'),
+                if line.account_id.pricelist_id.currency_id.id != currency_id and data['group_by_partner']:
+                    raise UserError(_('Error!'),
                         _('You cannot group invoices having different currencies on different analytic accounts for the same partner.'))
-            
-            if line.journal_id.type not in journal_types:
-                journal_types[line.journal_id.type] = set()
-            if line.account_id.partner_id.id not in partners:
-                partners[line.account_id.partner_id.id] = set()
-            journal_types[line.journal_id.type].add(line.account_id.id)
-            partners[line.account_id.partner_id.id].add(line.account_id.id)
+
+            journal_types.setdefault(line.journal_id.type, set()).add(line.account_id.id)
+            partners.setdefault(line.account_id.partner_id.id, set()).add(line.account_id.id)
+
         for journal_type in journal_types:
             if not data['group_by_partner']:
                 partners = {}
