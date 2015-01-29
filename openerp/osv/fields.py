@@ -120,6 +120,7 @@ class _column(object):
         """
         args0 = {
             'string': string,
+            'help': args.pop('help', None),
             'required': required,
             'readonly': readonly,
             '_domain': domain,
@@ -132,6 +133,9 @@ class _column(object):
             'translate': translate,
             'select': select,
             'manual': manual,
+            'group_operator': args.pop('group_operator', None),
+            'groups': args.pop('groups', None),
+            'deprecated': args.pop('deprecated', None),
         }
         for key, val in args0.iteritems():
             if val:
@@ -149,26 +153,17 @@ class _column(object):
         """ return a column like `self` with the given parameters """
         # memory optimization: reuse self whenever possible; you can reduce the
         # average memory usage per registry by 10 megabytes!
-        return self if self.same_parameters(args) else type(self)(**args)
-
-    def same_parameters(self, args):
-        dummy = object()
-        return all(
-            # either both are falsy, or they are equal
-            (not val1 and not val) or (val1 == val)
-            for key, val in args.iteritems()
-            for val1 in [getattr(self, key, getattr(self, '_' + key, dummy))]
-        )
+        column = type(self)(**args)
+        return self if self.to_field_args() == column.to_field_args() else column
 
     def to_field(self):
         """ convert column `self` to a new-style field """
         from openerp.fields import Field
-        return Field.by_type[self._type](**self.to_field_args())
+        return Field.by_type[self._type](column=self, **self.to_field_args())
 
     def to_field_args(self):
         """ return a dictionary with all the arguments to pass to the field """
         base_items = [
-            ('column', self),                   # field interfaces self
             ('copy', self.copy),
         ]
         truthy_items = filter(itemgetter(1), [
