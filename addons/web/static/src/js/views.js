@@ -541,6 +541,7 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
         this.active_view = this.view_manager.active_view;
         this.views = this.view_manager.views;
         this.flags = this.view_manager.flags;
+        this.title = this.view_manager.title; // needed for Favorites of searchview
         this.view_order = this.view_manager.view_order;
         this.multiple_views = (this.view_order.length > 1);
     },
@@ -976,6 +977,12 @@ instance.web.ViewManager = instance.web.Widget.extend({
         var main_view_loaded = this.switch_mode(default_view, null, default_options);
 
         return $.when(main_view_loaded, header_loaded);
+    },
+    /**
+     * Needed for dashboard.js to add Favorites to Dashboard
+     */
+    get_searchview: function() {
+        return this.header.searchview;
     },
     get_default_view: function() {
         return this.flags.default_view || this.view_order[0].type;
