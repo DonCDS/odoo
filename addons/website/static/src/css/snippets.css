@@ -864,3 +864,9 @@ table.table_desc tr td:last-child {
 .s_features_grid {
   margin-bottom: 16px;
 }
+
+.o_menu_column{
+  min-width: 450px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}

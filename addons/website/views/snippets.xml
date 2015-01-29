@@ -760,10 +760,40 @@
 <div id="snippet_menu" class="tab-pane">
 
     <div name="Column" class="o_block_menu_column">
-        <div class="o_menu">
-            <p>
-                Test snippet
-            </p>
+        <div class="o_menu_column">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <ul class="o_column_list">
+                        </ul>
+                        <p>
+                            Adapt these three columns to fit you design need.
+                            To duplicate, delete or move columns, select the
+                            column and use the top icons to perform your action.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <ul class="o_column_list">
+                        </ul>
+                        <p>
+                            To add a fourth column, reduce the size of these
+                            three columns using the right icon of each block.
+                            Then, duplicate one of the column to create a new
+                            one as a copy.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <ul class="o_column_list">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div name="link" class="o_block_menu_link">
+        <div class="o_menu_link">
+            <a href="/page/homepage">Link</a>
         </div>
     </div>
 
@@ -946,9 +976,14 @@
         data-drop-in=".content">
     </div>
 
-    <div data-js='menu'
-        data-selector=".o_menu"
+    <div data-selector=".o_menu_column"
         data-drop-in=".o_editable_menu"
+        data-no-check="true">
+    </div>
+
+    <div data-js="menu_link" 
+        data-selector=".o_menu_link"
+        data-drop-in=".o_column_list"
         data-no-check="true">
     </div>
 

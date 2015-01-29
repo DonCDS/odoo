@@ -366,7 +366,6 @@ define(['summernote/summernote'], function () {
     eventHandler.dialog.showLinkDialog = function ($editable, $dialog, linkInfo) {
         $editable.data('range').select();
         $editable.data('NoteHistory').recordUndo();
-        
         var editor = new website.editor.LinkDialog($editable, linkInfo);
         editor.appendTo(document.body);
 

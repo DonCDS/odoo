@@ -148,32 +148,39 @@
                     event.preventDefault();
                 }
             });
-            this.$snippet.on('snippet-drag-start', this.dragging_snippet_start);
-            this.$snippet.on('snippet-drag-end', this.dragging_snippet_end);
+            this.init_edit_menu();
         },
 
-        dragging_snippet_start: function(event, $snippet){
-            $.each($(".o_parent_menu"), function(index,value){
-                if(!this.getElementsByTagName('ul').length){
-                    $(this.getElementsByTagName('a')[0]).append('<span class="caret"></span>');
-                    $(this.getElementsByTagName('a')[0]).addClass('dropdown-toggle');
-                    $(this.getElementsByTagName('a')[0]).attr('data-toggle','dropdown');
-                    $(this.getElementsByTagName('a')[0]).attr('href','#');
-                    $(this.getElementsByTagName('a')[0]).after('<ul class="dropdown-menu o_editable_menu" role="menu"><li class="o_editable"></li></ul>');
+        open_dropdown_hover: function(snippet){
+            if(!snippet.hasClass('oe_current_dropdown')){
+                $('.oe_current_dropdown').children('ul').css('visibility', 'hidden');
+                $('.oe_current_dropdown').removeClass("oe_current_dropdown");
+                snippet.addClass("oe_current_dropdown");
+                snippet.children('ul').css('visibility', 'visible');
+                this.make_active(false);
+            }
+        },
+
+        init_edit_menu: function(){
+            var self = this;
+            $("#wrapwrap").click(function(event){
+                if(!$(event.target).hasClass('.dropdown-menu') &&
+                    $(event.target).parents('.dropdown-menu').length === 0){
+                    $('.oe_current_dropdown').children('ul').css('visibility', 'hidden');
+                    $('.oe_current_dropdown').removeClass("oe_current_dropdown");
                 }
             });
+            $(".o_parent_menu:not(:has(ul))").children('a').append('<span class="caret"></span>');
+            $(".o_parent_menu:not(:has(ul))").children('a').after('<ul class="dropdown-menu o_editable_menu" role="menu"><li class="o_editable"></li></ul>');
+            $(".o_parent_menu").children('a').removeAttr('data-toggle href class');
+            $(".o_parent_menu").addClass('open');
+            $(".o_parent_menu").children('ul').css('visibility', 'hidden');
             $(".o_parent_menu").droppable({
-                over:function(){
-                        if(! $(this).hasClass('oe_current_dropdown')){
-                            $('.oe_current_dropdown').removeClass("open oe_current_dropdown");
-                            $(this).addClass("open oe_current_dropdown");
-                        }
-                    }
+                over:function(){self.open_dropdown_hover($(this));}
             });
-        },
-
-        dragging_snippet_end: function(event, $snippet){
-            $('.oe_current_dropdown').removeClass("open oe_current_dropdown");
+            $("body").on("mouseenter", ".o_parent_menu", function () {
+                self.open_dropdown_hover($(this));
+            });
         },
 
         _get_snippet_url: function () {
@@ -540,8 +547,6 @@
                     var vertical = false;
                     var temp = website.snippet.templateOptions;
 
-                    $toInsert = $base_body.clone();
-                   self.$snippet.trigger('snippet-drag-start', $toInsert);
 
                     for (var k in temp) {
                         if ($base_body.is(temp[k].base_selector)) {
@@ -561,6 +566,7 @@
                         return;
                     }
 
+                    $toInsert = $base_body.clone();
                     self.activate_insertion_zones($selector_siblings, $selector_children);
 
                     $('.oe_drop_zone').droppable({
@@ -616,7 +622,6 @@
 
                         setTimeout(function () {
                             self.$snippet.trigger('snippet-dropped', $target);
-                            self.$snippet.trigger('snippet-drag-end', $target);
 
                             website.snippet.start_animation(true, $target);
 
@@ -2090,7 +2095,18 @@
             this.$overlay.removeClass('oe_active');
         },
     });
-
+    
+    website.snippet.options.menu_link = website.snippet.Option.extend({
+        start: function(){
+            this._super();
+            debugger;
+            var new_range = $.summernote.core.range.createFromNode($(this.$target).children('a')[0]);
+            new_range.select();
+            var linkInfo = {range: new_range, text: $(this.$target).children('a').text()};
+            var editor = new website.editor.LinkDialog($(this.$target).children('a'), linkInfo);
+            editor.appendTo(document.body);
+        },
+    });
     /* t-field options */
 
     website.snippet.options.many2one = website.snippet.Option.extend({
