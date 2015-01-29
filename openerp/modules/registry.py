@@ -56,6 +56,7 @@ class Registry(Mapping):
         # database-dependent field metadata
         self.field_digits = {}
         self.field_inverses = {}
+        self.field_triggers = {}
 
         # modules fully loaded (maintained during init phase by `loading` module)
         self._init_modules = set()
@@ -184,6 +185,7 @@ class Registry(Mapping):
         # reset database-dependent field metadata
         self.field_digits = {}
         self.field_inverses = {}
+        self.field_triggers = {}
 
         # load custom models
         ir_model = self['ir.model']

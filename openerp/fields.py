@@ -393,11 +393,6 @@ class Field(object):
     def reset(self):
         """ Prepare `self` for a new setup. """
         self.setup_done = False
-        # self._triggers is a set of pairs (field, path) that represents the
-        # computed fields that depend on `self`. When `self` is modified, it
-        # invalidates the cache of each `field`, and registers the records to
-        # recompute based on `path`. See method `modified` below for details.
-        self._triggers = set()
 
     def setup(self, env):
         """ Make sure that `self` is set up, except for recomputation triggers. """
@@ -529,6 +524,11 @@ class Field(object):
     #
     # Setup of field triggers
     #
+    # The triggers is a collection of pairs (field, path) of computed fields
+    # that depend on `self`. When `self` is modified, it invalidates the cache
+    # of each `field`, and registers the records to recompute based on `path`.
+    # See method `modified` below for details.
+    #
 
     def get_inverse_fields(self, env=None):
         reg = registry() if env is None else env.registry
@@ -537,6 +537,13 @@ class Field(object):
     def add_inverse_field(self, env, field):
         inverse_fields = env.registry.field_inverses.setdefault(self, [])
         inverse_fields.append(field)
+
+    def get_triggers(self, env):
+        return env.registry.field_triggers.get(self, ())
+
+    def add_triggers(self, env, triggers):
+        field_triggers = env.registry.field_triggers.setdefault(self, set())
+        field_triggers.update(triggers)
 
     def setup_triggers(self, env):
         """ Add the necessary triggers to invalidate/recompute `self`. """
@@ -565,22 +572,21 @@ class Field(object):
                 continue
 
             #_logger.debug("Add trigger on %s to recompute %s", field, self)
-            field._triggers.add((self, '.'.join(path0 or ['id'])))
+            field.add_triggers(env, [(self, '.'.join(path0 or ['id']))])
 
             # add trigger on inverse fields, too
             for invf in field.get_inverse_fields(env):
                 #_logger.debug("Add trigger on %s to recompute %s", invf, self)
-                invf._triggers.add((self, '.'.join(path0 + [head])))
+                invf.add_triggers(env, [(self, '.'.join(path0 + [head]))])
 
             # recursively traverse the dependency
             if tail:
                 comodel = env[field.comodel_name]
                 self._setup_dependency(path0 + [head], comodel, tail)
 
-    @property
-    def dependents(self):
+    def get_dependents(self, env):
         """ Return the computed fields that depend on `self`. """
-        return (field for field, path in self._triggers)
+        return (field for field, path in self.get_triggers(env))
 
     ############################################################################
     #
@@ -902,7 +908,7 @@ class Field(object):
         """
         # invalidate the fields that depend on self, and prepare recomputation
         spec = [(self, records._ids)]
-        for field, path in self._triggers:
+        for field, path in self.get_triggers(records.env):
             if path and field.store:
                 # don't move this line to function top, see log
                 env = records.env(user=SUPERUSER_ID, context={'active_test': False})
@@ -922,7 +928,7 @@ class Field(object):
         # invalidate the fields on the records in cache that depend on
         # `records`, except fields currently being computed
         spec = []
-        for field, path in self._triggers:
+        for field, path in self.get_triggers(env):
             target = env[field.model_name]
             computed = target.browse(env.computed[field])
             if path == 'id':
