@@ -1213,13 +1213,18 @@ class account_tax_template(models.Model):
         todo_dict = {}
         tax_template_to_tax = {}
         for tax in self:
+            #Compute children tax ids
+            children = []
+            for child_tax in tax.children_tax_ids:
+                if tax_template_to_tax.get(child_tax.id):
+                    children.append(tax_template_to_tax[child_tax.id])
             vals_tax = {
                 'name': tax.name,
                 'type_tax_use': tax.type_tax_use,
                 'amount_type': tax.amount_type,
                 'active': tax.active,
                 'company_id': company.id,
-                'children_tax_ids': tax.children_tax_ids,
+                'children_tax_ids': children and [(6, 0, children)] or [],
                 'sequence': tax.sequence,
                 'amount': tax.amount,
                 'description': tax.description,
