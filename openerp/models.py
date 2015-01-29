@@ -340,7 +340,7 @@ class BaseModel(object):
     # 1. includes self fields,
     # 2. uses column_info instead of a triple.
     # Warning: _all_columns is deprecated, use _fields instead
-    _all_columns = {}
+    # _all_columns = {}
 
     _table = None
     _log_create = False
@@ -490,7 +490,6 @@ class BaseModel(object):
         """
         field = cls._fields.pop(name)
         cls._columns.pop(name, None)
-        cls._all_columns.pop(name, None)
         if hasattr(cls, name):
             delattr(cls, name)
         return field
@@ -2878,19 +2877,16 @@ class BaseModel(object):
             for name, source in parent._inherit_fields.iteritems():
                 struct[name] = (parent_model, parent_field, source[2], source[3])
 
-        # old-api stuff
-        cls._all_columns = cls._get_column_infos()
-
-    @classmethod
-    def _get_column_infos(cls):
+    @property
+    def _all_columns(self):
         """Returns a dict mapping all fields names (direct fields and
            inherited field via _inherits) to a ``column_info`` struct
            giving detailed columns """
         result = {}
         # do not inverse for loops, since local fields may hide inherited ones!
-        for k, (parent, m2o, col, original_parent) in cls._inherit_fields.iteritems():
+        for k, (parent, m2o, col, original_parent) in self._inherit_fields.iteritems():
             result[k] = fields.column_info(k, col, parent, m2o, original_parent)
-        for k, col in cls._columns.iteritems():
+        for k, col in self._columns.iteritems():
             result[k] = fields.column_info(k, col)
         return result
 
