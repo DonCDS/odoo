@@ -18,8 +18,9 @@ import sys
 import time
 import urllib2
 import zlib
-from xml.etree import ElementTree
 from cStringIO import StringIO
+from lxml import etree
+from collections import defaultdict
 
 import babel.messages.pofile
 import werkzeug.utils
@@ -217,16 +218,16 @@ def concat_xml(file_list):
             contents = fp.read()
             checksum.update(contents)
             fp.seek(0)
-            xml = ElementTree.parse(fp).getroot()
+            xml = etree.parse(fp).getroot()
 
         if root is None:
-            root = ElementTree.Element(xml.tag)
+            root = etree.Element(xml.tag)
         #elif root.tag != xml.tag:
         #    raise ValueError("Root tags missmatch: %r != %r" % (root.tag, xml.tag))
 
         for child in xml.getchildren():
             root.append(child)
-    return ElementTree.tostring(root, 'utf-8'), checksum.hexdigest()
+    return etree.tostring(root, encoding='utf-8'), checksum.hexdigest()
 
 def fs2web(path):
     """convert FS path into web path"""
@@ -1289,6 +1290,7 @@ class Export(http.Controller):
         return [
             {'tag': 'csv', 'label': 'CSV'},
             {'tag': 'xls', 'label': 'Excel', 'error': None if xlwt else "XLWT required"},
+            {'tag': 'xml', 'label': 'XML'},
         ]
 
     def fields_get(self, model):
@@ -1431,7 +1433,7 @@ class ExportFormat(object):
         """
         raise NotImplementedError()
 
-    def from_data(self, fields, rows):
+    def from_data(self, fields, rows, model):
         """ Conversion method from OpenERP's export data to whatever the
         current export class outputs
 
@@ -1461,8 +1463,7 @@ class ExportFormat(object):
         else:
             columns_headers = [val['label'].strip() for val in fields]
 
-
-        return request.make_response(self.from_data(columns_headers, import_data),
+        return request.make_response(self.from_data(columns_headers, import_data, model),
             headers=[('Content-Disposition',
                             content_disposition(self.filename(model))),
                      ('Content-Type', self.content_type)],
@@ -1482,7 +1483,7 @@ class CSVExport(ExportFormat, http.Controller):
     def filename(self, base):
         return base + '.csv'
 
-    def from_data(self, fields, rows):
+    def from_data(self, fields, rows, model):
         fp = StringIO()
         writer = csv.writer(fp, quoting=csv.QUOTE_ALL)
 
@@ -1522,7 +1523,7 @@ class ExcelExport(ExportFormat, http.Controller):
     def filename(self, base):
         return base + '.xls'
 
-    def from_data(self, fields, rows):
+    def from_data(self, fields, rows, model):
         workbook = xlwt.Workbook()
         worksheet = workbook.add_sheet('Sheet 1')
 
@@ -1551,6 +1552,124 @@ class ExcelExport(ExportFormat, http.Controller):
         data = fp.read()
         fp.close()
         return data
+
+class XMLExport(ExportFormat, http.Controller):
+    """Export records in XML data files format"""
+
+    @http.route('/web/export/xml', type='http', auth="user")
+    @serialize_exception
+    def index(self, data, token):
+        return self.base(data, token)
+
+    @property
+    def content_type(self):
+        return 'text/xml; charset=utf-8'
+
+    def filename(self, base):
+        return base + '.xml'
+
+    @staticmethod
+    def val_to_uni(val, _type):
+        """Transform value to unicode"""
+        if _type is "integer":
+            val = unicode(int(val))
+        elif type(val) not in (unicode, bytes):
+            val = unicode(val)
+        return val
+
+    @staticmethod
+    def get_types_and_comodels(fields, model):
+        """Return fields types and relational field comodels"""
+        comodels = defaultdict(dict)
+        types = defaultdict(dict)
+
+        for tokens in (field.split('/') for field in fields):
+            cur_model = model
+            for token in tokens:
+                if token not in types[cur_model]:
+                    types[cur_model][token] = request.env[cur_model].fields_get([token], attributes=['type'])[token]['type']
+
+                if types[cur_model][token] not in ("one2many", "many2many", "many2one"):
+                    continue
+
+                if token in comodels[cur_model]:
+                    cur_model = comodels[cur_model][token]
+                    continue
+
+                comodels[cur_model][token] = cur_model = request.env[cur_model].fields_get([token], attributes=['relation'])[token]['relation']
+
+        return types, comodels
+
+    def from_data(self, fields, rows, model):
+        root = etree.Element('odoo')
+        fields_type, fields_comodel = self.get_types_and_comodels(fields, model)
+
+        seen_ids = set()
+
+        def add_record(fields, values, model, related_records=defaultdict(set)):
+            """Add a record to the root element
+
+            Loop over fields and values to add a record. Can call itself to add
+            not already seen related records. When the id is "" the values are
+            to add a 2many relation, so no record is added but related_records
+            is updated.
+
+            Args:
+                fields: A sequence of fields name corresponding to fields.
+                values: A sequence of values corresponding to fields.
+                model: The model corresponding to fields and values.
+                related_records: A dict mapping relational fields to a set of
+                    records related to the record to add.
+
+            Returns:
+                The xml_id of the added record, or "" if no record added. If
+                the record has been previously added, only return his xml_id.
+            """
+
+            val_fields = {}
+            refs = defaultdict(dict)
+
+            for field_name, value in zip(fields, values):
+                if "id" == field_name:
+                    if value in seen_ids:
+                        return value
+                    _id = value
+                elif "/" in field_name:
+                    ref_field, key = field_name.split('/', 1)
+                    refs[ref_field][key] = value
+                else:
+                    val_fields[field_name] = value
+
+            # treat relational fields
+            for ref in refs:
+                ref_id = add_record(refs[ref].keys(), refs[ref].values(), fields_comodel[model][ref], defaultdict(set))
+                if ref_id:
+                    related_records[ref].add(ref_id)
+
+            if not _id:
+                return ""
+
+            seen_ids.add(_id)
+
+            # adding record
+            new_record = etree.SubElement(root, "record", model=model, id=_id)
+
+            for field_name in val_fields:
+                etree.SubElement(new_record, "field", name=field_name).text = self.val_to_uni(val_fields[field_name], fields_type[model][field_name])
+
+            for field_name in related_records:
+                if fields_type[model][field_name] == "many2one":
+                    etree.SubElement(new_record, "field", name=field_name, ref=related_records[field_name].pop())
+                else:
+                    etree.SubElement(new_record, "field", name=field_name, eval='['+', '.join("(4,ref('"+_id+"'))" for _id in related_records[field_name])+']')
+            related_records.clear()
+
+            return _id
+
+        for values in reversed(rows):
+            add_record(fields, values, model)
+
+        return etree.tostring(root, encoding='utf-8', xml_declaration=True, pretty_print=True)
 
 class Reports(http.Controller):
     POLLING_DELAY = 0.25
