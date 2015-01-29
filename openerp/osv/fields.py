@@ -348,7 +348,7 @@ class float(_column):
 
     @property
     def digits(self):
-        return openerp.registry().field_digits.get(self)
+        return openerp.registry().field_digits[self]
 
     def _symbol_float(self, x):
         result = __builtin__.float(x or 0.0)
@@ -1250,7 +1250,7 @@ class function(_column):
 
     @property
     def digits(self):
-        return openerp.registry().field_digits.get(self)
+        return openerp.registry().field_digits[self]
 
     def _symbol_float(self, x):
         result = __builtin__.float(x or 0.0)

@@ -1004,7 +1004,7 @@ class Float(Field):
 
     @property
     def digits(self):
-        return registry().field_digits.get(self.base_field)
+        return registry().field_digits[self.base_field]
 
     def _setup_digits(self, env):
         """ Setup the digits for `self` and its corresponding column """
@@ -1028,7 +1028,7 @@ class Float(Field):
 
     def convert_to_cache(self, value, record, validate=True):
         # apply rounding here, otherwise value in cache may be wrong!
-        digits = record.pool.field_digits.get(self.base_field)
+        digits = record.pool.field_digits[self.base_field]
         if digits:
             return float_round(float(value or 0.0), precision_digits=digits[1])
         else:
