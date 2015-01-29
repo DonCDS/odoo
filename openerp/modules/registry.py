@@ -53,6 +53,9 @@ class Registry(Mapping):
         self._assertion_report = assertion_report.assertion_report()
         self._fields_by_model = None
 
+        # database-dependent field metadata
+        self.field_digits = {}
+
         # modules fully loaded (maintained during init phase by `loading` module)
         self._init_modules = set()
 
@@ -177,6 +180,9 @@ class Registry(Mapping):
 
             :param partial: ``True`` if all models have not been loaded yet.
         """
+        # reset database-dependent field metadata
+        self.field_digits = {}
+
         # load custom models
         ir_model = self['ir.model']
         cr.execute('select model from ir_model where state=%s', ('manual',))

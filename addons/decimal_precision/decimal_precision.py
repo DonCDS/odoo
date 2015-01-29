@@ -53,6 +53,8 @@ class decimal_precision(orm.Model):
             for field in model._fields.values():
                 if field.type == 'float':
                     field._setup_digits(env)
+                    if field.column:
+                        field.column.digits_change(cr)
         RegistryManager.signal_registry_change(cr.dbname)
 
     def create(self, cr, uid, data, context=None):

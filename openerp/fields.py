@@ -980,26 +980,27 @@ class Float(Field):
     """
     type = 'float'
     _digits = None              # digits argument passed to class initializer
-    digits = None               # digits as computed by setup()
     group_operator = None       # operator for aggregating values
 
     def __init__(self, string=None, digits=None, **kwargs):
         super(Float, self).__init__(string=string, _digits=digits, **kwargs)
 
+    @property
+    def digits(self):
+        return registry().field_digits.get(self.base_field)
+
     def _setup_digits(self, env):
         """ Setup the digits for `self` and its corresponding column """
-        self.digits = self._digits(env.cr) if callable(self._digits) else self._digits
-        if self.digits:
-            assert isinstance(self.digits, (tuple, list)) and len(self.digits) >= 2, \
-                "Float field %s with digits %r, expecting (total, decimal)" % (self, self.digits)
-        if self.column:
-            self.column.digits_change(env.cr)
+        digits = self._digits(env.cr) if callable(self._digits) else self._digits
+        if digits:
+            assert isinstance(digits, (tuple, list)) and len(digits) >= 2, \
+                "Float field %s with digits %r, expecting (total, decimal)" % (self, digits)
+        env.registry.field_digits[self] = digits
 
     def _setup_regular(self, env):
         super(Float, self)._setup_regular(env)
         self._setup_digits(env)
 
-    _related_digits = property(attrgetter('digits'))
     _related_group_operator = property(attrgetter('group_operator'))
 
     _description_digits = property(attrgetter('digits'))
@@ -1010,8 +1011,9 @@ class Float(Field):
 
     def convert_to_cache(self, value, record, validate=True):
         # apply rounding here, otherwise value in cache may be wrong!
-        if self.digits:
-            return float_round(float(value or 0.0), precision_digits=self.digits[1])
+        digits = record.pool.field_digits.get(self.base_field)
+        if digits:
+            return float_round(float(value or 0.0), precision_digits=digits[1])
         else:
             return float(value or 0.0)
 
@@ -1768,7 +1770,7 @@ class Id(Field):
         raise TypeError("field 'id' cannot be assigned")
 
 # imported here to avoid dependency cycle issues
-from openerp import SUPERUSER_ID
+from openerp import SUPERUSER_ID, registry
 from .exceptions import Warning, AccessError, MissingError
 from .models import BaseModel, MAGIC_COLUMNS
 from .osv import fields

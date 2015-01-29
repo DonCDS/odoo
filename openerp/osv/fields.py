@@ -339,33 +339,35 @@ import __builtin__
 class float(_column):
     _type = 'float'
     _symbol_c = '%s'
-    _symbol_f = lambda x: __builtin__.float(x or 0.0)
-    _symbol_set = (_symbol_c, _symbol_f)
     _symbol_get = lambda self,x: x or 0.0
+
+    @property
+    def digits(self):
+        return openerp.registry().field_digits.get(self)
+
+    def _symbol_float(self, x):
+        result = __builtin__.float(x or 0.0)
+        digits = self.digits
+        if digits:
+            precision, scale = digits
+            result = float_repr(float_round(result, precision_digits=scale), precision_digits=scale)
+        return result
 
     def __init__(self, string='unknown', digits=None, digits_compute=None, required=False, **args):
         _column.__init__(self, string=string, required=required, **args)
-        self.digits = digits
+        self._digits = digits
         # synopsis: digits_compute(cr) ->  (precision, scale)
-        self.digits_compute = digits_compute
-
-    def new(self, **args):
-        # float columns are database-dependent, so always recreate them
-        return type(self)(**args)
+        self._digits_compute = digits_compute
 
     def to_field_args(self):
         args = super(float, self).to_field_args()
-        args['digits'] = self.digits_compute or self.digits
+        args['digits'] = self._digits_compute or self._digits
         return args
 
     def digits_change(self, cr):
-        if self.digits_compute:
-            self.digits = self.digits_compute(cr)
-        if self.digits:
-            precision, scale = self.digits
-            self._symbol_set = ('%s', lambda x: float_repr(float_round(__builtin__.float(x or 0.0),
-                                                                       precision_digits=scale),
-                                                           precision_digits=scale))
+        digits = self._digits_compute(cr) if self._digits_compute else self._digits
+        openerp.registry().field_digits[self] = digits
+        self._symbol_set = (self._symbol_c, self._symbol_float)
 
 class date(_column):
     _type = 'date'
@@ -1241,10 +1243,26 @@ class function(_column):
     # function fields are not copied by default
     copy = False
 
+    @property
+    def digits(self):
+        return openerp.registry().field_digits.get(self)
+
+    def _symbol_float(self, x):
+        result = __builtin__.float(x or 0.0)
+        digits = self.digits
+        if digits:
+            precision, scale = digits
+            result = float_repr(float_round(result, precision_digits=scale), precision_digits=scale)
+        return result
+
 #
 # multi: compute several fields in one call
 #
     def __init__(self, fnct, arg=None, fnct_inv=None, fnct_inv_arg=None, type='float', fnct_search=None, obj=None, store=False, multi=False, **args):
+        # pop attributes that should not be assigned to self
+        self._digits = args.pop('digits', (16,2))
+        self._digits_compute = args.pop('digits_compute', None)
+
         _column.__init__(self, **args)
         self._obj = obj
         self._fnct = fnct
@@ -1254,8 +1272,6 @@ class function(_column):
         if 'relation' in args:
             self._obj = args['relation']
 
-        self.digits = args.get('digits', (16,2))
-        self.digits_compute = args.get('digits_compute', None)
         if callable(args.get('selection')):
             from openerp import api
             self.selection = api.expected(api.cr_uid_context, args['selection'])
@@ -1300,7 +1316,7 @@ class function(_column):
         args = super(function, self).to_field_args()
         args['store'] = bool(self.store)
         if self._type in ('float',):
-            args['digits'] = self.digits_compute or self.digits
+            args['digits'] = self._digits_compute or self._digits
         elif self._type in ('selection', 'reference'):
             args['selection'] = self.selection
         elif self._type in ('many2one', 'one2many', 'many2many'):
@@ -1309,13 +1325,9 @@ class function(_column):
 
     def digits_change(self, cr):
         if self._type == 'float':
-            if self.digits_compute:
-                self.digits = self.digits_compute(cr)
-            if self.digits:
-                precision, scale = self.digits
-                self._symbol_set = ('%s', lambda x: float_repr(float_round(__builtin__.float(x or 0.0),
-                                                                           precision_digits=scale),
-                                                               precision_digits=scale))
+            digits = self._digits_compute(cr) if self._digits_compute else self._digits
+            openerp.registry().field_digits[self] = digits
+            self._symbol_set = (self._symbol_c, self._symbol_float)
 
     def search(self, cr, uid, obj, name, args, context=None):
         if not self._fnct_search:
