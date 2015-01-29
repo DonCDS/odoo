@@ -19,18 +19,19 @@
 #
 ##############################################################################
 
-import partner
 import account
-import installer
-import account_invoice
-import account_bank_statement
-import account_bank
-import account_cash_statement
-import account_move_line
 import account_analytic_line
+import account_bank
+import account_bank_statement
+import account_cash_statement
 import account_financial_report
-import product
+import account_invoice
+import account_move_line
+import account_register_payment
 import company
+import installer
+import product
+import partner
 import res_config
 
 import wizard

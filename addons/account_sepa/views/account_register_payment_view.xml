@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_account_register_payment_inherited" model="ir.ui.view">
+            <field name="name">account.register.payment.form.inherited</field>
+            <field name="model">account.register.payment</field>
+            <field name="inherit_id" ref="account.view_account_register_payment" />
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='journal_id']" position="after">
+                    <field name="invoice_type" invisible="1"/>
+                    <field name="sepa_payment_enabled" invisible="1"/>
+                    <field name="pay_via_sepa" attrs="{'invisible': ['|', ('sepa_payment_enabled', '=', False), ('invoice_type', 'in', ('out_invoice', 'in_refund'))]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

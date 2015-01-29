@@ -14,7 +14,6 @@
                                 <field name="payment_amount" widget="monetary"/>
                                 <field name="journal_id" string="Payment Method" widget='selection'/>
                          </group>
-
                          <group>
                                 <field name="date_paid"/>
                                 <field name="reference"/>
@@ -42,7 +41,6 @@
            <field name="view_id" ref="view_account_register_payment"/>
            <field name="target">new</field>
         </record>
-
 
     </data>
 </openerp>

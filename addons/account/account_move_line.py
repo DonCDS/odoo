@@ -98,6 +98,8 @@ class account_move_line(models.Model):
         help="The move of this entry line.", index=True, required=True)
     narration = fields.Text(related='move_id.narration', string='Internal Note')
     ref = fields.Char(related='move_id.ref', string='Reference', store=True)
+    payment_state = fields.Selection([('none', 'None'), ('to_send', 'To send'), ('sent', 'Sent'), ('rejected', 'Rejected')],
+        required=True, default="none")
     statement_id = fields.Many2one('account.bank.statement', string='Statement',
         help="The bank statement used for bank reconciliation", index=True, copy=False)
     reconciled = fields.Boolean(compute='_amount_residual', store=True)

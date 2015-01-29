@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import time
 
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning
-import openerp.addons.decimal_precision as dp
 
 # Map invoice type to prefix of the aml created in the invoice account
 TYPE2PREFIX = {
@@ -13,10 +11,10 @@ TYPE2PREFIX = {
     'in_refund': 'Refund to ',
 }
 
-class account_register_payment(models.TransientModel):
+class account_register_payment(models.Model):
     _name = "account.register.payment"
     _description = "Register payment"
-    
+
     invoice_id = fields.Many2one('account.invoice', String="Related invoice", required=True)
     payment_amount = fields.Float(String='Amount paid', required=True, digits=0)
     date_paid = fields.Date(String='Date paid', default=fields.Date.context_today, required=True)
@@ -47,11 +45,8 @@ class account_register_payment(models.TransientModel):
             })
         return res
 
-    @api.multi
-    def pay(self):
-        """ Create an account_move and account_move_line based on payment then reconcile the invoice with the payment """
-
-        # Compute values
+    def _get_move_vals(self):
+        """ Return dict to create the payment move """
 
         if not self.journal_id.sequence_id:
             raise Warning(_('Configuration Error !'), _('The journal ' + self.journal_id.name + ' does not have a sequence, please specify one.'))
@@ -63,13 +58,22 @@ class account_register_payment(models.TransientModel):
         amount = sign * self.payment_amount
         debit, credit, amount_currency = self.env['account.move.line'].compute_amount_fields(amount, self.journal_id.currency, self.company_id.currency_id)
 
-        invoice_account_aml_name = self.invoice_id.number
-        payment_account_aml_name = TYPE2PREFIX[self.invoice_id.type] + self.partner_id.name
+        return {
+            'name': move_name,
+            'date': self.date_paid,
+            'ref': self.reference,
+            'company_id': self.company_id.id,
+            'journal_id': self.journal_id.id,
+            'line_id': [
+                (0, 0, self._get_invoice_account_move_line_vals(debit, credit, amount_currency)),
+                (0, 0, self._get_payment_account_move_line_vals(credit, debit, -amount_currency))
+            ],
+        }
 
-        # Create move
-
-        invoice_account_aml = {
-            'name': invoice_account_aml_name,
+    def _get_invoice_account_move_line_vals(self, debit, credit, amount_currency):
+        """ Return dict to create the move line in the invoice account """
+        return {
+            'name': self.invoice_id.number,
             'account_id': self.invoice_id.account_id.id,
             'journal_id': self.journal_id.id,
             'debit': debit,
@@ -81,25 +85,28 @@ class account_register_payment(models.TransientModel):
             'invoice': self.invoice_id.id,
         }
 
-        payment_account_aml = invoice_account_aml.copy()
-        payment_account_aml.update({
-            'name': payment_account_aml_name,
+    def _get_payment_account_move_line_vals(self, debit, credit, amount_currency):
+        """ Return dict to create the move line in the invoice account """
+        return {
+            'name': TYPE2PREFIX[self.invoice_id.type] + self.partner_id.name,
             # TOCHECK :   self.journal_id.default_credit_account_id.id if self.invoice_id.type in ('out_invoice', 'in_refund') ?
             'account_id': self.journal_id.default_debit_account_id.id,
-            'debit': credit,
-            'credit': debit,
-            'amount_currency': amount_currency and - amount_currency or False,
-        })
-
-        move_id = self.env['account.move'].create({
-            'name': move_name,
-            'date': self.date_paid,
-            'ref': self.reference,
-            'company_id': self.company_id.id,
             'journal_id': self.journal_id.id,
-            'line_id': [(0, 0, invoice_account_aml), (0, 0, payment_account_aml)],
-        })
+            'debit': debit,
+            'credit': credit,
+            'partner_id': self.invoice_id.partner_id.id,
+            'currency_id': self.journal_id.currency.id,
+            'amount_currency': amount_currency or False,
+            'date': self.date_paid,
+            'invoice': self.invoice_id.id,
+        }
 
+    @api.multi
+    def pay(self):
+        """ Create an account_move and account_move_line based on payment then reconcile the invoice with the payment """
+
+        # Create the move
+        move_id = self.env['account.move'].create(self._get_move_vals())
         move_id.post()
 
         # Reconcile
