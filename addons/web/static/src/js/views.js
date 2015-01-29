@@ -982,6 +982,12 @@ instance.web.ViewManager = instance.web.Widget.extend({
     get_searchview: function() {
         return this.control_panel.searchview;
     },
+    /**
+     * Needed for dashboard.js to add Favorites to Dashboard
+     */
+    get_searchview: function() {
+        return this.header.searchview;
+    },
     get_default_view: function() {
         return this.flags.default_view || this.view_order[0].type;
     },
