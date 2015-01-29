@@ -1590,23 +1590,21 @@ define(['summernote/summernote'], function () {
                 if (dom.isImg(sc) && nodes.indexOf(sc) === -1) {
                     nodes.push(sc);
                 }
-                if (nodes.length > 1 || dom.ancestor(nodes[0], dom.isImg)) {
-                    var text = "";
-                    this.data.images = [];
-                    for (var i=0; i<nodes.length; i++) {
-                        if (dom.ancestor(nodes[i], dom.isImg)) {
-                            this.data.images.push(dom.ancestor(nodes[i], dom.isImg));
-                            text += '[IMG]';
-                        } else if (!is_link && i===0) {
-                            text += nodes[i].textContent.slice(so, Infinity);
-                        } else if (!is_link && i===nodes.length-1) {
-                            text += nodes[i].textContent.slice(0, eo);
-                        } else {
-                            text += nodes[i].textContent;
-                        }
+                var text = "";
+                this.data.images = [];
+                for (var i=0; i<nodes.length; i++) {
+                    if (dom.ancestor(nodes[i], dom.isImg)) {
+                        this.data.images.push(dom.ancestor(nodes[i], dom.isImg));
+                        text += '[IMG]';
+                    } else if (!is_link && i===0) {
+                        text += nodes[i].textContent.slice(so, Infinity);
+                    } else if (!is_link && i===nodes.length-1) {
+                        text += nodes[i].textContent.slice(0, eo);
+                    } else {
+                        text += nodes[i].textContent;
                     }
-                    this.data.text = text;
                 }
+                this.data.text = text;
             }
 
             this.data.text = this.data.text.replace(/[ \t\r\n]+/g, ' ');

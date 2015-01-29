@@ -315,6 +315,7 @@
     <script type="text/javascript" src="/website/static/src/js/website.ace.js"></script>
     <script type="text/javascript" src="/website/static/src/js/website.translator.js"></script>
     <script type="text/javascript" src="/website/static/src/js/website.theme.js"></script>
+    <script type="text/javascript" src="/website/static/src/js/website.menu.editor.js"></script>
 
 </template>
 

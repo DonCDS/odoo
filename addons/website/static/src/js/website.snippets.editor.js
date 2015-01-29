@@ -148,39 +148,6 @@
                     event.preventDefault();
                 }
             });
-            this.init_edit_menu();
-        },
-
-        open_dropdown_hover: function(snippet){
-            if(!snippet.hasClass('oe_current_dropdown')){
-                $('.oe_current_dropdown').children('ul').css('visibility', 'hidden');
-                $('.oe_current_dropdown').removeClass("oe_current_dropdown");
-                snippet.addClass("oe_current_dropdown");
-                snippet.children('ul').css('visibility', 'visible');
-                this.make_active(false);
-            }
-        },
-
-        init_edit_menu: function(){
-            var self = this;
-            $("#wrapwrap").click(function(event){
-                if(!$(event.target).hasClass('.dropdown-menu') &&
-                    $(event.target).parents('.dropdown-menu').length === 0){
-                    $('.oe_current_dropdown').children('ul').css('visibility', 'hidden');
-                    $('.oe_current_dropdown').removeClass("oe_current_dropdown");
-                }
-            });
-            $(".o_parent_menu:not(:has(ul))").children('a').append('<span class="caret"></span>');
-            $(".o_parent_menu:not(:has(ul))").children('a').after('<ul class="dropdown-menu o_editable_menu" role="menu"><li class="o_editable"></li></ul>');
-            $(".o_parent_menu").children('a').removeAttr('data-toggle href class');
-            $(".o_parent_menu").addClass('open');
-            $(".o_parent_menu").children('ul').css('visibility', 'hidden');
-            $(".o_parent_menu").droppable({
-                over:function(){self.open_dropdown_hover($(this));}
-            });
-            $("body").on("mouseenter", ".o_parent_menu", function () {
-                self.open_dropdown_hover($(this));
-            });
         },
 
         _get_snippet_url: function () {
@@ -2099,12 +2066,23 @@
     website.snippet.options.menu_link = website.snippet.Option.extend({
         start: function(){
             this._super();
-            debugger;
-            var new_range = $.summernote.core.range.createFromNode($(this.$target).children('a')[0]);
+            var link = $(this.$target).children('a')
+            var new_range = $.summernote.core.range.createFromNode(link[0]);
             new_range.select();
-            var linkInfo = {range: new_range, text: $(this.$target).children('a').text()};
-            var editor = new website.editor.LinkDialog($(this.$target).children('a'), linkInfo);
+            var linkInfo = {range: new_range};
+            var editor = new website.editor.LinkDialog(link, linkInfo);
             editor.appendTo(document.body);
+
+            editor.on("save", this, function (linkInfo) {
+                var link = this.$target.children('a');
+                link.addClass(linkInfo.className);
+                link.removeClass('o_default_snippet_text');
+                link.text(linkInfo.text);
+                link.attr('href',linkInfo.url);
+                if(linkInfo.newWindow){
+                    link.attr('target', '_blank');
+                }
+            });
         },
     });
     /* t-field options */
