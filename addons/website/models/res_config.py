@@ -24,6 +24,11 @@ class website_config_settings(osv.osv_memory):
         'cdn_activated': fields.related('website_id', 'cdn_activated', type="boolean", string='Use CDN'),
         'cdn_url': fields.related('website_id', 'cdn_url', type="char", string='CDN Base URL'),
         'cdn_filters': fields.related('website_id', 'cdn_filters', type="text", string='CDN Filters'),
+        'module_mass_mailing': fields.boolean("Use the Newsletter Subscription Mechanism", help="This will install the module Mass Mailing"),
+        'module_website_mail_group': fields.boolean("Use the Discussion Group Subscription Mechanism", help="This will install the module Website Mail"),
+        'module_website_popup': fields.boolean("Use the Bounce Exchange Banner", help="This will install the module Newsletter Popup"),
+        'module_website_event': fields.boolean("Use the Upcoming Event Snippet", help="This will install the module Website Event"),
+        'module_website_form_builder': fields.boolean("Use the Form Builder Mechanism", help="This will install the module Website Form Builder"),
     }
 
     def on_change_website_id(self, cr, uid, ids, website_id, context=None):

@@ -81,6 +81,31 @@
                                 </div>
                             </div>
                         </group>
+                        <group string="Call-to-Action">
+                            <label for="id" string="Website Builder Snippets"/>
+                            <div>
+                                <div>
+                                    <field name="module_mass_mailing" class="oe_inline"/>
+                                    <label for="module_mass_mailing"/>
+                                </div>
+                                <div>
+                                    <field name="module_website_mail_group" class="oe_inline"/>
+                                    <label for="module_website_mail_group"/>
+                                </div>
+                                <div invisible="1">
+                                    <field name="module_website_popup" class="oe_inline"/>
+                                    <label for="module_website_popup"/>
+                                </div>
+                                <div>
+                                    <field name="module_website_event" class="oe_inline"/>
+                                    <label for="module_website_event"/>
+                                </div>
+                                <div invisible="1">
+                                    <field name="module_website_form_builder" class="oe_inline"/>
+                                    <label for="module_website_form_builder"/>
+                                </div>
+                            </div>
+                        </group>
                         <group string="Menu">
                             <button type="action"
                                 name="%(website.action_website_menu)d"
