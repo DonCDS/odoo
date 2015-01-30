@@ -1236,8 +1236,8 @@ class account_tax_template(models.Model):
             tax_template_to_tax[tax.id] = new_tax.id
             # Since the accounts have not been created yet, we have to wait before filling these fields
             todo_dict[new_tax.id] = {
-                'account_id': tax.account_id,
-                'refund_account_id': tax.refund_account_id,
+                'account_id': tax.account_id.id,
+                'refund_account_id': tax.refund_account_id.id,
             }
         res.update({'tax_template_to_tax': tax_template_to_tax, 'account_dict': todo_dict})
         return res
