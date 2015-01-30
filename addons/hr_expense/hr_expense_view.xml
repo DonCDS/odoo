@@ -169,6 +169,8 @@
                         <filter string="Department" domain="[]" context="{'group_by':'department_id'}"/>
                         <filter string="Expenses Month" domain="[]" context="{'group_by':'date'}" help="Expenses by Month"/>
                     </group>
+                    <separator />
+                    <filter domain="[('employee_id.active','=',False)]" string="Former Employees" name="inactive"/>
                 </search>
             </field>
         </record>

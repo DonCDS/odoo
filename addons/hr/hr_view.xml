@@ -133,6 +133,8 @@
                     <field name="category_ids" groups="base.group_hr_user"/>
                     <field name="job_id" />
                     <filter string="New Mail" name="message_unread" domain="[('message_unread','=',True)]"/>
+                    <separator/>
+                    <filter domain="[('active','=',False)]" string="Former Employees" name="inactive"/>
                     <group expand="0" string="Group By">
                         <filter string="Manager" icon="terp-personal" domain="[]" context="{'group_by':'parent_id'}"/>
                         <filter string="Coach" icon="terp-personal" domain="[]" context="{'group_by':'coach_id'}"/>
