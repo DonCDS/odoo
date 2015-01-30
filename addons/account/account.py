@@ -1455,8 +1455,9 @@ class wizard_multi_charts_accounts(models.TransientModel):
             raise openerp.exceptions.AccessError(_("Only administrators can change the settings"))
         ir_values_obj = self.env['ir.values']
         company = self.company_id
-
-        self.company_id.write({'currency_id': self.currency_id.id, 'accounts_code_digits': self.code_digits})
+        self.company_id.write({'currency_id': self.currency_id.id,
+                               'accounts_code_digits': self.code_digits,
+                               'bank_account_code_char': self.bank_account_code_char})
 
         # When we install the CoA of first company, set the currency to price types and pricelists
         if company.id==1:
