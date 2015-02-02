@@ -1101,7 +1101,10 @@ instance.web_kanban.KanbanRecord = instance.web.Widget.extend({
     },
     do_action_object: function ($action) {
         var button_attrs = $action.data();
-        this.view.do_execute_action(button_attrs, this.view.dataset, this.id, this.do_reload);
+        var node_context = button_attrs.context || {};
+        var context = new instance.web.CompoundContext(node_context).set_eval_context({active_id: this.id, active_ids: [this.id], active_model: this.view.dataset.model});
+        var action_data = _.extend({}, button_attrs, {context: context});
+        this.view.do_execute_action(action_data, this.view.dataset, this.id, this.do_reload);
     },
     do_action_url: function($action) {
         return instance.web.redirect($action.attr("href"));
