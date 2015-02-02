@@ -52,10 +52,7 @@
                         </div>
                         <div class="modal modal-dialog modal-md fade fade-custom" id="banner_popup" tabindex="-1" role="dialog">
                             <div class="modal-content o_popup_modal_content">
-                                <div class="o_popup_modal_header text-center">
-                                    <h3 class="o_popup_modal_title">Odoo Presents</h3>
-                                        <a href="#" class="o_popup_btn_close o_not_editable" data-dismiss="modal" contenteditable="false">&amp;times;</a>
-                                </div>
+                                <a href="#" class="o_popup_btn_close o_not_editable" data-dismiss="modal" contenteditable="false">&amp;times;</a>
 
                                 <div class="o_popup_modal_body text-center">
                                     <!--
@@ -87,5 +84,29 @@
                 </div>
             </xpath>
         </template>
+
+        <template id="popup_design" name="Popup Snippet Design">
+            <t t-call="website.layout">
+                <body data-spy="scroll" data-target=".navspy" data-offset="50">
+                    <div class="container">
+                        <div class="row mt16">
+                            <div class="col-md-2"/>
+                            <div class="col-md-9">
+                                <div class="modal modal-dialog modal-md show" id="banner_popup" tabindex="-1" role="dialog">
+                                    <div class="modal-content o_popup_modal_content">
+                                        <div class="o_popup_modal_body text-center">
+                                            <div class="o_popup_content_dev">
+                                                <div t-field="mailing_list.popup_content"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+            </t>
+        </template>
+
 </data>
 </openerp>

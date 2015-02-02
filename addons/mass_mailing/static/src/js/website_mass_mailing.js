@@ -69,7 +69,7 @@
                 if (data.content) {
                     $('<div></div>').append(data.content).appendTo(popupcontent)
                 }
-                self.$target.find('input.popup_subscribe_email').val(data.email ? data.email : "")
+                self.$target.find('input.popup_subscribe_email').val(data.email || "")
                 self.redirect_url = data.redirect_url
                 if (!editable_mode && !data.is_subscriber) {
                     $(document).on('mouseleave', _.bind(self.show_banner, self));
@@ -109,14 +109,15 @@
         },
         show_banner: function() {
             var self = this;
-//            if (!openerp.get_cookie("popup-banner-"+ self.$target.data('list-id')) && self.$target && !openerp.get_cookie("close-page-"+ window.location.pathname +'-' + self.$target.data('list-id'))) {
-                self.$target.find('#banner_popup').modal('show').css({
+            if (!openerp.get_cookie("popup-banner-"+ self.$target.data('list-id')) && self.$target && !openerp.get_cookie("close-page-"+ window.location.pathname +'-' + self.$target.data('list-id'))) {
+               $('#banner_popup:first').modal('show').css({
                     'margin-top': '70px',
                     'position': 'fixed'
                 });
-//            }
-            self.$target.find('#banner_popup').on('hidden.bs.modal', function (e) {
-//                $(document).off('mouseleave');
+            }
+
+            $('#banner_popup').on('hidden.bs.modal', function (e) {
+                $(document).off('mouseleave');
                 document.cookie = "close-page-"+ window.location.pathname +'-' + self.$target.data('list-id') +"=" + true + ";path=/"
             })
         }

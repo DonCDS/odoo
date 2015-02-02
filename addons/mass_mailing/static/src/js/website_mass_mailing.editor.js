@@ -45,17 +45,10 @@
                             .call('name_search', ['', []]);
                 },
             }).then(function (mailing_list_id) {
-                openerp.jsonRpc('/web/dataset/call', 'call', {
-                    model: 'mail.mass_mailing.list',
-                    method: 'read',
-                    args: [[parseInt(mailing_list_id)], ['popup_content'], website.get_context()],
-                }).then(function (data) {
-                    self.$target.find(".o_popup_content_dev").empty();
-                    if (data && data[0].popup_content) {
-                        $(data[0].popup_content).appendTo(self.$target.find(".o_popup_content_dev"))
-                    }
-                });
                 self.$target.attr("data-list-id", mailing_list_id);
+                self.$target.find('#edit_dialog').click(function(){
+                    window.open('/website_mass_mailing/popup_content_designer/'+ mailing_list_id + '?enable_editor=1', '_blank')
+                });
             });
         },
         drop_and_build_snippet: function() {
@@ -73,31 +66,11 @@
                 this._super();
                 $('body').on('click','#edit_dialog',_.bind(this.edit_dialog, self.rte.editor));
             },
-            save : function() {
-                var $target = $('#wrapwrap').find('#banner_popup')
-                $target.modal('hide')
-                $target.css("display", "none")
-                if ($target.length && !$target.find('.o_popup_content_dev').length) {
-                    $target.find('.o_popup_modal_body').before($('<div class="o_popup_content_dev" data-oe-placeholder="Type Here ..."></div>')) }
-                var res = this._super();
-                if ($target && $target.length) {
-                    var content = $('#wrapwrap .o_popup_content_dev').html()
-                    if (!$('#wrapwrap').find('.o_popup_content_dev').children().length ) {
-                        content = '<div data-oe-placeholder="Type Here ...">' + content + '</div>'
-                    }
-                    openerp.jsonRpc('/web/dataset/call', 'call', {
-                        model: 'mail.mass_mailing.list',
-                        method: 'write',
-                        args: [$('#wrapwrap').find('.banner_popup').data('list-id'),
-                           {'popup_content':content} || null,
-                           website.get_context()],
-                    });
+            edit_dialog : function(e) {
+                var newsletter_id = $('#wrapwrap').find('.banner_popup').data('list-id')
+                if (newsletter_id) {
+                    window.open('/website_mass_mailing/popup_content_designer/'+ newsletter_id + '?enable_editor=1', '_blank')
                 }
-                return res;
-            },
-            edit_dialog : function() {
-                $('#wrapwrap').find('#banner_popup').modal('show')
-                $('.modal-backdrop').css("z-index", "0")
             },
         });
 })();
