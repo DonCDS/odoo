@@ -15,9 +15,13 @@
             <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
             <field name="arch" type="xml">
                 <data>
+                    <xpath expr="//field[@name='tag_ids']" position="after">
+                        <field name="quotation_ids" invisible="1"/>
+                    </xpath>
                     <xpath expr="//field[@name='stage_id']" position="before">
                         <button attrs="{'invisible': [('probability', '=', 0)]}" string="Convert to Quotation" name="%(action_crm_make_sale)d" type="action" class="oe_highlight"/>
                         <button attrs="{'invisible': [('probability', '>', 0)]}" string="Convert to Quotation" name="%(action_crm_make_sale)d" type="action"/>
+                        <button attrs="{'invisible': [('quotation_ids', '=', [])]}" name="action_view_quotation" string="View Quotations" type="object" groups="base.group_user"/>
                     </xpath>
                     <xpath expr="//div[@name='buttons']" position="inside">
                         <button class="oe_inline oe_stat_button" type="action"  name="%(sale_action_quotations)d" icon="stat_button_icon fa fa-usd">
