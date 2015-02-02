@@ -49,6 +49,7 @@
                             </a>
                         </li>
                         <!--menu 8 to 11 will be come from website sale-->
+                        <span class="mobile_website_sale_planner"/>
                         <h4>Launch</h4>
                         <li>
                             <a href="#planner_page12">

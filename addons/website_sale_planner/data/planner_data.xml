@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_planner" name="website sale planner" inherit_id="website_planner.website_planner">
+        <!--Mobile Planner Menu-->
+        <xpath expr="//span[@class='mobile_website_sale_planner']" position="after">
+            <li>
+                <a href="#planner_page8">
+                    <span class="fa fa-fw"/>Product pages
+                </a>
+            </li>
+            <li>
+                <a href="#planner_page9">
+                    <span class="fa fa-fw"/>Import your products
+                </a>
+            </li>
+            <li>
+                <a href="#planner_page10">
+                    <span class="fa fa-fw"/>Payment methods
+                </a>
+            </li>
+            <li>
+                <a href="#planner_page11">
+                    <span class="fa fa-fw"/>Delivery strategy
+                </a>
+            </li>
+        </xpath>
+
+        <xpath expr="//span[@class='website_sale_planner']" position="after">
+            <h4><i class="fa fa-shopping-cart"/>Sell</h4>
+            <li>
+                <a href="#planner_page8">
+                    <span class="fa fa-fw"/>Product pages
+                </a>
+            </li>
+            <li>
+                <a href="#planner_page9">
+                    <span class="fa fa-fw"/>Import your products
+                </a>
+            </li>
+            <li>
+                <a href="#planner_page10">
+                    <span class="fa fa-fw"/>Payment methods
+                </a>
+            </li>
+            <li>
+                <a href="#planner_page11">
+                    <span class="fa fa-fw"/>Delivery strategy
+                </a>
+            </li>
+        </xpath>
+
+        <xpath expr="//div[@id='planner_page7']" position="after">
+            <div id="planner_page8" class="planner-page">
+                <h1>Product pages</h1>
+            </div>
+            <div id="planner_page9" class="planner-page">
+                <h1>Import your products</h1>
+            </div>
+            <div id="planner_page10" class="planner-page">
+                <h1>Payment methods</h1>
+            </div>
+            <div id="planner_page11" class="planner-page">
+                <h1>Delivery strategy</h1>
+            </div>
+        </xpath>
+
+    </template>
+</odoo>
