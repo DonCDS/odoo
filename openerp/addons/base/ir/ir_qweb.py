@@ -432,6 +432,30 @@ class QWeb(orm.AbstractModel):
 
     def render_tag_call(self, element, template_attributes, generated_attributes, qwebcontext):
         d = qwebcontext.copy()
+
+        # we need 1/ a valid context 2/ a t-lang tag with the t-call
+        translation_poss = d.context and 'lang' in d.context and 'lang' in template_attributes
+
+        # if there is a t-lang attribute, change context to include this language
+        if translation_poss:
+            # we need to store the original language
+            d.context['init_lang'] = d.context['lang']
+            lang = template_attributes['lang']
+            # lang can be a lang code (ex: 'en_US' or 'fr') or a record field
+            lang_regex = re.compile("^[a-z]{2}(_[A-Z]{2})?$")
+            if not lang_regex.match(lang):
+                try:
+                    try_lang=self.eval(lang,d)
+                    if not try_lang or not lang_regex.match(try_lang):
+                        raise_qweb_exception()
+                    lang = try_lang
+                except QWebException:
+                    _logger.warning("Could not render element %s", lang)
+                    _logger.warning(" Using default language %s", d.context['lang'])
+                    lang = d.context['lang']
+                    pass
+            d.context['lang']= lang
+
         d[0] = self.render_element(element, template_attributes, generated_attributes, d)
         cr = d.get('request') and d['request'].cr or None
         uid = d.get('request') and d['request'].uid or None
@@ -441,7 +465,15 @@ class QWeb(orm.AbstractModel):
             template = int(template)
         except ValueError:
             pass
-        return self.render(cr, uid, template, d)
+
+        res = self.render(cr,uid,template,d)
+
+        # we need to reset the lang after the rendering
+        if translation_poss and 'init_lang' in d.context:
+            d.context['lang'] = d.context['init_lang']
+            del d.context['init_lang']
+
+        return res
 
     def render_tag_call_assets(self, element, template_attributes, generated_attributes, qwebcontext):
         """ This special 't-call' tag can be used in order to aggregate/minify javascript and css assets"""
