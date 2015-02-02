@@ -18,10 +18,6 @@ instance.web.Notification =  instance.web.Widget.extend({
     },
     start: function() {
         this._super.apply(this, arguments);
-        this.$el.notify({
-            speed: 500,
-            expires: 2500
-        });
     },
     notify: function(title, text, sticky) {
         sticky = !!sticky;
@@ -29,10 +25,13 @@ instance.web.Notification =  instance.web.Widget.extend({
         if (sticky) {
             opts.expires = false;
         }
-        return this.$el.notify('create', {
-            title: title,
-            text: text
-        }, opts);
+        html = "<strong>"+title+"</strong><p>"+text+"</p>"
+        return this.$el.find('.top-right').notify({ 
+                closable: true,
+                message: { html: html},
+                fadeOut: {enabled: true, delay: 300000},
+                type: 'info',
+            }).show();
     },
     warn: function(title, text, sticky) {
         sticky = !!sticky;
@@ -40,10 +39,13 @@ instance.web.Notification =  instance.web.Widget.extend({
         if (sticky) {
             opts.expires = false;
         }
-        return this.$el.notify('create', 'oe_notification_alert', {
-            title: title,
-            text: text
-        }, opts);
+        html = "<strong class='fa fa-exclamation-triangle'>"+title+"</strong><p>"+text+"</p>"
+        return this.$el.find('.top-right').notify({ 
+            closable: true,
+            message: { html: html},
+            fadeOut: {enabled: true},
+            type: 'danger',
+        }).show()
     }
 });
 
@@ -1423,15 +1425,13 @@ instance.web.WebClient = instance.web.Client.extend({
             if (browser_offset !== user_offset) {
                 var $icon = $(QWeb.render('WebClient.timezone_systray'));
                 $icon.on('click', function() {
-                    var notification = self.do_warn(_t("Timezone Mismatch"), QWeb.render('WebClient.timezone_notification', {
+                    self.do_warn(_t("Timezone Mismatch"), QWeb.render('WebClient.timezone_notification', {
                         user_timezone: instance.session.user_context.tz || 'UTC',
                         user_offset: user_offset,
                         browser_offset: browser_offset,
                     }), true);
-                    notification.element.find('.oe_webclient_timezone_notification').on('click', function() {
-                        notification.close();
-                    }).find('a').on('click', function() {
-                        notification.close();
+                    self.$el.find('.oe_webclient_timezone_notification a').on('click', function() {
+                        self.$el.find('.close').trigger("click");
                         self.user_menu.on_menu_settings();
                         return false;
                     });

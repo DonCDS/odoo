@@ -38,9 +38,10 @@
 .oe_notification {
   z-index: 1600;
 }
-
+.oe_webclient_timezone_notification strong{
+  word-spacing: -10px;
+}
 .oe_webclient_timezone_notification a {
-  color: white;
   text-decoration: underline;
 }
 .oe_webclient_timezone_notification p {
