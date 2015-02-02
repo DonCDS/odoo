@@ -258,7 +258,7 @@
             <field name="refund_account_id" ref="a411059"/>
             <field name="account_id" ref="a411059"/>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">6</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -268,7 +268,7 @@
             <field name="description">VAT-IN-V82-00-S</field>
             <field name="name">TVA à l'entrée 0% - Services</field>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -278,7 +278,7 @@
             <field name="description">VAT-IN-V82-00-G</field>
             <field name="name">TVA à l'entrée 0% - Biens divers</field>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -290,7 +290,7 @@
             <field name="refund_account_id" ref="a411059"/>
             <field name="account_id" ref="a411059"/>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">21</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -302,7 +302,7 @@
             <field name="refund_account_id" ref="a411059"/>
             <field name="account_id" ref="a411059"/>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">12</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -314,7 +314,7 @@
             <field name="refund_account_id" ref="a411059"/>
             <field name="account_id" ref="a411059"/>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">6</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -338,7 +338,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-CC-C2" model="account.tax.template">
@@ -350,7 +350,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-CC" model="account.tax.template">
@@ -372,7 +372,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-12-CC-C2" model="account.tax.template">
@@ -384,7 +384,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-12-CC" model="account.tax.template">
@@ -406,7 +406,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-06-CC-C2" model="account.tax.template">
@@ -418,7 +418,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-06-CC" model="account.tax.template">
@@ -452,7 +452,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-CC-C2" model="account.tax.template">
@@ -464,7 +464,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-CC" model="account.tax.template">
@@ -487,7 +487,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-CC-C2" model="account.tax.template">
@@ -499,7 +499,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-CC" model="account.tax.template">
@@ -521,7 +521,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-CC-C2" model="account.tax.template">
@@ -533,7 +533,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-CC" model="account.tax.template">
@@ -568,7 +568,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-21-CC-C2" model="account.tax.template">
@@ -580,7 +580,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-21-CC" model="account.tax.template">
@@ -603,7 +603,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-12-CC-C2" model="account.tax.template">
@@ -615,7 +615,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-12-CC" model="account.tax.template">
@@ -638,7 +638,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-06-CC-C2" model="account.tax.template">
@@ -650,7 +650,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-06-CC" model="account.tax.template">
@@ -671,7 +671,7 @@
             <field name="refund_account_id" ref="a451056"/>
             <field name="account_id" ref="a451056"/>
             <field name="price_include" eval="0"/>
-            <field name="amount">100</field>
+            <field name="amount">9.5</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -683,7 +683,7 @@
             <field name="refund_account_id" ref="a411059"/>
             <field name="account_id" ref="a411059"/>
             <field name="price_include" eval="1"/>
-            <field name="amount">100</field>
+            <field name="amount">9.5</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
@@ -697,7 +697,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">10.5</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-CAR-EXC-C2" model="account.tax.template">
@@ -709,7 +709,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">10.5</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-CAR-EXC" model="account.tax.template">
@@ -720,7 +720,7 @@
             <field name="amount">1</field>
             <field name="amount_type">group</field>
             <field name="type_tax_use">purchase</field>
-            <field name="children_tax_ids" eval="[(6, 0, [ref('attn_VAT-IN-V82-CAR-EXC-C1'), ref('attn_VAT-IN-V83-06-CC-C2')])]"/>
+            <field name="children_tax_ids" eval="[(6, 0, [ref('attn_VAT-IN-V82-CAR-EXC-C1'), ref('attn_VAT-IN-V82-CAR-EXC-C2')])]"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-EU-C1" model="account.tax.template">
@@ -732,7 +732,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-EU-C2" model="account.tax.template">
@@ -744,7 +744,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-EU" model="account.tax.template">
@@ -767,7 +767,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-12-EU-C2" model="account.tax.template">
@@ -779,7 +779,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-12-EU" model="account.tax.template">
@@ -801,7 +801,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-06-EU-C2" model="account.tax.template">
@@ -813,7 +813,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-06-EU" model="account.tax.template">
@@ -846,7 +846,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-EU-S-C2" model="account.tax.template">
@@ -858,7 +858,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-EU-S" model="account.tax.template">
@@ -880,7 +880,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-EU-G-C2" model="account.tax.template">
@@ -892,7 +892,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-EU-G" model="account.tax.template">
@@ -914,7 +914,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-EU-S-C2" model="account.tax.template">
@@ -926,7 +926,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-EU-S" model="account.tax.template">
@@ -949,7 +949,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-EU-G-C2" model="account.tax.template">
@@ -961,7 +961,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-EU-G" model="account.tax.template">
@@ -983,7 +983,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-EU-S-C2" model="account.tax.template">
@@ -995,7 +995,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-EU-S" model="account.tax.template">
@@ -1017,7 +1017,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-EU-G-C2" model="account.tax.template">
@@ -1029,7 +1029,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-EU-G" model="account.tax.template">
@@ -1062,7 +1062,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-21-EU-C2" model="account.tax.template">
@@ -1074,7 +1074,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-21-EU" model="account.tax.template">
@@ -1107,7 +1107,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-12-EU-C2" model="account.tax.template">
@@ -1119,7 +1119,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-12-EU" model="account.tax.template">
@@ -1141,7 +1141,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-06-EU-C2" model="account.tax.template">
@@ -1153,7 +1153,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-06-EU" model="account.tax.template">
@@ -1185,7 +1185,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-ROW-CC-C2" model="account.tax.template">
@@ -1197,7 +1197,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-21-ROW-CC" model="account.tax.template">
@@ -1219,7 +1219,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-12-ROW-CC-C2" model="account.tax.template">
@@ -1231,7 +1231,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-12-ROW-CC" model="account.tax.template">
@@ -1253,7 +1253,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-06-ROW-CC-C2" model="account.tax.template">
@@ -1265,7 +1265,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V81-06-ROW-CC" model="account.tax.template">
@@ -1298,7 +1298,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-ROW-CC-C2" model="account.tax.template">
@@ -1310,7 +1310,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-21-ROW-CC" model="account.tax.template">
@@ -1332,7 +1332,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-ROW-CC-C2" model="account.tax.template">
@@ -1344,7 +1344,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-12-ROW-CC" model="account.tax.template">
@@ -1366,7 +1366,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-ROW-CC-C2" model="account.tax.template">
@@ -1378,7 +1378,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V82-06-ROW-CC" model="account.tax.template">
@@ -1410,7 +1410,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-21-ROW-CC-C2" model="account.tax.template">
@@ -1422,7 +1422,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-21</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-21-ROW-CC" model="account.tax.template">
@@ -1444,7 +1444,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-12-ROW-CC-C2" model="account.tax.template">
@@ -1456,7 +1456,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-12</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-12-ROW-CC" model="account.tax.template">
@@ -1478,7 +1478,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-06-ROW-CC-C2" model="account.tax.template">
@@ -1490,7 +1490,7 @@
             <field name="price_include" eval="0"/>
             <field name="amount">-6</field>
             <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
+            <field name="type_tax_use">none</field>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="attn_VAT-IN-V83-06-ROW-CC" model="account.tax.template">
