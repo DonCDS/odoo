@@ -29,8 +29,8 @@
                 }
             });
             $(".o_parent_menu:not(:has(ul))").children('a').append('<span class="caret"></span>');
-            $(".o_parent_menu:not(:has(ul))").children('a').after('<ul class="dropdown-menu o_editable_menu" role="menu"><li class="o_editable"></li></ul>');
-            $(".o_parent_menu").children('a').removeAttr('data-toggle href class');
+            $(".o_parent_menu:not(:has(ul))").children('a').after('<ul class="dropdown-menu o_editable_menu" role="menu"></ul>');
+            $(".o_parent_menu").children('a').removeAttr('data-toggle class');
             $(".o_parent_menu").addClass('open');
             $(".o_parent_menu").children('ul').css('visibility', 'hidden');
             $(".o_parent_menu").droppable({
@@ -41,6 +41,29 @@
             });
         },
     });
+
+	website.snippet.SaveMenu = website.EditorBar.include({
+		saveElement: function($el){
+			// if($el.hasClass('o_parent_menu')){
+   //          	$el.children('ul').css('visibility', '');
+   //          	$el.off('mouseenter');
+   //          	$el.removeClass('open');
+   //          	debugger;
+			// 	if($el.find('li').length === 0){
+   //          		$el.children('a').children('.caret').remove();
+   //          		$el.children('.dropdown-menu').remove();
+			// 	}else{
+			// 		$el.children('a').attr('data-toggle', 'dropdown');
+   //          		$el.children('a').addClass('dropdown-toggle');
+			// 	}
+			// }
+			// debugger;
+
+			var result = this._super($el);
+
+			return result;
+		}
+	});
 
 
 
