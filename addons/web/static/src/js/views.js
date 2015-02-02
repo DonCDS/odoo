@@ -139,9 +139,6 @@ instance.web.ActionManager = instance.web.Widget.extend({
                 w.destroy();
             });
             self.inner_widget = _.last(self.widgets);
-            if (self.inner_widget.display_breadcrumbs) {
-                self.inner_widget.display_breadcrumbs();
-            }
             if (self.inner_widget.do_show) {
                 self.inner_widget.do_show();
             }
