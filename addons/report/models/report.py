@@ -127,7 +127,8 @@ class Report(osv.Model):
             else:
                 # Reach the lang we want to translate the doc into
                 ctx['lang'] = eval('doc.%s' % lang_field, {'doc': doc})
-                qcontext['o'] = self.pool[model].browse(cr, uid, doc_id, context=ctx)
+                # we need the SU_ID for portal users who want to print their report
+                qcontext['o'] = self.pool[model].browse(cr, SUPERUSER_ID, doc_id, context=ctx)
             return view_obj.render(cr, uid, template, qcontext, context=ctx)
 
         user = self.pool['res.users'].browse(cr, uid, uid)
