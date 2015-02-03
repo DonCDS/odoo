@@ -28,6 +28,7 @@ class res_company(models.Model):
         string="Gain Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False)])
     expense_currency_exchange_account_id = fields.Many2one('account.account', related='currency_exchange_journal_id.default_debit_account_id',
         string="Loss Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False)])
+    anglo_saxon_accounting = fields.Boolean(string="Use anglo-saxon accounting")
 
 
 class account_payment_term(models.Model):

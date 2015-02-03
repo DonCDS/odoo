@@ -66,11 +66,12 @@ class product_template(osv.osv):
         @param product_id: product id
         @return: dictionary which contains information regarding stock input account, stock output account and stock journal
         """
-        accounts = super(product_template, self)._get_product.accounts()
-        accounts.extend({
+        accounts = super(product_template, self)._get_product_accounts()
+        accounts.update({
             'stock_input': self.property_stock_account_input or self.categ_id.property_stock_account_input_categ,
             'stock_output': self.property_stock_account_output or self.categ_id.property_stock_account_output_categ,
             'stock_valuation': self.categ_id.property_stock_valuation_account_id or False,
+            'stock_journal': self.categ_id.property_stock_journal or False,
         })
         return accounts
 

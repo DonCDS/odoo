@@ -15,6 +15,10 @@ class product_category(models.Model):
         string="Expense Account",
         domain=[('deprecated', '=', False)],
         help="This account will be used for invoices to value expenses.")
+    property_account_creditor_price_difference_categ = fields.Many2one('account.account', company_dependent=True,
+        string="Price Difference Account",
+        domain=[('deprecated', '=', False)],
+        help="This account will be used to value price difference between purchase price and cost price.")
 
 
 #----------------------------------------------------------
@@ -37,6 +41,10 @@ class product_template(models.Model):
         string="Expense Account",
         domain=[('deprecated', '=', False)],
         help="This account will be used for invoices instead of the default one to value expenses for the current product.")
+    property_account_creditor_price_difference = fields.Many2one('account.account', company_dependent=True,
+        string="Price Difference Account",
+        domain=[('deprecated', '=', False)],
+        help="This account will be used to value price difference between purchase price and cost price.")
 
     @api.multi
     def write(self, vals):
@@ -46,10 +54,6 @@ class product_template(models.Model):
                 raise UserError(_('You can not change the unit of measure of a product that has been already used in an account journal item. If you need to change the unit of measure, you may deactivate this product.'))
         return super(product_template, self).write(vals)
 
-
-class product_product(models.Model):
-    _inherit = "product.product"
-
     @api.v8
     def _get_product_accounts(self):
         return {
@@ -58,6 +62,8 @@ class product_product(models.Model):
         }
 
     @api.v8
-    def get_product_accounts(self, fiscal_pos):
-        accounts = self._get_product_accounts()
+    def get_product_accounts(self, fiscal_pos=None):
+        accounts = self._get_product_accounts()[0]
+        if not fiscal_pos:
+            fiscal_pos = self.env['account.fiscal.position']
         return fiscal_pos.map_accounts(accounts)
