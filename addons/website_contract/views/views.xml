@@ -1,0 +1,15 @@
+<odoo>
+    <record model="ir.ui.view" id="view_account_analytic_account_form">
+        <field name="name">analytic.analytic.account.form</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="arch" type="xml">
+            <group name="contract" position="after">
+                <group name="portal_contract" string="Frontend attributes">
+                    <field name="selectable_by_customer"/>
+                    <field name="plan_description"/>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

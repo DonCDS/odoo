@@ -36,6 +36,7 @@ Allows your customers to manage their contract from a beautiful web interface.
     ],
     'data': [
         'views/templates.xml',
+        'views/views.xml',
         'security/ir.model.access.csv',
         'security/portal_contract_security.xml',
     ],

@@ -79,7 +79,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <h3>Your Plan</h3>
+                            <h3>Your Plan <button class="btn btn-primary">Change Plan</button></h3>
                             <div class="row row-centered">
                                 <t t-foreach="account_templates" t-as="template">
                                     <t t-call="website_contract.template_panel"/>
@@ -114,7 +114,7 @@
                     <h3 class="panel-title text-center" t-esc="template.name"/>
                 </div>
                 <div class="panel-body">
-                    Add some details to your contract content.
+                    <t t-raw="template.plan_description" />
                 </div>
                 <div class="panel-footer">
                     <p class="text-center" t-value="template.total_cost"/>
