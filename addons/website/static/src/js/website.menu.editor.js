@@ -58,7 +58,7 @@
 			// 	}
 			// }
 			// debugger;
-
+			debugger;
 			var result = this._super($el);
 
 			return result;
