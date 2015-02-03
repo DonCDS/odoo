@@ -377,11 +377,6 @@
             update_timer(seconds_to_release);
         }
     };
-    $(document).ready(function(){
-        _.each($(".countdown"), function(counter){
-            website.countdown(counter, true);
-        });
-    });
-    
+
     return website;
 })();

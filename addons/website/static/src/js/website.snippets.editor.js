@@ -47,11 +47,11 @@
         }
     });
 
-    $.extend($.expr[':'],{
-        o_editable: function(node,i,m){
+    $.extend($.expr[':'], {
+        o_editable: function (node, i, m) {
             while (node) {
                 if (node.className) {
-                    if (node.className.indexOf('o_not_editable')!==-1 ) {
+                    if (node.className.indexOf('o_not_editable') !== -1) {
                         return false;
                     }
                     if (node.className.indexOf('o_editable')!==-1 ) {
@@ -1360,7 +1360,7 @@
             this._super();
             this.$el.find(".set_countdown").on('click', function () {self.on_set_countdown(); return false;});
         },
-        on_set_countdown:function(){
+        on_set_countdown: function () {
             var self = this;
             var release_date = parseInt(this.$target[0].getAttribute("data-release_date"));
             var set_dialog = new website.editor.countdown(self);
@@ -1380,7 +1380,7 @@
         add_timer_element: function (type, value) {
             var $clock_str = {"o_counter_day": "Days", "o_counter_hour": "Hours", "o_counter_min": "Minutes", "o_counter_sec": "Seconds"};
             if (value && value.length && type == "click"){
-                if (this.$target.find("div."+value).length >= 1){
+                if (this.$target.find("div."+value).length){
                     alert('Countdown Timer displaying "' + $clock_str[value] + '" is already there.')
                 }
                 else{
@@ -1390,6 +1390,7 @@
             }
         },
     });
+
     website.EditorBar.include({
         edit: function () {
             var self = this;
@@ -1407,7 +1408,7 @@
                     $(this).closest('.container').find(".o_countdown_over").removeClass('hidden');
             });
         },
-   });
+    });
 
     website.snippet.options.marginAndResize = website.snippet.Option.extend({
         start: function () {
