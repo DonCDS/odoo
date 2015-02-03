@@ -203,26 +203,27 @@ class BlogPost(models.Model):
 
 
 
-class Website(osv.Model):
+class Website(models.Model):
     _inherit = "website"
 
-    def page_search_dependencies(self, cr, uid, view_id, context=None):
-        dep = super(Website, self).page_search_dependencies(cr, uid, view_id, context=context)
+    @api.model
+    def page_search_dependencies(self, view_id):
+        dep = super(Website, self).page_search_dependencies(view_id)
 
-        post_obj = self.pool.get('blog.post')
+        post_obj = self.env['blog.post']
 
-        view = self.pool.get('ir.ui.view').browse(cr, uid, view_id, context=context)
+        view = self.env['ir.ui.view'].browse(view_id)
         name = view.key.replace("website.", "")
         fullname = "website.%s" % name
 
         dom = [
             '|', ('content', 'ilike', '/page/%s' % name), ('content', 'ilike', '/page/%s' % fullname)
         ]
-        posts = post_obj.search(cr, uid, dom, context=context)
+        posts = post_obj.search(dom)
         if posts:
             page_key = _('Blog Post')
             dep[page_key] = []
-        for p in post_obj.browse(cr, uid, posts, context=context):
+        for p in posts:
             dep[page_key].append({
                 'text': _('Blog Post <b>%s</b> probably has a link to this page !' % p.name),
                 'link': p.website_url
