@@ -383,6 +383,7 @@
                                 will contain the raw materials, instead of the finished product.
                             </p>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="categ_id"/>
                         </group>
                     </group>
                     <notebook>
@@ -438,12 +439,14 @@
                     <field name="product_tmpl_id" string="Product"/>
                     <field name="product_id" string="Variant"/>
                     <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="categ_id" string="Category"/>
                     <group expand="0" string="Group By...">
                         <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_tmpl_id'}"/>
                         <filter string='Default Unit of Measure' icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}"/>
                         <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
                         <filter string='Type' icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
                         <filter string=" Valid From Month" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" help="Valid From Date by Month"/>
+                        <filter string="Category" domain="[]" context="{'group_by':'categ_id'}"/>
                    </group>
                 </search>
             </field>

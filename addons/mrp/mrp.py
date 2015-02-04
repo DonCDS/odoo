@@ -155,6 +155,12 @@ class mrp_bom(osv.osv):
     _description = 'Bill of Material'
     _inherit = ['mail.thread']
 
+    def get_product_categ_ids(self, cr, uid, ids, context=None):
+        res = {}
+        for temp in self.browse(cr, uid, ids, context=context):
+            res[temp.categ_id.id] = True
+        return res.keys()
+
     _columns = {
         'name': fields.char('Name'),
         'code': fields.char('Reference', size=16),
@@ -167,6 +173,11 @@ class mrp_bom(osv.osv):
             domain="['&', ('product_tmpl_id','=',product_tmpl_id), ('type','!=', 'service')]",
             help="If a product variant is defined the BOM is available only for this product."),
         'bom_line_ids': fields.one2many('mrp.bom.line', 'bom_id', 'BoM Lines', copy=True),
+        'categ_id': fields.related('product_tmpl_id', 'categ_id', type='many2one', relation='product.category', string='Product Category', 
+            store = {
+                'mrp.bom': (lambda self, cr, uid, ids, c={}: ids, ['product_tmpl_id'], 10),
+                'product.template': (get_product_categ_ids, ['categ_id'], 10)
+            }),
         'product_qty': fields.float('Product Quantity', required=True, digits_compute=dp.get_precision('Product Unit of Measure')),
         'product_uom': fields.many2one('product.uom', 'Product Unit of Measure', required=True, help="Unit of Measure (Unit of Measure) is the unit of measurement for the inventory control"),
         'date_start': fields.date('Valid From', help="Validity of this BoM. Keep empty if it's always valid."),
@@ -350,6 +361,7 @@ class mrp_bom(osv.osv):
             res['value'] = {
                 'name': prod.name,
                 'product_uom': prod.uom_id.id,
+                'categ_id': prod.categ_id.id,
             }
         return res
 
