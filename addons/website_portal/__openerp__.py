@@ -39,7 +39,7 @@ Allows your customers to manage their account from a beautiful web interface.
     'qweb': [
     ],
     'demo': [
-        
+        'demo.xml'
     ],
     'installable': True,
     'application': True,
