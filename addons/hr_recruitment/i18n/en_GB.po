@@ -17,8 +17,8 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-09-21 07:26+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#. module: hr_applicant_document
-#: model:ir.actions.act_window,help:hr_applicant_document.hr_applicant_resumes
+#. module: hr_recruitment
+#: model:ir.actions.act_window,help:hr_recruitment.hr_applicant_resumes
 msgid ""
 "<p>\n"
 "             Search through resumes and motivation letters.\n"
@@ -30,23 +30,23 @@ msgstr ""
 "            </p>\n"
 "            "
 
-#. module: hr_applicant_document
-#: model:ir.model,name:hr_applicant_document.model_hr_applicant
+#. module: hr_recruitment
+#: model:ir.model,name:hr_recruitment.model_hr_applicant
 msgid "Applicant"
 msgstr "Applicant"
 
-#. module: hr_applicant_document
+#. module: hr_recruitment
 #: field:hr.applicant,index_content:0
 msgid "Index Content"
 msgstr "Index Content"
 
-#. module: hr_applicant_document
-#: view:hr.applicant:hr_applicant_document.view_crm_case_jobs_filter_inherit
+#. module: hr_recruitment
+#: view:hr.applicant:hr_recruitment.view_crm_case_jobs_filter_inherit
 msgid "Resume Content"
 msgstr "Resume Content"
 
-#. module: hr_applicant_document
-#: model:ir.actions.act_window,name:hr_applicant_document.hr_applicant_resumes
-#: model:ir.ui.menu,name:hr_applicant_document.menu_crm_case_categ0_act_job02
+#. module: hr_recruitment
+#: model:ir.actions.act_window,name:hr_recruitment.hr_applicant_resumes
+#: model:ir.ui.menu,name:hr_recruitment.menu_crm_case_categ0_act_job02
 msgid "Resumes and Letters"
 msgstr "Resumes and Letters"

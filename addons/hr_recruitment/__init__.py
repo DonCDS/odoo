@@ -23,3 +23,4 @@ import hr_recruitment
 import report
 import wizard
 import res_config
+import hr_applicant

@@ -1653,3 +1653,37 @@ msgstr ""
 #: view:hr.applicant:hr_recruitment.hr_kanban_view_applicant
 msgid "oe_kanban_text_red"
 msgstr ""
+
+#. module: hr_recruitment
+#: model:ir.actions.act_window,help:hr_recruitment.hr_applicant_resumes
+msgid ""
+"<p>\n"
+"             Search through resumes and motivation letters.\n"
+"            </p>\n"
+"            "
+msgstr ""
+"<p>\n"
+"             Özgeçmiş ve motivasyon mektupları içinden ara.\n"
+"            </p>\n"
+"            "
+
+#. module: hr_recruitment
+#: model:ir.model,name:hr_recruitment.model_hr_applicant
+msgid "Applicant"
+msgstr "Başvuru"
+
+#. module: hr_recruitment
+#: field:hr.applicant,index_content:0
+msgid "Index Content"
+msgstr "İçerik İndeksi"
+
+#. module: hr_recruitment
+#: view:hr.applicant:hr_recruitment.view_crm_case_jobs_filter_inherit
+msgid "Resume Content"
+msgstr "Özgeçmiş İçeriği"
+
+#. module: hr_recruitment
+#: model:ir.actions.act_window,name:hr_recruitment.hr_applicant_resumes
+#: model:ir.ui.menu,name:hr_recruitment.menu_crm_case_categ0_act_job02
+msgid "Resumes and Letters"
+msgstr "Özgeçmişler ve Mektuplar"

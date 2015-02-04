@@ -1582,3 +1582,32 @@ msgstr ""
 msgid "or"
 msgstr ""
 
+#. module: hr_recruitment
+#: model:ir.actions.act_window,help:hr_recruitment.hr_applicant_resumes
+msgid "<p>\n"
+"             Search through resumes and motivation letters.\n"
+"            </p>\n"
+"            "
+msgstr ""
+
+#. module: hr_recruitment
+#: model:ir.model,name:hr_recruitment.model_hr_applicant
+msgid "Applicant"
+msgstr ""
+
+#. module: hr_recruitment
+#: field:hr.applicant,index_content:0
+msgid "Index Content"
+msgstr ""
+
+#. module: hr_recruitment
+#: view:hr.applicant:hr_recruitment.view_crm_case_jobs_filter_inherit
+msgid "Resume Content"
+msgstr ""
+
+#. module: hr_recruitment
+#: model:ir.actions.act_window,name:hr_recruitment.hr_applicant_resumes
+#: model:ir.ui.menu,name:hr_recruitment.menu_crm_case_categ0_act_job02
+msgid "Resumes and Letters"
+msgstr ""
+
