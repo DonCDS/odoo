@@ -40,7 +40,7 @@
             <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Edit this title.
+                        <h3>You Custom Title</h3>
                     </div>
                     <div class="panel-body">
                         <p>Place your content here.</p>
@@ -146,7 +146,7 @@
         </div>
     </template>
 
-    <template id="sale_orders" name="Sale Oders">
+    <template id="sale_orders" name="Sale Orders">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Your Orders</h3>

@@ -31,6 +31,7 @@ Allows your customers to manage their contract from a beautiful web interface.
     'website': 'https://www.odoo.com/',
     'depends': [
         'sale',
+        'account_analytic_analysis',
         'website',
         'website_portal',
     ],
@@ -43,7 +44,7 @@ Allows your customers to manage their contract from a beautiful web interface.
     'qweb': [
     ],
     'demo': [
-        
+        'demo.xml',
     ],
     'installable': True,
     'application': True,

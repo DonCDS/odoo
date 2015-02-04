@@ -5,11 +5,12 @@
             <field name="partner_id" ref="portal.partner_demo_portal"/>
             <field name="partner_invoice_id" ref="portal.partner_demo_portal"/>
             <field name="partner_shipping_id" ref="portal.partner_demo_portal"/>
-            <field name="user_id" ref="base.user_demo"/>
-            <field name="state">sent</field>
+            <field name="user_id" ref="base.user_root"/>
             <field name="pricelist_id" ref="product.list0"/>
+            <field name="state">sent</field>
             <field name="team_id" ref="sales_team.team_sales_department"/>
             <field name="date_order" eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d %H:%M')"/>
+            <field name="message_follower_ids" eval="[(4, ref('portal.partner_demo_portal'))]"/>
         </record>
 
         <record id="sale_order_line_1" model="sale.order.line">
@@ -51,6 +52,7 @@
             <field name="order_policy">manual</field>
             <field name="team_id" ref="sales_team.team_sales_department"/>
             <field name="date_order" eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d %H:%M')"/>
+            <field name="message_follower_ids" eval="[(4, ref('portal.partner_demo_portal'))]"/>
         </record>
 
         <record id="sale_order_line_4" model="sale.order.line">
@@ -76,8 +78,6 @@
 
         <!-- Confirm some Sale Orders-->
         <workflow action="order_confirm" model="sale.order" ref="sale_order_2"/>
-
-        <workflow action="order_confirm" model="sale.order" ref="sale_order_7"/>
 
         <!-- Invoice for Indirect Marketing -->
 
