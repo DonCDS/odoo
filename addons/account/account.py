@@ -1059,6 +1059,7 @@ class wizard_multi_charts_accounts(models.TransientModel):
     sale_tax = fields.Many2one('account.tax.template', string='Default Sale Tax')
     purchase_tax = fields.Many2one('account.tax.template', string='Default Purchase Tax')
     sale_tax_rate = fields.Float(string='Sales Tax(%)')
+    use_anglo_saxon = fields.Boolean(string='Use Anglo-Saxon Accounting', default=False)
     purchase_tax_rate = fields.Float(string='Purchase Tax(%)')
     complete_tax_set = fields.Boolean('Complete Set of Taxes',
         help="This boolean helps you to choose if you want to propose to the user to encode the sales and purchase rates or use "
@@ -1415,7 +1416,7 @@ class wizard_multi_charts_accounts(models.TransientModel):
         ir_values_obj = self.env['ir.values']
         company_id = self.company_id.id
 
-        self.company_id.write({'currency_id': self.currency_id.id, 'accounts_code_digits': self.code_digits})
+        self.company_id.write({'currency_id': self.currency_id.id, 'accounts_code_digits': self.code_digits, 'anglo_saxon_accounting': self.use_anglo_saxon,})
 
         # When we install the CoA of first company, set the currency to price types and pricelists
         if company_id==1:
@@ -1502,8 +1503,8 @@ class wizard_multi_charts_accounts(models.TransientModel):
             raise UserError(_('Cannot generate an unused account code.'))
 
         # Get the id of the user types fr-or cash and bank
-        cash_type = self.env.ref('account.data_account_type_cash') or False
-        bank_type = self.env.ref('account.data_account_type_bank') or False
+        cash_type = self.env.ref('account.data_account_type_cash') and self.env.ref('account.data_account_type_cash').id or False
+        bank_type = self.env.ref('account.data_account_type_bank') and self.env.ref('account.data_account_type_bank').id or False
         parent_id = False
         if acc_template_ref:
             parent_id = acc_template_ref[ref_acc_bank.id]
