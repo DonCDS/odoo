@@ -561,7 +561,7 @@
                         }
                     }
 
-                    self.$editable.find('.oe_drop_zone').droppable('destroy').remove();
+                    self.$editable.find('.oe_drop_zone').remove();
                     
                     if (dropped) {
 
