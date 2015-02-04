@@ -45,6 +45,6 @@
     user-select: none;
 }
 
-.oe-header-switch-buttons .oe-header-switch-diagram:before {
+.oe-cp-switch-buttons .oe-cp-switch-diagram:before {
   content: "";
 }

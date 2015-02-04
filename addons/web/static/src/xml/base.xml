@@ -66,7 +66,7 @@
         <div class="oe_form">
             <form id="db_create" name="create_db_form" style="display: block;">
                 <div class="oe_view_manager oe_view_manager_current">
-                    <div class="oe_view_manager_header" style="padding: 8px;">
+                    <div class="oe-control-panel-content" style="padding: 8px;">
                         <div class="oe_header_row">
                             <h2 class="oe_view_title">
                                 <span class="oe_view_title_text oe_breadcrumb_title">Create a New Database</span>
@@ -134,7 +134,7 @@
             </form>
             <form id="db_duplicate" name="duplicate_db_form" style="display: none;">
                 <div class="oe_view_manager oe_view_manager_current">
-                    <div class="oe_view_manager_header" style="padding: 8px;">
+                    <div class="oe-control-panel-content" style="padding: 8px;">
                         <div class="oe_header_row">
                             <h2 class="oe_view_title">
                                 <span class="oe_view_title_text oe_breadcrumb_title">Duplicate Database</span>
@@ -160,7 +160,7 @@
             </form>
             <form id="db_drop" name="drop_db_form" style="display: none; ">
                 <div class="oe_view_manager oe_view_manager_current">
-                    <div class="oe_view_manager_header" style="padding: 8px;">
+                    <div class="oe-control-panel-content" style="padding: 8px;">
                         <div class="oe_header_row">
                             <h2 class="oe_view_title">
                                 <span class="oe_view_title_text oe_breadcrumb_title">Drop Database</span>
@@ -191,7 +191,7 @@
             </form>
             <form id="db_backup" name="backup_db_form" target="backup-target" action="/web/database/backup" style="display: none;">
                 <div class="oe_view_manager oe_view_manager_current">
-                    <div class="oe_view_manager_header" style="padding: 8px;">
+                    <div class="oe-control-panel-content" style="padding: 8px;">
                         <div class="oe_header_row">
                             <h2 class="oe_view_title">
                                 <span class="oe_view_title_text oe_breadcrumb_title">Backup Database</span>
@@ -241,7 +241,7 @@
             </form>
             <form id="db_restore" name="restore_db_form" style="display: none; ">
                 <div class="oe_view_manager oe_view_manager_current">
-                    <div class="oe_view_manager_header" style="padding: 8px;">
+                    <div class="oe-control-panel-content" style="padding: 8px;">
                         <div class="oe_header_row">
                             <h2 class="oe_view_title">
                                 <span class="oe_view_title_text oe_breadcrumb_title">Restore Database</span>
@@ -274,7 +274,7 @@
             </form>
             <form id="db_change_password" name="change_pwd_form" style="display: none;">
                 <div class="oe_view_manager oe_view_manager_current">
-                    <div class="oe_view_manager_header" style="padding: 8px;">
+                    <div class="oe-control-panel-content" style="padding: 8px;">
                         <div class="oe_header_row">
                             <h2 class="oe_view_title">
                                 <span class="oe_view_title_text oe_breadcrumb_title">Change Master Password</span>
@@ -478,33 +478,33 @@
 
 <div t-name="ActionManager" class="oe_application" />
 
-<div t-name="HeaderWidget" class="oe-header">
-    <div class="oe-header-content container-fluid">
+<div t-name="ControlPanel" class="oe-control-panel">
+    <div class="oe-control-panel-content container-fluid">
         <div class="row">
-            <div class="col-md-6 oe-header-title">
+            <div class="col-md-6 oe-cp-title">
                 <div t-if="widget.session.debug" class="oe_debug_view btn-group btn-group-sm"/>
                 <ol class="oe-view-title breadcrumb" t-if="widget.flags.display_title !== false">
                 </ol>
             </div>
-            <div class="oe-header-search-view col-md-6" />
+            <div class="oe-cp-search-view col-md-6" />
         </div>
         <div class="row">
             <div class="col-md-6 oe-button-column">
-                <div class="oe-header-buttons">
+                <div class="oe-cp-buttons">
                     <t t-foreach="widget.views" t-as="view">
                         <div t-attf-class="oe-#{view}-buttons"/>
                     </t>                    
                 </div>
-                <div class="oe-header-sidebar"></div>
+                <div class="oe-cp-sidebar"></div>
             </div>
             <div class="col-md-6">
                 <div class="oe-search-options btn-group"/>
                 <div class="oe-right-toolbar">
-                    <div class="oe-header-pager"></div>
+                    <div class="oe-cp-pager"></div>
                     <t t-if="widget.multiple_views">
-                        <div class="oe-header-switch-buttons btn-group btn-group-sm">
+                        <div class="oe-cp-switch-buttons btn-group btn-group-sm">
                             <t t-foreach="widget.view_order" t-as="view">
-                                <button type="button" t-attf-class="btn btn-default fa oe-header-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label">
+                                <button type="button" t-attf-class="btn btn-default fa oe-cp-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label">
                                 </button>
                             </t>
                         </div>
@@ -526,7 +526,7 @@
     <button type="button" class="btn btn-default dropdown-toggle fa fa-bug oe-view-manager-debug" data-toggle="dropdown"> <span class="caret"/>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <t t-if="view_manager.active_view.type === 'form'">
+        <t t-if="widget.active_view.type === 'form'">
             <li><a data-action="get_metadata">View Metadata</a></li>
             <li><a data-action="toggle_layout_outline">Toggle Form Layout Outline</a></li>
             <li><a data-action="set_defaults">Set Defaults</a></li>
@@ -535,12 +535,12 @@
         <li><a data-action="fields">View Fields</a></li>
         <li><a data-action="fvg">Fields View Get</a></li>
         <li><a data-action="manage_filters">Manage Filters</a></li>
-        <t t-if="view_manager.session.uid === 1">
+        <t t-if="widget.session.uid === 1">
             <li><a data-action="translate">Technical Translation</a></li>
             <li><a data-action="manage_views">Manage Views</a></li>
             <li><a data-action="edit" data-model="ir.ui.view" t-att-data-id="view.fields_view.view_id">Edit <t t-esc="_.str.capitalize(view.fields_view.type)"/> View</a></li>
-            <li t-if="view_manager.header.searchview"><a data-action="edit" data-model="ir.ui.view" t-att-data-id="view_manager.header.searchview.view_id">Edit SearchView</a></li> 
-            <li t-if="view_manager.action"><a data-action="edit" t-att-data-model="view_manager.action.type" t-att-data-id="view_manager.action.id">Edit Action</a></li> 
+            <li t-if="widget.searchview"><a data-action="edit" data-model="ir.ui.view" t-att-data-id="widget.searchview.view_id">Edit SearchView</a></li> 
+            <li t-if="widget.action"><a data-action="edit" t-att-data-model="widget.action.type" t-att-data-id="widget.action.id">Edit Action</a></li> 
             <li><a data-action="edit_workflow">Edit Workflow</a></li>
             <li><a data-action="print_workflow">Print Workflow</a></li>
             <li class="divider"/>

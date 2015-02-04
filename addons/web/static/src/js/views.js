@@ -67,6 +67,7 @@ instance.web.ActionManager = instance.web.Widget.extend({
         this.inner_action = action;
         this.inner_widget = widget;
         return $.when(this.inner_widget.appendTo(this.$el)).done(function () {
+            // AAB: widget.$header does not exist anymore
             if ((action.target !== 'inline') && (!action.flags.headless) && widget.$header) {
                 widget.$header.show();
             }
@@ -522,11 +523,11 @@ instance.web.ActionManager = instance.web.Widget.extend({
     },
 });
 
-instance.web.HeaderWidget = instance.web.Widget.extend({
-    template: "HeaderWidget",
+instance.web.ControlPanel = instance.web.Widget.extend({
+    template: "ControlPanel",
     events: {
         "click .oe_debug_view": "on_debug_changed",
-        "click .oe-header-switch-buttons button": "on_switch_buttons_click",
+        "click .oe-cp-switch-buttons button": "on_switch_buttons_click",
     },
     init: function(parent) {
         this._super(parent);
@@ -545,28 +546,28 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
     start: function() {
         var self = this;
 
-        // Hide the HeaderWidget in headless mode
-        if (this.flags.headless) {
-            this.$('.oe-header-content').hide();
-        }
-
-        // Retrieve header elements
+        // Retrieve control panel elements
+        this.$control_panel = this.$('.oe-control-panel-content');
         this.$breadcrumbs = this.$('.oe-view-title');
-        this.$switch_buttons = this.$('.oe-header-switch-buttons button');
-        this.$header = this.$('.oe-header-content');
-        this.$header_col = this.$header.find('.oe-header-title');
-        this.$search_col = this.$header.find('.oe-header-search-view');
-        // AAB: Use sidebar and pager of the HeaderWidget only if it is displayed, otherwise set them
+        this.$switch_buttons = this.$('.oe-cp-switch-buttons button');
+        this.$title_col = this.$control_panel.find('.oe-cp-title');
+        this.$search_col = this.$control_panel.find('.oe-cp-search-view');
+        // AAB: Use sidebar and pager of the ControlPanel only if it is displayed, otherwise set them
         // to undefined to that the view uses its own elements to sidebar and pager, as follows:
-        // this.$sidebar = !this.flags.headless && this.flags.sidebar ? this.$('.oe-header-sidebar') : undefined,
-        // this.$pager = !this.flags.headless ? this.$('.oe-header-pager') : undefined;
+        // this.$sidebar = !this.flags.headless && this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined,
+        // this.$pager = !this.flags.headless ? this.$('.oe-cp-pager') : undefined;
         // But rather use the following definition to keep behavior as it is for now (i.e. it does not
         // display the pager in one2many list views)
-        this.$sidebar = this.flags.sidebar ? this.$('.oe-header-sidebar') : undefined,
-        this.$pager = this.$('.oe-header-pager');
+        this.$sidebar = this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined,
+        this.$pager = this.$('.oe-cp-pager');
+
+        // Hide the ControlPanel in headless mode
+        if (this.flags.headless) {
+            this.$control_panel.hide();
+        }
 
         _.each(this.views, function (view) {
-            // Expose header elements to the views so that they can insert stuff in them
+            // Expose control panel elements to the views so that they can insert stuff in them
             view.options = _.extend(view.options, {
                 $buttons : !self.flags.headless ? self.$('.oe-' + view.type + '-buttons') : undefined,
                 $sidebar : self.$sidebar,
@@ -574,7 +575,7 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
             }, self.flags, self.flags[view.type], view.options);
             // Show $buttons as views will put their own buttons inside it and show/hide them
             if (view.options.$buttons) view.options.$buttons.show();
-            self.$('.oe-header-switch-' + view.type).tooltip();
+            self.$('.oe-cp-switch-' + view.type).tooltip();
         });
 
         // Create the searchview
@@ -601,7 +602,7 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
 
         // Update switch-buttons
         this.$switch_buttons.removeClass('active');
-        this.$('.oe-header-switch-' + this.active_view.type).addClass('active');
+        this.$('.oe-cp-switch-' + this.active_view.type).addClass('active');
     },
     update_breadcrumbs: function () {
         var self = this;
@@ -661,13 +662,13 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
         this.searchview = new SearchView(this, this.dataset, view_id, search_defaults, options);
 
         this.searchview.on('search_data', this, this.search.bind(this));
-        return this.searchview.appendTo(this.$(".oe-header-search-view:first"));
+        return this.searchview.appendTo(this.$(".oe-cp-search-view:first"));
     },
     update_search_view: function() {
         if (this.searchview) {
             var is_hidden = this.active_view.controller.searchable === false;
             this.searchview.toggle_visibility(!is_hidden);
-            this.$header_col.toggleClass('col-md-6', !is_hidden).toggleClass('col-md-12', is_hidden);
+            this.$title_col.toggleClass('col-md-6', !is_hidden).toggleClass('col-md-12', is_hidden);
             this.$search_col.toggle(!is_hidden);
         }
     },
@@ -866,7 +867,7 @@ instance.web.HeaderWidget = instance.web.Widget.extend({
         if (self.session.debug) {
             self.$('.oe_debug_view').html(QWeb.render('ViewManagerDebug', {
                 view: self.active_view.controller,
-                view_manager: self.view_manager,
+                widget: self,
             }));
         }
     },
@@ -936,10 +937,10 @@ instance.web.ViewManager = instance.web.Widget.extend({
             self.views[view_type] = view_descr;
         });
 
-        // Instantiate HeaderWidget
-        this.header = new instance.web.HeaderWidget(self);
+        // Instantiate ControlPanel
+        this.control_panel = new instance.web.ControlPanel(self);
         // Listen to event 'switch_view' trigerred when clicking on switch-buttons
-        this.header.on('switch_view', this, function(view_type) {
+        this.control_panel.on('switch_view', this, function(view_type) {
             if (view_type === 'form' && this.active_view && this.active_view.type === 'form') {
                 this._display_view(view_type);
             } else {
@@ -969,17 +970,17 @@ instance.web.ViewManager = instance.web.Widget.extend({
 
         this.$el.addClass("oe_view_manager_" + ((this.action && this.action.target) || 'current'));
 
-        // Insert HeaderWidget in the DOM
-        var header_loaded = this.header.prependTo(this.$el);
+        // Insert ControlPanel in the DOM
+        var cp_loaded = this.control_panel.prependTo(this.$el);
         var main_view_loaded = this.switch_mode(default_view, null, default_options);
 
-        return $.when(main_view_loaded, header_loaded);
+        return $.when(main_view_loaded, cp_loaded);
     },
     /**
      * Needed for dashboard.js to add Favorites to Dashboard
      */
     get_searchview: function() {
-        return this.header.searchview;
+        return this.control_panel.searchview;
     },
     get_default_view: function() {
         return this.flags.default_view || this.view_order[0].type;
@@ -1002,13 +1003,13 @@ instance.web.ViewManager = instance.web.Widget.extend({
             if (this.active_view.controller) this.active_view.controller.do_hide();
             if (this.active_view.$container) this.active_view.$container.hide();
         }
-        this.active_view = this.header.active_view = view;
+        this.active_view = this.control_panel.active_view = view;
 
         if (!view.created) {
             view.created = this.create_view.bind(this)(view, view_options);
         }
-        // Tell the HeaderWidget to call do_search on its searchview
-        var active_search = this.header.activate_search(view.created);
+        // Tell the ControlPanel to call do_search on its searchview
+        var active_search = this.control_panel.activate_search(view.created);
 
         return $.when(view.created, active_search).done(function () {
             self._display_view(view_options);
@@ -1019,8 +1020,8 @@ instance.web.ViewManager = instance.web.Widget.extend({
         var self = this;
         this.active_view.$container.show();
         $.when(this.active_view.controller.do_show(view_options)).done(function () {
-            // Tell the HeaderWidget to update its elemnts
-            self.header.update(self.active_view);
+            // Tell the ControlPanel to update its elemnts
+            self.control_panel.update(self.active_view);
         });
     },
     create_view: function(view, view_options) {
@@ -1048,7 +1049,7 @@ instance.web.ViewManager = instance.web.Widget.extend({
             if (self.action_manager) self.action_manager.trigger('history_back');
         });
         controller.on("change:title", this, function() {
-            self.header.update_breadcrumbs();
+            self.control_panel.update_breadcrumbs();
         });
         controller.on('view_loaded', this, function () {
             view_loaded.resolve();

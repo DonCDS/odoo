@@ -827,7 +827,7 @@ $sheet-padding: 16px
                     display: block
         .oe-view-manager-debug
             margin-right: 5px
-    .oe-header-content
+    .oe-control-panel-content
         background-color: rgb(240, 238, 238)
         border-bottom: 1px solid #afafb6
         -webkit-flex-shrink: 0
@@ -878,32 +878,32 @@ $sheet-padding: 16px
                 -moz-user-select: initial
                 -webkit-user-select: initial
                 user-select: initial
-        .oe-header-search-view
+        .oe-cp-search-view
             padding-top: 5px
-        .oe-header-switch-buttons
+        .oe-cp-switch-buttons
             button
                 width: 34px
-            .oe-header-switch-kanban:before
+            .oe-cp-switch-kanban:before
                 content: "\f009"
-            .oe-header-switch-list:before
+            .oe-cp-switch-list:before
                 content: ""
-            .oe-header-switch-form:before
+            .oe-cp-switch-form:before
                 content: "\f044"
-            .oe-header-switch-graph:before
+            .oe-cp-switch-graph:before
                 content: "\f080"
-            .oe-header-switch-calendar:before
+            .oe-cp-switch-calendar:before
                 content: "\f073"
-            .oe-header-switch-gantt:before
+            .oe-cp-switch-gantt:before
                 content: "\f0ae"
-            .oe-header-switch-pivot:before
+            .oe-cp-switch-pivot:before
                 content: "\f0ce"
-            .oe-header-switch-tree:before
+            .oe-cp-switch-tree:before
                 content: "\f036"
-        .oe-header-buttons
+        .oe-cp-buttons
             display: inline-block
             > div
                 display: none
-        .oe-header-sidebar
+        .oe-cp-sidebar
             display: inline-block
             float: right
             .oe_form_binary_form
@@ -937,7 +937,7 @@ $sheet-padding: 16px
         .oe-pager-buttons
             min-height: 30px
     .oe_view_manager_inline, .oe_view_manager_inlineview
-        > .oe-header-content
+        > .oe-control-panel-content
             display: none
 
         // }}}
@@ -2527,7 +2527,7 @@ body.oe_single_form
                 box-shadow: 0px 0px 0px
                 .oe_list
                     overflow-x: visible
-        .oe_view_manager_current > .oe_view_manager_header
+        .oe-control-panel > .oe-control-panel-content
             border: 0px !important
             box-shadow: 0px 0px 0px
         text-shadow: none
