@@ -160,7 +160,7 @@ class stock_move(osv.osv):
             'price_unit': self._get_price_unit_invoice(cr, uid, move, inv_type),
             'discount': 0.0,
             'account_analytic_id': False,
-            'move_id': move.id if move.company_id.anglo_saxon_accounting else False,
+            'move_id': move.id,
         }
 
 #----------------------------------------------------------

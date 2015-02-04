@@ -60,7 +60,7 @@ class product_template(osv.osv):
         'valuation': 'manual_periodic',
     }
 
-    @api.one
+    @api.multi
     def _get_product_accounts(self):
         """ To get the stock input account, stock output account and stock journal related to product.
         @param product_id: product id

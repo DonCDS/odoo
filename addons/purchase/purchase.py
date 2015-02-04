@@ -1543,6 +1543,11 @@ class product_template(osv.Model):
         return res
 
     _columns = {
+        'property_account_creditor_price_difference': fields.property(
+            type='many2one',
+            relation='account.account',
+            string="Price Difference Account",
+            help="This account will be used to value price difference between purchase price and cost price."),
         'purchase_ok': fields.boolean('Can be Purchased', help="Specify if the product can be selected in a purchase order line."),
         'purchase_count': fields.function(_purchase_count, string='# Purchases', type='integer'),
     }
@@ -1573,6 +1578,15 @@ class product_product(osv.Model):
         'purchase_count': fields.function(_purchase_count, string='# Purchases', type='integer'),
     }
 
+class product_category(osv.Model):
+    _inherit = "product.category"
+    _columns = {
+        'property_account_creditor_price_difference_categ': fields.property(
+            type='many2one',
+            relation='account.account',
+            string="Price Difference Account",
+            help="This account will be used to value price difference between purchase price and cost price."),
+    }
 
 
 class mail_compose_message(osv.Model):
@@ -1633,13 +1647,20 @@ class account_invoice_line(osv.Model):
             readonly=True),
     }
 
+    def move_line_get(self, cr, uid, invoice_id, context=None):
+        res = super(account_invoice_line,self).move_line_get(cr, uid, invoice_id, context=context)
+        if self.company_id.anglo_saxon_accounting:
+            if inv.type in ('in_invoice','in_refund'):
+                for i_line in inv.invoice_line:
+                    res.extend(self._anglo_saxon_purchase_move_lines(cr, uid, i_line, res, context=context))
+        return res
+
     def _anglo_saxon_purchase_move_lines(self, cr, uid, i_line, res, context=None):
         """Return the additional move lines for purchase invoices and refunds.
 
         i_line: An account.invoice.line object.
         res: The move line entries produced so far by the parent move_line_get.
         """
-        rec = super(account_invoice_line, self)._anglo_saxon_purchase_move_lines(cr, uid, i_line, res, context=context)
         inv = i_line.invoice_id
         company_currency = inv.company_id.currency_id.id
         if i_line.product_id and i_line.product_id.valuation == 'real_time':
@@ -1695,7 +1716,7 @@ class account_invoice_line(osv.Model):
                                 'taxes': line.get('taxes', []),
                                 })
                 return diff_res
-        return rec
+        return []
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

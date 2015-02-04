@@ -40,9 +40,6 @@ class account_invoice_line(osv.osv):
             if inv.type in ('out_invoice','out_refund'):
                 for i_line in inv.invoice_line:
                     res.extend(self._anglo_saxon_sale_move_lines(cr, uid, i_line, res, context=context))
-            elif inv.type in ('in_invoice','in_refund'):
-                for i_line in inv.invoice_line:
-                    res.extend(self._anglo_saxon_purchase_move_lines(cr, uid, i_line, res, context=context))
         return res
 
     def _get_price(self, cr, uid, inv, company_currency, i_line, price_unit):
@@ -112,14 +109,6 @@ class account_invoice_line(osv.osv):
                         'taxes':i_line.invoice_line_tax_id,
                     },
                 ]
-        return []
-
-    def _anglo_saxon_purchase_move_lines(self, cr, uid, i_line, res, context=None):
-        """Return the additional move lines for purchase invoices and refunds.
-
-        i_line: An account.invoice.line object.
-        res: The move line entries produced so far by the parent move_line_get.
-        """
         return []
 
 class account_invoice(osv.osv):
