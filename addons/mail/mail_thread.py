@@ -426,12 +426,12 @@ class mail_thread(osv.AbstractModel):
 
         # Perform write, update followers
         result = super(mail_thread, self).write(cr, uid, ids, values, context=context)
-        self.message_auto_subscribe(cr, uid, ids, values.keys(), context=context, values=values)
 
         # Perform the tracking
         if tracked_fields:
             self.message_track(cr, uid, ids, tracked_fields, initial_values, context=track_ctx)
 
+        self.message_auto_subscribe(cr, uid, ids, values.keys(), context=context, values=values)
         return result
 
     def unlink(self, cr, uid, ids, context=None):
