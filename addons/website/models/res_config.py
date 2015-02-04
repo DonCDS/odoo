@@ -24,6 +24,15 @@ class website_config_settings(osv.osv_memory):
         'cdn_activated': fields.related('website_id', 'cdn_activated', type="boolean", string='Use CDN'),
         'cdn_url': fields.related('website_id', 'cdn_url', type="char", string='CDN Base URL'),
         'cdn_filters': fields.related('website_id', 'cdn_filters', type="text", string='CDN Filters'),
+        'module_website_twitter': fields.boolean("Add twitter scroller snippet in website builder.",
+            help='Allows you to display best tweets by adding twitter scroller snippet in website builder.\n'
+                 '-This installs the module website_twitter'),
+        'module_document': fields.boolean("Allows to use complete document management system.",
+            help='Allows you to manage documents with indexation, full text search of attachements.\n'
+                 '-This installs the module document.'),
+        'module_website_certification': fields.boolean("Display your network of certified people in website",
+            help='Display your network of certified people on your website.\n'
+                 '-This installs the module website_certification'),
     }
 
     def on_change_website_id(self, cr, uid, ids, website_id, context=None):
