@@ -424,6 +424,9 @@
                                 "states_legend": {"normal": "legend_normal", "blocked": "legend_blocked", "done": "legend_done"}}'/>
                         </div>
                     </div>
+                    <div class="alert alert-warning" role="alert" style='padding: 5px;margin: 0px;' attrs="{'invisible': [('pending_warning', '=', False)]}">
+                        <field name="pending_warning"/>  
+                    </div>
                     <group>
                         <group>
                             <field name="project_id" domain="[('state','not in', ('close', 'cancelled'))]" on_change="onchange_project(project_id)" context="{'default_use_tasks':1}"/>

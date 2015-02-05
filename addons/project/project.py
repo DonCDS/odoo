@@ -795,6 +795,15 @@ class task(osv.osv):
             if work.task_id: result[work.task_id.id] = True
         return result.keys()
 
+    def _get_pending_contract_warning(self, cr, uid, ids, field_name, args, context=None):      
+        result = {}
+        for task in self.browse(cr, uid, ids, context=context):
+            result[task.id] = False
+            analytic_account_id = task.project_id and task.project_id.analytic_account_id
+            if analytic_account_id and analytic_account_id.state == 'pending' :
+                result[task.id] = analytic_account_id.warning_message
+        return result
+  
     _columns = {
         'active': fields.function(_is_template, store=True, string='Not a Template Task', type='boolean', help="This field is computed automatically and have the same behavior than the boolean 'active' field: if the task is linked to a template or unactivated project, it will be hidden unless specifically asked."),
         'name': fields.char('Task Summary', track_visibility='onchange', size=128, required=True, select=True),
@@ -852,6 +861,7 @@ class task(osv.osv):
         'id': fields.integer('ID', readonly=True),
         'color': fields.integer('Color Index'),
         'user_email': fields.related('user_id', 'email', type='char', string='User Email', readonly=True),
+        'pending_warning': fields.function(_get_pending_contract_warning, string="Alert Message", type='text'), 
     }
     _defaults = {
         'stage_id': _get_default_stage_id,

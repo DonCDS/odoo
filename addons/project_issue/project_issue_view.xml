@@ -64,6 +64,9 @@
                                 "states_legend": {"normal": "legend_normal", "blocked": "legend_blocked", "done": "legend_done"}}'/>
                         </div>
                     </div>
+                    <div class="alert alert-warning" style='padding: 5px;margin: 0px;' role="alert" attrs="{'invisible': [('pending_warning','=',False)]}">
+                        <field name="pending_warning"/>  
+                    </div>
                     <label for="categ_ids" class="oe_edit_only"/>
                     <field name="categ_ids" widget="many2many_tags"/>
                     <group>

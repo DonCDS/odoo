@@ -40,6 +40,11 @@
                 </field>
                 <xpath expr='//group[@name="invoice_on_timesheets"]' position="replace">
                 </xpath>
+                <xpath expr='//div[@name="buttons"]' position='inside'>
+                    <button class="oe_inline oe_stat_button" type="object" name="contract_invoice_line" icon="fa-pencil-square-o fa-fw" help="Overdue Invoices">
+                        <div><strong><field name="total_due_amount" widget="monetary"/></strong><br/>Overdue Inv.</div>
+                    </button>
+                </xpath>
                 <xpath expr='//separator[@name="description"]' position='before'>
                     <separator name="toinvoice" string="Invoicing"/>
                     <table class="oe_form_analytic_account">

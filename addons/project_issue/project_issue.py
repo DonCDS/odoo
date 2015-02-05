@@ -224,6 +224,15 @@ class project_issue(osv.Model):
                 issues += issue_pool.search(cr, uid, [('task_id','=',work.task_id.id)])
         return issues
 
+    def _get_pending_contract_warning(self, cr, uid, ids, field_name, args, context=None):
+        result = {}       
+        for issue in self.browse(cr, uid, ids, context=context):
+            result[issue.id] = False
+            analytic_account_id = issue.project_id and issue.project_id.analytic_account_id
+            if analytic_account_id and analytic_account_id.state == 'pending' :
+                result[issue.id] = analytic_account_id.warning_message
+        return result
+
     _columns = {
         'id': fields.integer('ID', readonly=True),
         'name': fields.char('Issue', required=True),
@@ -261,6 +270,7 @@ class project_issue(osv.Model):
                         track_visibility='onchange', select=True,
                         domain="[('project_ids', '=', project_id)]", copy=False),
         'project_id': fields.many2one('project.project', 'Project', track_visibility='onchange', select=True),
+        'pending_warning': fields.function(_get_pending_contract_warning, string="Alert Message", type='text'),
         'duration': fields.float('Duration'),
         'task_id': fields.many2one('project.task', 'Task', domain="[('project_id','=',project_id)]",
             help="You can link this issue to an existing task or directly create a new one from here"),
