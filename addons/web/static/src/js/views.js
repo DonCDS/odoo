@@ -558,7 +558,7 @@ instance.web.ControlPanel = instance.web.Widget.extend({
         // this.$pager = !this.flags.headless ? this.$('.oe-cp-pager') : undefined;
         // But rather use the following definition to keep behavior as it is for now (i.e. it does not
         // display the pager in one2many list views)
-        this.$sidebar = this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined,
+        this.$sidebar = this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined;
         this.$pager = this.$('.oe-cp-pager');
 
         // Hide the ControlPanel in headless mode
