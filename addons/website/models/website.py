@@ -376,7 +376,10 @@ class website(osv.osv):
         if not isinstance(template, (int, long)) and '.' not in template:
             template = 'website.%s' % template
         View = self.pool['ir.ui.view']
-        view_id = View.get_view_id(cr, uid, template, context=context)
+        if isinstance(template, (basestring, unicode)):
+            view_id = View.get_view_id(cr, uid, template, context=context)
+        else:
+            view_id = template
         if not view_id:
             raise NotFound
         return View.browse(cr, uid, view_id, context=context)
