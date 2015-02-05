@@ -760,7 +760,7 @@
 <div id="snippet_menu" class="tab-pane">
 
     <div name="Column" class="o_block_menu_column">
-        <div class="o_menu_column">
+        <li class="o_menu_column">
             <div class="container">
                 <div class="row">
                     <div class="col-md-4">
@@ -788,7 +788,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </li>
     </div>
 
     <div name="link" class="o_block_menu_link">

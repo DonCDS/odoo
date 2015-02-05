@@ -44,21 +44,28 @@
 
 	website.snippet.SaveMenu = website.EditorBar.include({
 		saveElement: function($el){
-			// if($el.hasClass('o_parent_menu')){
-   //          	$el.children('ul').css('visibility', '');
-   //          	$el.off('mouseenter');
-   //          	$el.removeClass('open');
-   //          	debugger;
-			// 	if($el.find('li').length === 0){
-   //          		$el.children('a').children('.caret').remove();
-   //          		$el.children('.dropdown-menu').remove();
-			// 	}else{
-			// 		$el.children('a').attr('data-toggle', 'dropdown');
-   //          		$el.children('a').addClass('dropdown-toggle');
-			// 	}
-			// }
-			// debugger;
-			var result = this._super($el);
+			if($el.hasClass('o_parent_menu')){
+            	$el.children('ul').css('visibility', '');
+            	$el.off('mouseenter');
+            	$el.removeClass('open');
+				if($el.find('ul').length === 0){
+            		$el.children('a').children('.caret').remove();
+            		$el.children('.dropdown-menu').remove();
+				}else{
+					$el.children('a').attr('data-toggle', 'dropdown');
+            		$el.children('a').addClass('dropdown-toggle');
+				}
+                var markup = $el.prop('outerHTML');
+                result = openerp.jsonRpc('/web/dataset/call', 'call', {
+                    model: 'ir.ui.view',
+                    method: 'save_menu',
+                    args: [markup,
+                           $el.data('oe-xpath') || null,
+                           website.get_context()],
+                });
+			}else{
+                var result = this._super($el);
+            }
 
 			return result;
 		}
