@@ -21,6 +21,12 @@ instance.web.ActionManager = instance.web.Widget.extend({
         this.dialog_widget = null;
         this.widgets = [];
         this.on('history_back', this, this.proxy('history_back'));
+
+        this.main_control_panel = new instance.web.ControlPanel(this);
+    },
+    start: function() {
+        this._super();
+        this.main_control_panel.appendTo(this.$el);
     },
     dialog_stop: function (reason) {
         if (this.dialog) {
@@ -47,7 +53,7 @@ instance.web.ActionManager = instance.web.Widget.extend({
         if (options.clear_breadcrumbs) {
             to_destroy = this.widgets;
             this.widgets = [];
-        } else if (options.replace_breadcrumb) {
+        } else if (options.replace_breadcrumb) { // AAB: replace_breadcrumb does not seem to be used anywhere
             to_destroy = _.last(this.widgets);
             this.widgets = _.initial(this.widgets);
         }
@@ -136,16 +142,17 @@ instance.web.ActionManager = instance.web.Widget.extend({
             if (widget.__on_reverse_breadcrumb) {
                 widget.__on_reverse_breadcrumb();
             }
-            _.each(self.widgets.splice(widget_index + 1), function (w) {
-                w.destroy();
-            });
+
+            self.clear_widgets(self.widgets.splice(widget_index + 1));
             self.inner_widget = _.last(self.widgets);
+            self.main_control_panel.set_context(self.inner_widget);
             if (self.inner_widget.do_show) {
                 self.inner_widget.do_show();
             }
         });
     },
     clear_widgets: function(widgets) {
+        _.each(widgets || this.widgets, this.main_control_panel.clear_history, this.main_control_panel);
         _.invoke(widgets || this.widgets, 'destroy');
         if (!widgets) {
             this.widgets = [];
@@ -426,10 +433,12 @@ instance.web.ActionManager = instance.web.Widget.extend({
     },
     ir_actions_act_window: function (action, options) {
         var self = this;
-
         return this.ir_actions_common({
             widget: function () { 
-                return new instance.web.ViewManager(self, null, null, null, action); 
+                if (action.target === 'current') {
+                    var control_panel = self.main_control_panel;
+                }
+                return new instance.web.ViewManager(self, null, null, null, action, control_panel);
             },
             action: action,
             klass: 'oe_act_window',
@@ -451,7 +460,11 @@ instance.web.ActionManager = instance.web.Widget.extend({
         }
 
         return this.ir_actions_common({
-            widget: function () { return new ClientWidget(self, action); },
+            widget: function () {
+                // AAB: temporary fix: Hide main control panel as client actions do not use it
+                self.main_control_panel.do_hide();
+                return new ClientWidget(self, action);
+            },
             action: action,
             klass: 'oe_act_client',
         }, options).then(function () {
@@ -532,56 +545,92 @@ instance.web.ControlPanel = instance.web.Widget.extend({
     init: function(parent) {
         this._super(parent);
 
-        this.view_manager = parent;
-        this.action_manager = this.view_manager.action_manager;
-        this.action = this.view_manager.action;
-        this.dataset = this.view_manager.dataset;
-        this.active_view = this.view_manager.active_view;
-        this.views = this.view_manager.views;
-        this.flags = this.view_manager.flags;
-        this.title = this.view_manager.title; // needed for Favorites of searchview
-        this.view_order = this.view_manager.view_order;
-        this.multiple_views = (this.view_order.length > 1);
+        this.action_manager = parent; // Needed for breadcrumps (TODO: remove it)
+        this.action = null;
+        this.flags = null;
+        this.active_view = null;
+        this.views = null;
+        this.title = null; // Needed for Favorites of searchview
+        this.view_order = null;
+        this.multiple_views = null;
+        this.history = {}; // Used to restore elements in control panel when switching between VM with breadcrumbs
     },
     start: function() {
-        var self = this;
-
         // Retrieve control panel elements
         this.$control_panel = this.$('.oe-control-panel-content');
         this.$breadcrumbs = this.$('.oe-view-title');
-        this.$switch_buttons = this.$('.oe-cp-switch-buttons button');
+        this.$buttons = this.$('.oe-cp-buttons');
+        this.$switch_buttons = this.$('.oe-cp-switch-buttons');
         this.$title_col = this.$control_panel.find('.oe-cp-title');
         this.$search_col = this.$control_panel.find('.oe-cp-search-view');
         // AAB: Use sidebar and pager of the ControlPanel only if it is displayed, otherwise set them
         // to undefined to that the view uses its own elements to sidebar and pager, as follows:
-        // this.$sidebar = !this.flags.headless && this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined,
+        // this.$sidebar = !this.flags.headless && this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined;
         // this.$pager = !this.flags.headless ? this.$('.oe-cp-pager') : undefined;
         // But rather use the following definition to keep behavior as it is for now (i.e. it does not
         // display the pager in one2many list views)
-        this.$sidebar = this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined;
         this.$pager = this.$('.oe-cp-pager');
-
-        // Hide the ControlPanel in headless mode
-        if (this.flags.headless) {
-            this.$control_panel.hide();
-        }
-
-        _.each(this.views, function (view) {
-            // Expose control panel elements to the views so that they can insert stuff in them
-            view.options = _.extend(view.options, {
-                $buttons : !self.flags.headless ? self.$('.oe-' + view.type + '-buttons') : undefined,
-                $sidebar : self.$sidebar,
-                $pager : self.$pager,
-            }, self.flags, self.flags[view.type], view.options);
-            // Show $buttons as views will put their own buttons inside it and show/hide them
-            if (view.options.$buttons) view.options.$buttons.show();
-            self.$('.oe-cp-switch-' + view.type).tooltip();
-        });
-
-        // Create the searchview
-        this.search_view_loaded = this.setup_search_view();
+        // this.$sidebar = this.flags.sidebar ? this.$('.oe-cp-sidebar') : undefined;
+        this.$sidebar = this.$('.oe-cp-sidebar');
 
         return this._super();
+    },
+    set_context: function(context) {
+        var self = this;
+
+        this.action = context.action;
+        this.flags = context.flags;
+        this.active_view = context.active_view;
+        this.dataset = context.dataset;
+        this.views = context.views;
+        this.title = context.title; // needed for Favorites of searchview
+        this.view_order = context.view_order;
+        this.multiple_views = (this.view_order.length > 1);
+
+        // Hide the ControlPanel in headless mode
+        this.flags.headless ? this.do_hide() : this.do_show();
+
+        // Detach control panel elements in which sub-elements are inserted by other widgets
+        // Store them to re-attach them if we come back to that context (e.g. using breadcrumbs)
+        if (this.context_id) { // this.context_id is the id of the previously loaded context
+            this.history[this.context_id] = {
+                'buttons': this.$buttons.contents().detach(),
+                'switch_buttons': this.$switch_buttons.contents().detach(),
+                'pager': this.$pager.contents().detach(),
+                'sidebar': this.$sidebar.contents().detach(),
+            };
+        }
+        debugger;
+        this.context_id = context.uniq_id;
+
+        if (this.history[this.context_id]) { // This context has already been rendered once
+            var historic_elements = this.history[this.context_id];
+            historic_elements.buttons.appendTo(this.$buttons);
+            historic_elements.switch_buttons.appendTo(this.$switch_buttons);
+            historic_elements.pager.appendTo(this.$pager);
+            historic_elements.sidebar.appendTo(this.$sidebar);
+        } else {
+            // Render buttons and switch-buttons and append them to the ControlPanel
+            var buttons = QWeb.render('ControlPanel.buttons', {views: self.views});
+            var switch_buttons = QWeb.render('ControlPanel.switch-buttons', {views: self.view_order});
+            $(buttons).appendTo(this.$buttons);
+            $(switch_buttons).appendTo(this.$switch_buttons);
+
+            _.each(this.views, function (view) {
+                // Expose control panel elements to the views so that they can insert stuff in them
+                view.options = _.extend(view.options, {
+                    $buttons : !self.flags.headless ? self.$('.oe-' + view.type + '-buttons') : undefined,
+                    $sidebar : self.$sidebar,
+                    $pager : self.$pager,
+                }, self.flags, self.flags[view.type], view.options);
+                // Show $buttons as views will put their own buttons inside it and show/hide them
+                if (view.options.$buttons) view.options.$buttons.show();
+                self.$('.oe-cp-switch-' + view.type).tooltip();
+            });
+        }
+    },
+    clear_history: function(context_id) {
+        delete this.history[context_id];
     },
     /**
      * Triggers an event when switch-buttons are clicked on
@@ -596,12 +645,18 @@ instance.web.ControlPanel = instance.web.Widget.extend({
     update: function(active_view) {
         this.active_view = active_view;
 
+        this.update_switch_buttons();
         this.update_search_view();
         this.update_breadcrumbs();
         this.render_debug_view();
-
-        // Update switch-buttons
-        this.$switch_buttons.removeClass('active');
+    },
+    /**
+     * Removes active class on all switch-buttons and adds it to the one of the active view
+     */
+    update_switch_buttons: function() {
+        _.each(this.$switch_buttons.contents('button'), function(button) {
+            $(button).removeClass('active');
+        });
         this.$('.oe-cp-switch-' + this.active_view.type).addClass('active');
     },
     update_breadcrumbs: function () {
@@ -624,7 +679,9 @@ instance.web.ControlPanel = instance.web.Widget.extend({
                     .toggleClass('active', is_last);
             if (!is_last) {
                 $bc.click(function () {
-                    self.action_manager.select_widget(bc.widget, bc.index);
+                    $.when(self.action_manager.select_widget(bc.widget, bc.index)).done(function() {
+                        self.update_breadcrumbs();
+                    });
                 });
             }
             return $bc;
@@ -880,7 +937,7 @@ instance.web.ViewManager = instance.web.Widget.extend({
      * @param {Array} [views] List of [view_id, view_type]
      * @param {Object} [flags] various boolean describing UI state
      */
-    init: function(parent, dataset, views, flags, action) {
+    init: function(parent, dataset, views, flags, action, control_panel) {
         if (action) {
             flags = action.flags || {};
             if (!('auto_search' in flags)) {
@@ -937,16 +994,23 @@ instance.web.ViewManager = instance.web.Widget.extend({
             self.views[view_type] = view_descr;
         });
 
-        // Instantiate ControlPanel
-        this.control_panel = new instance.web.ControlPanel(self);
-        // Listen to event 'switch_view' trigerred when clicking on switch-buttons
-        this.control_panel.on('switch_view', this, function(view_type) {
-            if (view_type === 'form' && this.active_view && this.active_view.type === 'form') {
-                this._display_view(view_type);
-            } else {
-                this.switch_mode(view_type);
+        // Associate a unique ID the the VM
+        // AAB: temporary solution to deal with the CP's history
+        var guid = (function() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                           .toString(16)
+                           .substring(1);
             }
-        });
+            return function() {
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                   s4() + '-' + s4() + s4() + s4();
+            };
+        })();
+        this.uniq_id = guid();
+
+        // Send current context to ControlPanel
+        this.set_control_panel(control_panel);
     },
     /**
      * @returns {jQuery.Deferred} initial view loading promise
@@ -970,23 +1034,39 @@ instance.web.ViewManager = instance.web.Widget.extend({
 
         this.$el.addClass("oe_view_manager_" + ((this.action && this.action.target) || 'current'));
 
-        // Insert ControlPanel in the DOM
-        var cp_loaded = this.control_panel.prependTo(this.$el);
-        var main_view_loaded = this.switch_mode(default_view, null, default_options);
+        if (self.control_panel) {
+            // Tell the ControlPanel to setup its search view
+            self.search_view_loaded = self.control_panel.setup_search_view();
+        }
+        else {
+            self.search_view_loaded = $.Deferred().resolve();
+        }
 
-        return $.when(main_view_loaded, cp_loaded);
+        self.main_view_loaded = self.switch_mode(default_view, null, default_options);
+
+        return $.when(self.main_view_loaded, self.search_view_loaded);
+    },
+    set_control_panel: function(control_panel) {
+        this.control_panel = control_panel;
+        if (this.control_panel) {
+            // Listen to event 'switch_view' trigerred when clicking on switch-buttons
+            this.control_panel.on('switch_view', this, function(view_type) {
+                if (view_type === 'form' && this.active_view && this.active_view.type === 'form') {
+                    this._display_view(view_type);
+                } else {
+                    this.switch_mode(view_type);
+                }
+            });
+
+            // Sets the ControlPanel context (views, active_view...)
+            this.control_panel.set_context(this);
+        }
     },
     /**
      * Needed for dashboard.js to add Favorites to Dashboard
      */
     get_searchview: function() {
-        return this.control_panel.searchview;
-    },
-    /**
-     * Needed for dashboard.js to add Favorites to Dashboard
-     */
-    get_searchview: function() {
-        return this.header.searchview;
+        if (this.control_panel) return this.control_panel.searchview;
     },
     get_default_view: function() {
         return this.flags.default_view || this.view_order[0].type;
@@ -1009,13 +1089,21 @@ instance.web.ViewManager = instance.web.Widget.extend({
             if (this.active_view.controller) this.active_view.controller.do_hide();
             if (this.active_view.$container) this.active_view.$container.hide();
         }
-        this.active_view = this.control_panel.active_view = view;
+        // this.active_view = this.control_panel.active_view = view;
+        this.active_view = view;
+        if (this.control_panel) this.control_panel.active_view = view;
 
         if (!view.created) {
             view.created = this.create_view.bind(this)(view, view_options);
         }
         // Tell the ControlPanel to call do_search on its searchview
-        var active_search = this.control_panel.activate_search(view.created);
+        var active_search = $.Deferred();
+        if (this.control_panel) {
+            active_search = this.control_panel.activate_search(view.created);
+        }
+        else {
+            active_search.resolve();
+        }
 
         return $.when(view.created, active_search).done(function () {
             self._display_view(view_options);
@@ -1027,7 +1115,7 @@ instance.web.ViewManager = instance.web.Widget.extend({
         this.active_view.$container.show();
         $.when(this.active_view.controller.do_show(view_options)).done(function () {
             // Tell the ControlPanel to update its elemnts
-            self.control_panel.update(self.active_view);
+            if (self.control_panel) self.control_panel.update(self.active_view);
         });
     },
     create_view: function(view, view_options) {
@@ -1055,7 +1143,7 @@ instance.web.ViewManager = instance.web.Widget.extend({
             if (self.action_manager) self.action_manager.trigger('history_back');
         });
         controller.on("change:title", this, function() {
-            self.control_panel.update_breadcrumbs();
+            if (self.control_panel) self.control_panel.update_breadcrumbs();
         });
         controller.on('view_loaded', this, function () {
             view_loaded.resolve();
