@@ -11,7 +11,7 @@ openerp.testing.section('registry', {
 
         reg.add('foo', 'instance.web.Foo')
            .add('bar', 'instance.web.Bar');
-        strictEqual(reg.get_object('bar'), instance.web.Bar);
+        strictEqual(reg.get('bar'), instance.web.Bar);
     });
     test('extension', function (instance) {
         var reg = new instance.web.Registry({
@@ -20,8 +20,8 @@ openerp.testing.section('registry', {
         });
 
         var reg2 = reg.extend({ 'foo': 'instance.web.Foo2' });
-        strictEqual(reg.get_object('foo'), instance.web.Foo);
-        strictEqual(reg2.get_object('foo'), instance.web.Foo2);
+        strictEqual(reg.get('foo'), instance.web.Foo);
+        strictEqual(reg2.get('foo'), instance.web.Foo2);
     });
     test('remain-linked', function (instance) {
         var reg = new instance.web.Registry({
@@ -31,8 +31,8 @@ openerp.testing.section('registry', {
 
         var reg2 = reg.extend();
         reg.add('foo2', 'instance.web.Foo2');
-        strictEqual(reg.get_object('foo2'), instance.web.Foo2);
-        strictEqual(reg2.get_object('foo2'), instance.web.Foo2);
+        strictEqual(reg.get('foo2'), instance.web.Foo2);
+        strictEqual(reg2.get('foo2'), instance.web.Foo2);
     });
     test('multiget', function (instance) {
         var reg = new instance.web.Registry({

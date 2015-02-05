@@ -1,16 +1,22 @@
+odoo.define('web.TreeView', ['web.core', 'web.View', 'web.formats', 'web.pyeval', 'web.data', 'web.session'], function (require) {
+"use strict";
 /*---------------------------------------------------------
- * OpenERP web library
+ * Odoo Tree view
  *---------------------------------------------------------*/
 
-(function() {
+var core = require('web.core'),
+    View = require('web.View'),
+    data = require('web.data'),
+    pyeval = require('web.pyeval'),
+    session = require('web.session'),
+    formats = require('web.formats');
 
-var instance = openerp;
-openerp.web.view_tree = {};
-var QWeb = instance.web.qweb,
-      _lt = instance.web._lt;
+var _lt = core._lt,
+    QWeb = core.qweb,
+    py = core.py,
+    moment = core.moment;
 
-instance.web.views.add('tree', 'instance.web.TreeView');
-instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeView# */{
+var TreeView = View.extend(/** @lends instance.web.TreeView# */{
     display_name: _lt('Tree'),
     view_type: 'tree',
     /**
@@ -68,7 +74,7 @@ instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeVie
         // field name in OpenERP is kinda stupid: this is the name of the field
         // holding the ids to the children of the current node, why call it
         // field_parent?
-        this.children_field = fields_view['field_parent'];
+        this.children_field = fields_view.field_parent;
         this.fields_view = fields_view;
         _(this.fields_view.arch.children).each(function (field) {
             if (field.attrs.modifiers) {
@@ -137,7 +143,7 @@ instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeVie
     color_for: function (record) {
         if (!this.colors) { return ''; }
         var context = _.extend({}, record, {
-            uid: this.session.uid,
+            uid: session.uid,
             current_date: moment().format('YYYY-MM-DD')
             // TODO: time, datetime, relativedelta
         });
@@ -203,7 +209,7 @@ instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeVie
                 'fields_view': self.fields_view.arch.children,
                 'fields': self.fields,
                 'level': $curr_node.data('level') || 0,
-                'render': instance.web.format_value,
+                'render': formats.format_value,
                 'color_for': self.color_for,
                 'row_parent_id': id
             });
@@ -224,8 +230,8 @@ instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeVie
             active_id: id,
             active_ids: [id]
         };
-        var ctx = instance.web.pyeval.eval(
-            'context', new instance.web.CompoundContext(
+        var ctx = pyeval.eval(
+            'context', new data.CompoundContext(
                 this.dataset.get_context(), local_context));
         return this.rpc('/web/treeview/action', {
             id: id,
@@ -234,7 +240,7 @@ instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeVie
         }).then(function (actions) {
             if (!actions.length) { return; }
             var action = actions[0][2];
-            var c = new instance.web.CompoundContext(local_context).set_eval_context(ctx);
+            var c = new data.CompoundContext(local_context).set_eval_context(ctx);
             if (action.context) {
                 c.add(action.context);
             }
@@ -267,4 +273,10 @@ instance.web.TreeView = instance.web.View.extend(/** @lends instance.web.TreeVie
         this._super();
     }
 });
-})();
+
+core.view_registry.add('tree', TreeView);
+
+return TreeView;
+
+});
+
