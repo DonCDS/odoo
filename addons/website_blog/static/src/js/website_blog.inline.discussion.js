@@ -22,6 +22,19 @@
             website.add_template_file('/website_blog/static/src/xml/website_blog.inline.discussion.xml').then(function () {
                 self.do_render(self);
             });
+            $('#blog_content').bind('DOMNodeInserted', function(event) {
+                if(event.target.nodeName !== "P") return;
+                $(event.target).bind("DOMSubtreeModified", function(ev) {
+                    $(ev.target).unbind("DOMSubtreeModified");
+                    if(!$(ev.target).text()) {
+                        $(ev.target).removeAttr('data-chatter-id')
+                    } else {
+                        var chatter_id = $(event.target).attr('data-chatter-id');
+                        $("p[data-chatter-id='"+chatter_id+"']").removeAttr('data-chatter-id');
+                        $(ev.target).attr('data-chatter-id', chatter_id)
+                    }
+                });
+            });
         },
         do_render: function(data) {
             var self = this;
