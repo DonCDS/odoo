@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
     <data>
-
         <record id="channel_website" model="im_livechat.channel">
             <field name="name">YourWebsite.com</field>
             <field name="default_message">Hello, how may I help you?</field>
@@ -17,6 +16,5 @@
             <field name="auto_popup_timer">3</field>
             <field name="channel_id" ref="channel_website" />
         </record>
-
     </data>
-</openerp>
+</odoo>

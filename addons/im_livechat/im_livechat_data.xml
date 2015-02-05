@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
-
+<odoo>
     <data noupdate="1">
         <!-- After installation of the module, open the related menu -->
         <record id="action_client_livechat_menu" model="ir.actions.client">
@@ -41,7 +40,5 @@
             <field name="context">{'group_by': ['start_date:month',  'user_id', 'uuid']}</field>
             <field name="user_id" eval="False"/>
         </record>
-
-
     </data>
-</openerp>
+</odoo>

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import openerp
+
 from openerp.addons.rating.controllers.main import Rating
 from openerp.addons.web import http
 from openerp.http import request
+
 
 class LivechatRatingController(Rating):
 

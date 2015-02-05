@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import openerp
-import openerp.addons.im_chat.im_chat
 
 from openerp import http
 from openerp.http import request
@@ -12,7 +11,7 @@ class LivechatController(http.Controller):
     @http.route('/im_livechat/support/<string:dbname>/<int:channel_id>', type='http', auth='none')
     def support_page(self, dbname, channel_id, **kwargs):
         registry, cr, uid, context = openerp.modules.registry.RegistryManager.get(dbname), request.cr, openerp.SUPERUSER_ID, request.context
-        info = registry.get('im_livechat.channel').get_info_for_chat_src(cr, uid, channel_id)
+        info = request.env['im_livechat.channel'].get_channel_infos(channel_id)
         info["dbname"] = dbname
         info["channel"] = channel_id
         info["channel_name"] = registry.get('im_livechat.channel').read(cr, uid, channel_id, ['name'], context=context)["name"]
@@ -21,7 +20,7 @@ class LivechatController(http.Controller):
     @http.route('/im_livechat/loader/<string:dbname>/<int:channel_id>', type='http', auth='none')
     def loader(self, dbname, channel_id, **kwargs):
         registry, cr, uid, context = openerp.modules.registry.RegistryManager.get(dbname), request.cr, openerp.SUPERUSER_ID, request.context
-        info = registry.get('im_livechat.channel').get_info_for_chat_src(cr, uid, channel_id)
+        info = request.env['im_livechat.channel'].get_channel_infos(channel_id)
         info["dbname"] = dbname
         info["channel"] = channel_id
         info["username"] = kwargs.get("username", "Visitor")
@@ -35,7 +34,7 @@ class LivechatController(http.Controller):
         # extract url
         url = request.httprequest.headers.get('Referer') or request.httprequest.base_url
         # find the match rule for the given country and url
-        rule = registry.get('im_livechat.channel.rule').match_rule(cr, uid, channel_id, url, country_id, context=context)
+        rule = request.env['im_livechat.channel.rule'].match_rule(channel_id, url, country_id)
         if rule:
             if rule.action == 'hide_button':
                 # don't return the initialization script, since its blocked (in the country)

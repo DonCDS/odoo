@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 {
     'name' : 'Instant Messaging',
     'version': '1.0',
-    'summary': 'OpenERP Chat',
-    'author': 'OpenERP SA',
+    'summary': 'Chat between users',
+    'author': 'Odoo SA',
     'sequence': '18',
     'category': 'Tools',
     'complexity': 'easy',
@@ -19,6 +20,7 @@ chat in real time. It support several chats in parallel.
         'security/ir.model.access.csv',
         'security/im_security.xml',
         'views/im_chat.xml',
+        'data/im_chat_data.xml',
     ],
     'depends' : ['base', 'web', 'bus'],
     'qweb': ['static/src/xml/*.xml'],

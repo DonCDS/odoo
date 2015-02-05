@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
     <data>
         <!--
             Views for im_chat.session
@@ -157,8 +157,8 @@
                                                 </i>
                                             </p>
                                             <div style="margin-top:5px;">
-                                                <button t-if="record.are_you_inside.raw_value" name="quit" type="object" class="btn btn-default btn-xs">Quit</button>
-                                                <button t-if="! record.are_you_inside.raw_value" name="join" type="object" class="btn btn-info btn-xs">Join</button>
+                                                <button t-if="record.are_you_inside.raw_value" name="action_quit" type="object" class="btn btn-default btn-xs">Quit</button>
+                                                <button t-if="! record.are_you_inside.raw_value" name="action_join" type="object" class="btn btn-info btn-xs">Join</button>
                                             </div>
                                         </div>
                                     </div>
@@ -183,8 +183,8 @@
                             <field name="name" placeholder="e.g. YourWebsite.com"/>
                         </h1>
                         <div>
-                            <button type="object" name="join" class="oe_highlight" string="Join Channel" attrs='{"invisible": [["are_you_inside", "=", True]]}'/>
-                            <button type="object" name="quit" string="Leave Channel" attrs='{"invisible": [["are_you_inside", "=", False]]}'/>
+                            <button type="object" name="action_join" class="oe_highlight" string="Join Channel" attrs='{"invisible": [["are_you_inside", "=", True]]}'/>
+                            <button type="object" name="action_quit" string="Leave Channel" attrs='{"invisible": [["are_you_inside", "=", False]]}'/>
                             <button type="object" name="test_channel" string="Test" attrs='{"invisible": [["web_page", "=", False]]}'/>
                             <field name="are_you_inside" invisible="1"/>
                         </div>
@@ -291,4 +291,4 @@
         <menuitem name="History" parent="im_livechat" id="session_history" action="action_session_history" groups="group_im_livechat" sequence="10"/>
 
     </data>
-</openerp>
+</odoo>

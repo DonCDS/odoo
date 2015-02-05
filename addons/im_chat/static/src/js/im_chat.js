@@ -259,7 +259,7 @@
             this.$().css("bottom", this.get("bottom_position"));
         },
         update_fold_state: function(state){
-            return new openerp.Model("im_chat.session").call("update_state", [], {"uuid" : this.get("session").uuid, "state" : state});
+            return new openerp.Model("im_chat.session").call("update_state", [], {"uuid" : this.get("session").uuid, "status" : state});
         },
         update_session: function(){
             // built the name

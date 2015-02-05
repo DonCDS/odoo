@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from openerp import fields, models
 
 class website(models.Model):
@@ -6,6 +6,7 @@ class website(models.Model):
     _inherit = "website"
 
     channel_id = fields.Many2one('im_livechat.channel', string='Live Chat Channel')
+
 
 
 class website_config_settings(models.TransientModel):
