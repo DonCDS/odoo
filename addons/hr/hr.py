@@ -288,8 +288,8 @@ class hr_employee(osv.osv):
 
         employee_id = super(hr_employee, self).create(cr, uid, data, context=context)
 
-        if context.get("mail_broadcast"):
-            self._broadcast_welcome(cr, uid, employee_id, context=context)
+        # if context.get("mail_broadcast"):
+        #     self._broadcast_welcome(cr, uid, employee_id, context=context)
         return employee_id
 
     def unlink(self, cr, uid, ids, context=None):

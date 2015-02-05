@@ -21,5 +21,18 @@ Leave Management (keep track of employee leaves), Expense Management (manage emp
             <field name="image" type="base64" file="hr/static/img/employee-image.png"/>
         </record>
 
+        <record id="welcome_hr_new_employee" model="mail.template">
+            <field name="name">Welcome New Emplyoee</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="subject">Welcome ${object.name} </field>
+            <field name="body_html"><![CDATA[
+                <p>I’m very pleased to announce that<strong> ${object.name} </strong>will be joining us as a <strong>${object.job_id.name}</strong> on ${object.create_date}.</p>
+                <p>Please welcome him/her and help him/her finding his marks.</p><br>
+                <p>Best regards,</p>
+                <p>${object.create_uid.name}</p>
+                ]]></field>
+        </record>
+
+
     </data>
 </openerp>

@@ -539,6 +539,18 @@ class hr_applicant(osv.Model):
                 self.pool['mail.compose.message'].send_mail(cr, uid, [compose_id], context=compose_ctx)
         return res
 
+    def _broadcast_welcome(self, cr, uid, employee_id, context=None):
+        """ Broadcast the welcome message to all users in the employee company. """
+        model_obj = self.pool.get('ir.model.data')
+        template_obj = self.pool.get('mail.template')
+        mail_group_id = model_obj.xmlid_to_res_id(cr, uid, 'mail.group_all_employees')
+        get_template = model_obj.xmlid_to_res_id(cr, uid, 'hr.welcome_hr_new_employee')
+        template_id = template_obj.browse(cr, uid, get_template)
+        if template_id:
+            body_html = template_obj.render_template(cr, uid, template_id.body_html, 'hr.employee', employee_id, context=context)
+            self.pool.get('mail.group').message_post(cr, uid, [mail_group_id], body=body_html, subtype='mail.mt_comment', context=context)
+        return True
+
     def create_employee_from_applicant(self, cr, uid, ids, context=None):
         """ Create an hr.employee from the hr.applicants """
         if context is None:
@@ -553,8 +565,7 @@ class hr_applicant(osv.Model):
                 address_id = self.pool.get('res.partner').address_get(cr, uid, [applicant.partner_id.id], ['contact'])['contact']
                 contact_name = self.pool.get('res.partner').name_get(cr, uid, [applicant.partner_id.id])[0][1]
             if applicant.job_id and (applicant.partner_name or contact_name):
-                applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
-                create_ctx = dict(context, mail_broadcast=True)
+                applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1}, context=context)
                 emp_id = hr_employee.create(cr, uid, {'name': applicant.partner_name or contact_name,
                                                      'job_id': applicant.job_id.id,
                                                      'address_home_id': address_id,
@@ -562,12 +573,13 @@ class hr_applicant(osv.Model):
                                                      'address_id': applicant.company_id and applicant.company_id.partner_id and applicant.company_id.partner_id.id or False,
                                                      'work_email': applicant.department_id and applicant.department_id.company_id and applicant.department_id.company_id.email or False,
                                                      'work_phone': applicant.department_id and applicant.department_id.company_id and applicant.department_id.company_id.phone or False,
-                                                     }, context=create_ctx)
+                                                     }, context=context)
                 self.write(cr, uid, [applicant.id], {'emp_id': emp_id}, context=context)
                 self.pool['hr.job'].message_post(
                     cr, uid, [applicant.job_id.id],
                     body=_('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
                     subtype="hr_recruitment.mt_job_applicant_hired", context=context)
+                self._broadcast_welcome(cr, uid, emp_id, context=context)
             else:
                 raise UserError(_('You must define an Applied Job and a Contact Name for this applicant.'))
 
