@@ -13,7 +13,10 @@ odoo.define('web.compatibility', [
     'web.data', 
     'web.FavoriteMenu',
     'web.form_common', 
+    'web.form_relational',
+    'web.form_widgets',
     'web.formats',
+    'web.FormView',
     'web.ListView',
     'web.Menu', 
     'web.Model', 
@@ -40,6 +43,9 @@ var ActionManager = require('web.ActionManager'),
     FavoriteMenu = require('web.FavoriteMenu'),
     form_common = require('web.form_common'),
     formats = require('web.formats'),
+    FormView = require('web.FormView'),
+    form_relational = require('web.form_relational'), // necessary 
+    form_widgets = require('web.form_widgets'), // necessary to be able to export them
     ListView = require('web.ListView'),
     Menu = require('web.Menu'),
     Model = require('web.Model'),
@@ -74,6 +80,7 @@ openerp._session_id = "instance0";
 openerp._t = core._t;
 openerp.get_cookie = utils.get_cookie;
 
+openerp.qweb = core.qweb;
 openerp.session = session;
 
 openerp.web = openerp.web || {};
@@ -96,6 +103,8 @@ openerp.web.form = openerp.web.form || {};
 openerp.web.form.AbstractField = form_common.AbstractField;
 openerp.web.form.compute_domain = data.compute_domain;
 openerp.web.form.DefaultFieldManager = form_common.DefaultFieldManager;
+openerp.web.form.FieldChar = core.form_widget_registry.get('char');
+openerp.web.form.FieldFloat = core.form_widget_registry.get('float');
 openerp.web.form.FieldStatus = core.form_widget_registry.get('statusbar');
 openerp.web.form.FieldMany2ManyTags = core.form_widget_registry.get('many2many_tags');
 openerp.web.form.FieldMany2One = core.form_widget_registry.get('many2one');
@@ -104,6 +113,7 @@ openerp.web.form.tags = make_old_registry(core.form_tag_registry);
 openerp.web.form.widgets = make_old_registry(core.form_widget_registry);
 
 openerp.web.format_value = formats.format_value;
+openerp.web.FormView = FormView;
 
 openerp.web.json_node_to_xml = utils.json_node_to_xml;
 
