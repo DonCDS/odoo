@@ -233,15 +233,3 @@ class view(osv.osv):
         view = self.browse(cr, SUPERUSER_ID, res_id, context=context)
         if view.model_data_id:
             view.model_data_id.write({'noupdate': True})
-
-    def save_menu(self, cr, uid, value, xpath=None, context=None):
-        """ Update the menu view.
-
-        :param str model:
-        :param str xpath: valid xpath to the tag to replace
-        """
-
-        arch_section = html.fromstring(
-            value, parser=html.HTMLParser(encoding='utf-8'))
-
-        

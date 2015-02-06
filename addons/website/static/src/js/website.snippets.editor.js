@@ -1798,6 +1798,7 @@
             this.$target.find("li:has(.o_ul_toggle_self, .o_ul_toggle_next), li:has(>ul,>ol):not(:has(>li))").css('list-style', 'none');
         },
         clean_for_save: function () {
+            debugger;
             this._super();
             if (!this.$target.hasClass('o_ul_folded')) {
                 this.$target.find(".o_close").removeClass("o_close");

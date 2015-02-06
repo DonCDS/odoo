@@ -30,34 +30,50 @@
 </template>
 
 <template id="website.submenu" name="Submenu">
-    <li t-if="not submenu.child_id" class="o_editable o_parent_menu" t-att-class="
-        ((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
-         request.httprequest.path == submenu.url) and 'active'
-        ">
-        <a t-att-href="(website.menu_id.child_id[0] == submenu) and '/' or submenu.url" t-ignore="true" t-att-target="'blank' if submenu.new_window else None">
-            <span t-field="submenu.name"/>
-        </a>
-    </li>
-    <li t-if="submenu.child_id" class="o_editable o_parent_menu" t-attf-class="dropdown #{
-        ((submenu.url != '/' and [1 for submenu in submenu.child_id if request.httprequest.path.startswith(submenu.url)]) or
-         request.httprequest.path == submenu.url) and 'active'
-        }">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            <span t-field="submenu.name"/> <span class="caret" t-ignore="true"></span>
-        </a>
-        <ul class="dropdown-menu o_editable_menu" role="menu">
-            <t t-if="submenu.has_grandchild">
-                <t t-foreach="submenu.child_id" t-as="submenu">
-                    <li class="o_editable" t-att-class="((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
-                         request.httprequest.path == submenu.url) and 'active'
-                        ">
-                        <a t-att-href="(website.menu_id.child_id[0] == submenu) and '/' or submenu.url" t-ignore="true" t-att-target="'blank' if submenu.new_window else None">
-                            <span t-field="submenu.name"/>
-                        </a>
-                    </li>
-                    <ul class="o_editable_menu" style="list-style-type: none;">
+    <ul class="nav navbar-nav navbar-right o_editable" id="top_menu">
+        <t t-foreach="website.menu_id.child_id" t-as="submenu">
+            <li t-if="not submenu.child_id" class="o_parent_menu" t-att-class="
+                ((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
+                 request.httprequest.path == submenu.url) and 'active'
+                ">
+                <a t-att-href="(website.menu_id.child_id[0] == submenu) and '/' or submenu.url" t-ignore="true" t-att-target="'blank' if submenu.new_window else None">
+                    <span t-field="submenu.name"/>
+                </a>
+            </li>
+            <li t-if="submenu.child_id" class="o_parent_menu" t-attf-class="dropdown #{
+                ((submenu.url != '/' and [1 for submenu in submenu.child_id if request.httprequest.path.startswith(submenu.url)]) or
+                 request.httprequest.path == submenu.url) and 'active'
+                }">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span t-field="submenu.name"/> <span class="caret" t-ignore="true"></span>
+                </a>
+                <ul class="dropdown-menu o_editable_menu" role="menu">
+                    <t t-if="submenu.has_grandchild">
                         <t t-foreach="submenu.child_id" t-as="submenu">
-                            <li class="o_editable" t-att-class="
+                            <li t-att-class="((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
+                                 request.httprequest.path == submenu.url) and 'active'
+                                ">
+                                <a t-att-href="(website.menu_id.child_id[0] == submenu) and '/' or submenu.url" t-ignore="true" t-att-target="'blank' if submenu.new_window else None">
+                                    <span t-field="submenu.name"/>
+                                </a>
+                            </li>
+                            <ul style="list-style-type: none;">
+                                <t t-foreach="submenu.child_id" t-as="submenu">
+                                    <li class="o_editable" t-att-class="
+                                        ((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
+                                         request.httprequest.path == submenu.url) and 'active'
+                                        ">
+                                        <a t-att-href="(website.menu_id.child_id[0] == submenu) and '/' or submenu.url" t-ignore="true" t-att-target="'blank' if submenu.new_window else None">
+                                            <span t-field="submenu.name"/>
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+                        </t>
+                    </t>
+                    <t t-if="not submenu.has_grandchild">
+                        <t t-foreach="submenu.child_id" t-as="submenu">
+                            <li t-if="not submenu.child_id" class="o_editable" t-att-class="
                                 ((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
                                  request.httprequest.path == submenu.url) and 'active'
                                 ">
@@ -66,23 +82,24 @@
                                 </a>
                             </li>
                         </t>
-                    </ul>
-                </t>
-            </t>
-            <t t-if="not submenu.has_grandchild">
-                <t t-foreach="submenu.child_id" t-as="submenu">
-                    <li t-if="not submenu.child_id" class="o_editable" t-att-class="
-                        ((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
-                         request.httprequest.path == submenu.url) and 'active'
-                        ">
-                        <a t-att-href="(website.menu_id.child_id[0] == submenu) and '/' or submenu.url" t-ignore="true" t-att-target="'blank' if submenu.new_window else None">
-                            <span t-field="submenu.name"/>
-                        </a>
-                    </li>
-                </t>
-            </t>
-        </ul>
-    </li>
+                    </t>
+                </ul>
+            </li>
+        </t>
+        <li class="divider" t-ignore="true" t-if="website.user_id != user_id"/>
+        <li class="dropdown" t-ignore="true" t-if="website.user_id != user_id">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <b>
+                    <span t-esc="(len(user_id.name)&gt;25) and (user_id.name[:23]+'...') or user_id.name"/>
+                    <span class="caret"></span>
+                </b>
+            </a>
+            <ul class="dropdown-menu js_usermenu" role="menu">
+                <li><a t-attf-href="/web/session/logout?redirect=/" role="menuitem">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
+    
 </template>
 
 <template id="layout" name="Main layout">&lt;!DOCTYPE html&gt;
@@ -149,23 +166,7 @@
                                 <a class="navbar-brand" href="/">YourCompany</a>
                             </div>
                             <div class="collapse navbar-collapse navbar-top-collapse">
-                                <ul class="nav navbar-nav navbar-right" id="top_menu">
-                                    <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                                        <t t-call="website.submenu"/>
-                                    </t>
-                                    <li class="divider" t-ignore="true" t-if="website.user_id != user_id"/>
-                                    <li class="dropdown" t-ignore="true" t-if="website.user_id != user_id">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                            <b>
-                                                <span t-esc="(len(user_id.name)&gt;25) and (user_id.name[:23]+'...') or user_id.name"/>
-                                                <span class="caret"></span>
-                                            </b>
-                                        </a>
-                                        <ul class="dropdown-menu js_usermenu" role="menu">
-                                            <li><a t-attf-href="/web/session/logout?redirect=/" role="menuitem">Logout</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
+                                <t t-call="website.submenu"/>
                             </div>
                         </div>
                     </div>

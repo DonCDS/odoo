@@ -502,6 +502,16 @@ class Website(openerp.addons.web.controllers.main.Home):
             response = werkzeug.wrappers.Response()
             return self.placeholder(response)
 
+    @http.route('/website/save_menu')
+    def save_menu(self, value, xpath=None, context=None):
+        """ Update the menu view.
+
+        :param str model:
+        :param str xpath: valid xpath to the tag to replace
+        """
+
+        print("SAVE MENU")
+
     #------------------------------------------------------
     # Server actions
     #------------------------------------------------------

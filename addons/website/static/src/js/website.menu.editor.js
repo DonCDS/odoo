@@ -45,6 +45,7 @@
 	website.snippet.SaveMenu = website.EditorBar.include({
 		saveElement: function($el){
 			if($el.hasClass('o_parent_menu')){
+                //a mettre dans clean_for_save
             	$el.children('ul').css('visibility', '');
             	$el.off('mouseenter');
             	$el.removeClass('open');
@@ -56,12 +57,11 @@
             		$el.children('a').addClass('dropdown-toggle');
 				}
                 var markup = $el.prop('outerHTML');
-                result = openerp.jsonRpc('/web/dataset/call', 'call', {
-                    model: 'ir.ui.view',
-                    method: 'save_menu',
-                    args: [markup,
-                           $el.data('oe-xpath') || null,
-                           website.get_context()],
+                console.log(markup);
+                result = openerp.jsonRpc('/website/save_menu', 'save_menu', {
+                    value: markup,
+                    xpath: $el.data('oe-xpath') || null,
+                    context: website.get_context(),
                 });
 			}else{
                 var result = this._super($el);
