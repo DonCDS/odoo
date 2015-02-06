@@ -50,7 +50,9 @@
                                 <p><strong>Next invoice date: </strong><t t-esc="account.recurring_next_date"/></p>
                                 <br/>
 
-                                <p><strong>Subtotal: </strong>82.64 €</p>
+                                <p><strong>Subtotal: </strong>
+                                    <span t-field="account.full_price" t-field-options='{"widget": "monetary", "display_currency": "account.company_id.currency_id"}'/>
+                                </p>
                                 <p><strong>Taxes: </strong>17.36 €</p>
                                 <p><strong>Total: </strong>100 €</p>
                             </div>
@@ -88,13 +90,21 @@
                         </div>
                         <div class="col-md-12">
                             <h3>Active Options</h3>
-                            <p>There are no active options.</p>
+                            <table class="table table-default">
+                                <t t-foreach="account.template_id.recurring_invoice_line_ids" t-as="invoice_line">
+                                    <t t-if="invoice_line in account.recurring_invoice_line_ids">
+                                        <t t-call="website_contract.template_option" />
+                                    </t>
+                                </t>
+                            </table>
                         </div>
                         <div class="col-md-12">
                             <h3>Add Options</h3>
                             <table class="table table-default">
-                                <t t-foreach="account.recurring_invoice_line_ids" t-as="invoice_line">
-                                    <t t-call="website_contract.template_option" />
+                                <t t-foreach="account.template_id.recurring_invoice_line_ids" t-as="invoice_line">
+                                    <t t-if="invoice_line not in account.recurring_invoice_line_ids">
+                                        <t t-call="website_contract.template_option" />
+                                    </t>
                                 </t>
                             </table>
                         </div>
@@ -121,7 +131,7 @@
                     <ul class='list-unstyled'>
                         <t t-foreach="template.recurring_invoice_line_ids" t-as="invoice_line">
                             <t t-if="invoice_line.type=='mandatory'">
-                                <li t-esc="invoice_line.product_id.product_tmpl_id.name"/>
+                                <li t-esc="invoice_line.product_id.name_template"/>
                             </t>
                         </t>
                     </ul>
@@ -129,7 +139,7 @@
                     <t t-raw="template.plan_description" />
                 </div>
                 <div class="panel-footer">
-                    <p class="text-center" t-value="template.base_price"/>
+                    <p class="text-center" t-field="template.base_price" t-field-options='{"widget": "monetary", "display_currency": "template.company_id.currency_id"}'/>
                 </div>
             </div>
         </div>
@@ -138,7 +148,7 @@
     <template id="template_option">
         <t t-if="invoice_line.type=='optional'">
             <tr>
-                <td t-esc="invoice_line.product_id.product_tmpl_id.name"/>
+                <td t-esc="invoice_line.product_id.name_template"/>
                 <td><t t-esc="invoice_line.quantity"/> Unit</td>
                 <td t-esc="invoice_line.price_subtotal"/>
             </tr>

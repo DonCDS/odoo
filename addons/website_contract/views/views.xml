@@ -21,8 +21,8 @@
         <field name="arch" type="xml">
             <field name="quantity" position="after">
                 <field name="type"/>
-                <field name="user_addable"/>
-                <field name="user_removable"/>
+                <field name="user_addable" attrs="{'invisible': [('type','=', 'mandatory')]}"/>
+                <field name="user_removable" attrs="{'invisible': [('type','=', 'mandatory')]}"/>
             </field>
         </field>
     </record>

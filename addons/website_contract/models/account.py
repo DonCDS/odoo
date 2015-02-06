@@ -16,6 +16,14 @@ class account_analytic_account(models.Model):
                 base_price += invoice_line.price_subtotal
         self.base_price = base_price
 
+    @api.one
+    @api.depends('recurring_invoice_line_ids')
+    def _compute_full_price(self):
+        full_price = 0
+        for invoice_line in self.recurring_invoice_line_ids:
+                full_price += invoice_line.price_subtotal
+        self.full_price = full_price
+
     def _search_upper(self, operator, value):
         return [('name', operator, value)]
 
@@ -30,7 +38,8 @@ class account_analytic_account(models.Model):
         (for a free trial, for example)""",
         default=True
         )
-    base_price = fields.Float(compute=_compute_base_price, store=True, search=_search_upper)
+    base_price = fields.Float(compute=_compute_base_price)
+    full_price = fields.Float(compute=_compute_full_price)
 
 
 class account_analytic_invoice_line(models.Model):
@@ -43,12 +52,12 @@ class account_analytic_invoice_line(models.Model):
         default="mandatory"
         )
     user_addable = fields.Boolean(
-        string="User can add line",
+        string="Addable",
         help="If checked, the user is able to add this line to his contract himself",
         default=False
         )
     user_removable = fields.Boolean(
-        string="User can remove line",
+        string="Removable",
         help="If checked, the user is able to remove this line from his contract himself",
         default=False
         )

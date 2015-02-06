@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+     
     <!-- Contract templates -->
     <record id="contract_template_1" model="account.analytic.account">
-        <field name="invoice_on_timesheets">False</field>
         <field name="type">template</field>
-        <field name="name">Plan 10</field>
+        <field name="name">Mobile Plan 10</field>
         <field name="plan_description">
             <![CDATA[
             <ul>
@@ -14,6 +14,9 @@
             </ul>
             ]]>
         </field>
+        <field name="recurring_invoices">True</field>
+        <field name="recurring_interval">1</field>
+        <field name="recurring_rule_type">monthly</field>
         <field name="description">
             Payment
             All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
@@ -33,9 +36,8 @@
     </record>
 
     <record id="contract_template_2" model="account.analytic.account">
-        <field name="invoice_on_timesheets">False</field>
         <field name="type">template</field>
-        <field name="name">Plan 25</field>
+        <field name="name">Mobile Plan 25</field>
         <field name="plan_description">
             <![CDATA[
 
@@ -46,6 +48,9 @@
             </ul>
             ]]>
         </field>
+        <field name="recurring_invoices">True</field>
+        <field name="recurring_interval">1</field>
+        <field name="recurring_rule_type">monthly</field>
         <field name="description">
             Payment
             All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
@@ -65,9 +70,8 @@
     </record>
 
     <record id="contract_template_3" model="account.analytic.account">
-        <field name="invoice_on_timesheets">False</field>
         <field name="type">template</field>
-        <field name="name">Plan 50</field>
+        <field name="name">Mobile Plan 50</field>
         <field name="plan_description">
             <![CDATA[<ul>
                 <li>300 min calls to all networks</li>
@@ -76,6 +80,9 @@
             </ul>
             ]]>
         </field>
+        <field name="recurring_invoices">True</field>
+        <field name="recurring_interval">1</field>
+        <field name="recurring_rule_type">monthly</field>
         <field name="description">
             Payment
             All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
@@ -101,9 +108,6 @@
         <field name="template_id" ref="contract_template_1"/>
         <field name="manager_id" ref="base.user_root"/>
         <field name="type">contract</field>
-        <field name="recurring_invoices">True</field>
-        <field name="recurring_interval">1</field>
-        <field name="recurring_rule_type">monthly</field>
         <field name="description">
             Payment
             All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
@@ -121,5 +125,4 @@
             Any complaints about items or sellers may be sent to our support team: support@wesellyourstuff.com or (888) 555-0198. There is no guarantee of a resolution. Each case will be looked at individually, and the seller will be in contact as well.
         </field>
     </record>
-
 </odoo>
