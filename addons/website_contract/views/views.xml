@@ -8,8 +8,23 @@
                 <group name="portal_contract" string="Frontend attributes">
                     <field name="selectable_by_customer"/>
                     <field name="plan_description"/>
+                    <field name="base_price"/>
                 </group>
             </group>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="account_analytic_account_form_form">
+        <field name="name">account.analytic.account.invoice.form.inherit</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="account_analytic_analysis.account_analytic_account_form_form"/>
+        <field name="arch" type="xml">
+            <field name="quantity" position="after">
+                <field name="type"/>
+                <field name="user_addable"/>
+                <field name="user_removable"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>

@@ -92,7 +92,11 @@
                         </div>
                         <div class="col-md-12">
                             <h3>Add Options</h3>
-                            <p>There are no other options available.</p>
+                            <table class="table table-default">
+                                <t t-foreach="account.recurring_invoice_line_ids" t-as="invoice_line">
+                                    <t t-call="website_contract.template_option" />
+                                </t>
+                            </table>
                         </div>
 
                     </div>
@@ -114,13 +118,31 @@
                     <h3 class="panel-title text-center" t-esc="template.name"/>
                 </div>
                 <div class="panel-body">
+                    <ul class='list-unstyled'>
+                        <t t-foreach="template.recurring_invoice_line_ids" t-as="invoice_line">
+                            <t t-if="invoice_line.type=='mandatory'">
+                                <li t-esc="invoice_line.product_id.product_tmpl_id.name"/>
+                            </t>
+                        </t>
+                    </ul>
+                    <hr/>
                     <t t-raw="template.plan_description" />
                 </div>
                 <div class="panel-footer">
-                    <p class="text-center" t-value="template.total_cost"/>
+                    <p class="text-center" t-value="template.base_price"/>
                 </div>
             </div>
         </div>
+    </template>
+
+    <template id="template_option">
+        <t t-if="invoice_line.type=='optional'">
+            <tr>
+                <td t-esc="invoice_line.product_id.product_tmpl_id.name"/>
+                <td><t t-esc="invoice_line.quantity"/> Unit</td>
+                <td t-esc="invoice_line.price_subtotal"/>
+            </tr>
+        </t>
     </template>
 
 
