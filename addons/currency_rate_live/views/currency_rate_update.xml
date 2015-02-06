@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+        <record model="ir.ui.view" id="currency_rate_update_tree">
+            <field name="name">Update Rates service</field>
+            <field name="model">res.currency.rate.provider</field>
+            <field name="arch" type="xml">
+                <tree string="Rates">
+                    <field name="service_provider"/>
+                    <field name="base_currency_id"/>
+                    <field name="currency_ids"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="currency_rate_update_form">
+            <field name="name">Update Rates</field>
+            <field name="model">res.currency.rate.provider</field>
+            <field name="arch" type="xml">
+                <form string="Rate">
+                    <separator string="Currencies to update with this service" colspan="4"/>
+                    <group>
+                        <field name="currency_ids" widget="many2many_tags" placeholder="Type currency ids here.."/>
+                        <!-- <field name="server_action_id"/> -->
+                    </group>
+                    <separator string="API Details" colspan="4"/>
+                    <group>
+                        <field name="service_provider"/>
+                        <field name="base_currency_id" placeholder="Type base currency here.."/>
+                        <field name="request_token" attrs="{'invisible':[('service_provider','not in',('appspot', 'quandl'))], 'required':[('service_provider','in',('appspot', 'quandl'))]}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+	</data>
+</openerp>
