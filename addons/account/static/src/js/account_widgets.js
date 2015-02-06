@@ -1,13 +1,19 @@
-openerp.account = function (instance) {
-    openerp.account.quickadd(instance);
+odoo.define(['web.View', 'web.ListView', 'web.Widget', 'web.core'], function (require) {
+
+    var View = require('web.View'),
+        ListView = require('web.ListView'),
+        core = require('web.core'),
+        Widget = require('web.Widget');
+
+    var instance = openerp;
     var _t = instance.web._t,
         _lt = instance.web._lt;
     var QWeb = instance.web.qweb;
     
     instance.web.account = instance.web.account || {};
     
-    instance.web.client_actions.add('bank_statement_reconciliation_view', 'instance.web.account.bankStatementReconciliation');
-    instance.web.account.bankStatementReconciliation = instance.web.Widget.extend({
+
+    var bankStatementReconciliation = Widget.extend({
         className: 'oe_bank_statement_reconciliation',
 
         events: {
@@ -654,8 +660,9 @@ openerp.account = function (instance) {
             });
         },
     });
+    core.action_registry.add('bank_statement_reconciliation_view', bankStatementReconciliation);
     
-    instance.web.account.bankStatementReconciliationLine = instance.web.Widget.extend({
+    instance.web.account.bankStatementReconciliationLine = Widget.extend({
         className: 'oe_bank_statement_reconciliation_line',
     
         events: {
@@ -1748,8 +1755,8 @@ openerp.account = function (instance) {
         },
     });
 
-    instance.web.views.add('tree_account_reconciliation', 'instance.web.account.ReconciliationListView');
-    instance.web.account.ReconciliationListView = instance.web.ListView.extend({
+    core.view_registry.add('tree_account_reconciliation', 'instance.web.account.ReconciliationListView');
+    instance.web.account.ReconciliationListView = ListView.extend({
         init: function() {
             this._super.apply(this, arguments);
             var self = this;
@@ -1869,4 +1876,4 @@ openerp.account = function (instance) {
         },
     });
     
-};
+});

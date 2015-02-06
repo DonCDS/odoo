@@ -1,5 +1,10 @@
 
-openerp.hr_timesheet_sheet = function(instance) {
+odoo.define('hr_timesheet_sheet', ['web.core'], function () {
+
+var core = this.require('web.core');
+
+var instance = openerp;
+
     var QWeb = instance.web.qweb;
     var _t = instance.web._t;
 
@@ -350,6 +355,6 @@ openerp.hr_timesheet_sheet = function(instance) {
         },
     });
 
-    instance.web.form.custom_widgets.add('weekly_timesheet', 'instance.hr_timesheet_sheet.WeeklyTimesheet');
+    core.form_custom_registry.add('weekly_timesheet', instance.hr_timesheet_sheet.WeeklyTimesheet);
 
-};
+});

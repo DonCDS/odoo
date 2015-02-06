@@ -1,7 +1,19 @@
-openerp.web_view_editor = function(instance) {
-var _t = instance.web._t;
-var QWeb = instance.web.qweb;
-instance.web.ViewManager.include({
+odoo.define(['web.Class', 'web.ViewManager', 'web.View', 'web.Widget', 'web.translation', 'qweb', 'web.Registry'], function (require) {
+"use strict";
+
+var Class = require('web.Class'),
+    ViewManager = require('web.ViewManager'),
+    View = require('web.View'),
+    translation = require('web.translation'),
+    Widget = require('web.Widget'),
+    Registry = require('web.Registry'),
+    QWeb = require('qweb');
+
+var instance = openerp;
+instance.web_view_editor = {};
+var _t = translation._t;
+
+ViewManager.include({
     on_debug_changed:function(evt){
         var val = $(evt.target).data('action'),
             current_view = this.active_view.controller;
@@ -18,7 +30,7 @@ instance.web.ViewManager.include({
         }
     }
 });
-instance.web_view_editor.ViewEditor =   instance.web.Widget.extend({
+instance.web_view_editor.ViewEditor = Widget.extend({
     init: function(parent, element_id, dataset, view, options) {
         this._super(parent);
         this.parent = parent;
@@ -1031,7 +1043,7 @@ instance.web_view_editor.ViewEditor =   instance.web.Widget.extend({
         });
     }
 });
-instance.web_view_editor.ViewEditor.Field = instance.web.Class.extend({
+instance.web_view_editor.ViewEditor.Field = Class.extend({
     init: function(view, widget) {
         this.$el = view.$el;
         this.dirty = false;
@@ -1220,11 +1232,12 @@ var _ICONS = ['','STOCK_ABOUT', 'STOCK_ADD', 'STOCK_APPLY', 'STOCK_BOLD',
             'terp-sale', 'terp-tools', 'terp-administration', 'terp-hr', 'terp-partner',
             'terp-project', 'terp-report', 'terp-stock', 'terp-calendar', 'terp-graph'
 ];
-instance.web_view_editor.ViewEditor.property_widget = new instance.web.Registry({
-    'boolean' : 'instance.web_view_editor.ViewEditor.FieldBoolean',
-    'selection_multi' : 'instance.web_view_editor.ViewEditor.FieldSelectMulti',
-    'selection' : 'instance.web_view_editor.ViewEditor.FieldSelect',
-    'char' : 'instance.web_view_editor.ViewEditor.FieldChar',
-    'float' : 'instance.web_view_editor.ViewEditor.FieldFloat'
+instance.web_view_editor.ViewEditor.property_widget = new Registry({
+    'boolean' : instance.web_view_editor.ViewEditor.FieldBoolean,
+    'selection_multi' : instance.web_view_editor.ViewEditor.FieldSelectMulti,
+    'selection' : instance.web_view_editor.ViewEditor.FieldSelect,
+    'char' : instance.web_view_editor.ViewEditor.FieldChar,
+    'float' : instance.web_view_editor.ViewEditor.FieldFloat
 });
-};
+
+});

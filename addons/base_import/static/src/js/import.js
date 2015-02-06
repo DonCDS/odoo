@@ -1,7 +1,14 @@
-openerp.base_import = function (instance) {
-    var QWeb = instance.web.qweb;
-    var _t = instance.web._t;
-    var _lt = instance.web._lt;
+odoo.define(['web.ListView', 'web.Widget', 'web.core', 'web.session'], function (require) {
+
+    var ListView = require('web.ListView'),
+        core = require('web.core'),
+        Widget = require('web.Widget'),
+        session = require('web.session');
+
+    var instance = openerp;
+    var QWeb = core.qweb;
+    var _t = core._t;
+    var _lt = core._lt;
 
     /**
      * Safari does not deal well at all with raw JSON data being
@@ -36,8 +43,8 @@ openerp.base_import = function (instance) {
     }
 
     // if true, the 'Import', 'Export', etc... buttons will be shown
-    instance.web.ListView.prototype.defaults.import_enabled = true;
-    instance.web.ListView.include({
+    ListView.prototype.defaults.import_enabled = true;
+    ListView.include({
         load_list: function () {
             var self = this;
             var add_button = false;
@@ -69,9 +76,7 @@ openerp.base_import = function (instance) {
         }
     });
 
-    instance.web.client_actions.add(
-        'import', 'instance.web.DataImport');
-    instance.web.DataImport = instance.web.Widget.extend({
+    var DataImport = Widget.extend({
         template: 'ImportView',
         opts: [
             {name: 'encoding', label: _lt("Encoding:"), value: 'utf-8'},
@@ -136,6 +141,7 @@ openerp.base_import = function (instance) {
             // import object id
             this.id = null;
             this.Import = new instance.web.Model('base_import.import');
+            this.session = session;
         },
         start: function () {
             var self = this;
@@ -466,9 +472,11 @@ openerp.base_import = function (instance) {
                 }));
         },
     });
+    core.action_registry.add('import', DataImport);
+
     // FSM-ize DataImport
     StateMachine.create({
-        target: instance.web.DataImport.prototype,
+        target: DataImport.prototype,
         events: [
             { name: 'loaded_file',
               from: ['none', 'file_loaded', 'preview_error', 'preview_success', 'results'],
@@ -486,4 +494,4 @@ openerp.base_import = function (instance) {
             { name: 'import_failed', from: 'importing', to: 'results' }
         ]
     })
-};
+});

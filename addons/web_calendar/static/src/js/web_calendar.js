@@ -1,27 +1,35 @@
+odoo.define('web_calendar.CalendarView', ['web.Model', 'web.View', 'web.form_widgets', 'web.time_utils', 'web.Widget', 'qweb', 'web.data', 'web.translation', 'web.Registry', 'web.core', 'web.form_common'], function (require) {
 /*---------------------------------------------------------
  * OpenERP web_calendar
  *---------------------------------------------------------*/
 
-_.str.toBoolElse = function (str, elseValues, trueValues, falseValues) {
-    var ret = _.str.toBool(str, trueValues, falseValues);
-    if (_.isUndefined(ret)) {
-        return elseValues;
-    }
-    return ret;
-};
+var Model = require('web.Model'),
+    View = require('web.View'),
+    core = require('web.core'),
+    form_widgets = require('web.form_widgets'),
+    form_common = require('web.form_common'),
+    time_utils = require('web.time_utils'),
+    Widget = require('web.Widget'),
+    QWeb = require('qweb'),
+    data = require('web.data'),
+    Registry = require('web.Registry'),
+    translation = require('web.translation');
 
-openerp.web_calendar = function(instance) {
-    var _t = instance.web._t,
-        _lt = instance.web._lt,
-        QWeb = instance.web.qweb;
+var CompoundDomain = data.CompoundDomain;
+var AbstractField = form_widgets.AbstractField;
+    var instance = openerp;
+    var _t = translation._t,
+        _lt = translation._lt;
+
+    instance.web_calendar = {};
 
     function get_class(name) {
-        return new instance.web.Registry({'tmp' : name}).get_object("tmp");
+        return new instance.web.Registry({'tmp' : name}).get("tmp");
     }
 
     function get_fc_defaultOptions() {
         shortTimeformat = moment._locale._longDateFormat.LT;
-        var dateFormat = instance.web.normalize_format(_t.database.parameters.date_format);
+        var dateFormat = time_utils.strftime_to_moment_format(_t.database.parameters.date_format);
 
         // adapt format for fullcalendar v1.
         // see http://fullcalendar.io/docs1/utilities/formatDate/
@@ -76,9 +84,8 @@ openerp.web_calendar = function(instance) {
         return _.isUndefined(value) || _.isNull(value);
     }
 
-    instance.web.views.add('calendar', 'instance.web_calendar.CalendarView');
 
-    instance.web_calendar.CalendarView = instance.web.View.extend({
+    var CalendarView = View.extend({
         template: "CalendarView",
         display_name: _lt('Calendar'),
         quick_create_instance: 'instance.web_calendar.QuickCreate',
@@ -240,12 +247,12 @@ openerp.web_calendar = function(instance) {
             }
 
             self.shown.done(this._do_show_init.bind(this));
-            var edit_check = new instance.web.Model(this.dataset.model)
+            var edit_check = new Model(this.dataset.model)
                 .call("check_access_rights", ["write", false])
                 .then(function (write_right) {
                     self.write_right = write_right;
                 });
-            var init = new instance.web.Model(this.dataset.model)
+            var init = new Model(this.dataset.model)
                 .call("check_access_rights", ["create", false])
                 .then(function (create_right) {
                     self.create_right = create_right;
@@ -488,12 +495,12 @@ openerp.web_calendar = function(instance) {
                 attendees = [];
 
             if (!all_day) {
-                date_start = instance.web.auto_str_to_date(evt[this.date_start]);
-                date_stop = this.date_stop ? instance.web.auto_str_to_date(evt[this.date_stop]) : null;
+                date_start = time_utils.auto_str_to_date(evt[this.date_start]);
+                date_stop = this.date_stop ? time_utils.auto_str_to_date(evt[this.date_stop]) : null;
             }
             else {
-                date_start = instance.web.auto_str_to_date(evt[this.date_start].split(' ')[0],'start');
-                date_stop = this.date_stop ? instance.web.auto_str_to_date(evt[this.date_stop].split(' ')[0],'start') : null;
+                date_start = time_utils.auto_str_to_date(evt[this.date_start].split(' ')[0],'start');
+                date_stop = this.date_stop ? time_utils.auto_str_to_date(evt[this.date_stop].split(' ')[0],'start') : null;
             }
 
             if (this.info_fields) {
@@ -639,17 +646,17 @@ openerp.web_calendar = function(instance) {
                     date_start_day = new Date(event.start.getFullYear(),event.start.getMonth(),event.start.getDate(),7);
                     date_stop_day = new Date(event_end.getFullYear(),event_end.getMonth(),event_end.getDate(),19);
                 }
-                data[this.date_start] = instance.web.datetime_to_str(date_start_day);
+                data[this.date_start] = time_utils.datetime_to_str(date_start_day);
                 if (this.date_stop) {
-                    data[this.date_stop] = instance.web.datetime_to_str(date_stop_day);
+                    data[this.date_stop] = time_utils.datetime_to_str(date_stop_day);
                 }
                 diff_seconds = Math.round((date_stop_day.getTime() - date_start_day.getTime()) / 1000);
                                 
             }
             else {
-                data[this.date_start] = instance.web.datetime_to_str(event.start);
+                data[this.date_start] = time_utils.datetime_to_str(event.start);
                 if (this.date_stop) {
-                    data[this.date_stop] = instance.web.datetime_to_str(event_end);
+                    data[this.date_stop] = time_utils.datetime_to_str(event_end);
                 }
                 diff_seconds = Math.round((event_end.getTime() - event.start.getTime()) / 1000);
             }
@@ -793,7 +800,7 @@ openerp.web_calendar = function(instance) {
          * between given start, end dates.
          */
         get_range_domain: function(domain, start, end) {
-            var format = instance.web.date_to_str;
+            var format = time_utils.date_to_str;
             
             extend_domain = [[this.date_start, '>=', format(start)],
                      [this.date_start, '<=', format(end)]];
@@ -812,7 +819,7 @@ openerp.web_calendar = function(instance) {
                 );
                 //final -> (A & B) | (C & D) | (E & F) ->  | | & A B & C D & E F
             }
-            return new instance.web.CompoundDomain(domain, extend_domain);
+            return new CompoundDomain(domain, extend_domain);
         },
 
         /**
@@ -951,7 +958,7 @@ openerp.web_calendar = function(instance) {
      * @class
      * @type {*}
      */
-    instance.web_calendar.QuickCreate = instance.web.Widget.extend({
+    instance.web_calendar.QuickCreate = Widget.extend({
         template: 'CalendarView.quick_create',
         
         init: function(parent, dataset, buttons, options, data_template) {
@@ -1180,7 +1187,7 @@ openerp.web_calendar = function(instance) {
         });
     }
 
-    instance.web_calendar.BufferedDataSet = instance.web.BufferedDataSet.extend({
+    instance.web_calendar.BufferedDataSet = data.BufferedDataSet.extend({
 
         /**
          * Adds verification on possible missing fields for the sole purpose of
@@ -1234,14 +1241,14 @@ openerp.web_calendar = function(instance) {
         },
     });
 
-    instance.web_calendar.fields_dataset = new instance.web.Registry({
-        'many2many': 'instance.web.DataSetStatic',
-        'one2many': 'instance.web_calendar.BufferedDataSet',
+    instance.web_calendar.fields_dataset = new Registry({
+        'many2many': instance.web.DataSetStatic,
+        'one2many': instance.web_calendar.BufferedDataSet,
     });
 
 
     function get_field_dataset_class(type) {
-        var obj = instance.web_calendar.fields_dataset.get_any([type]);
+        var obj = instance.web_calendar.fields_dataset.get(type);
         if (!obj) {
             throw new Error(_.str.sprintf(_t("Dataset for type '%s' is not defined."), type));
         }
@@ -1262,7 +1269,7 @@ openerp.web_calendar = function(instance) {
     /**
      * Common part to manage any field using calendar view
      */
-    instance.web_calendar.FieldCalendar = instance.web.form.AbstractField.extend({
+    instance.web_calendar.FieldCalendar = form_common.AbstractField.extend({
 
         disable_utility_classes: true,
         calendar_view_class: 'instance.web_calendar.FieldCalendarView',
@@ -1386,7 +1393,7 @@ openerp.web_calendar = function(instance) {
         }
     });
 
-    instance.web_calendar.Sidebar = instance.web.Widget.extend({
+    instance.web_calendar.Sidebar = Widget.extend({
         template: 'CalendarView.sidebar',
         
         start: function() {
@@ -1395,7 +1402,7 @@ openerp.web_calendar = function(instance) {
             this.filter.appendTo(this.$el.find('.oe_calendar_filter'));
         }
     });
-    instance.web_calendar.SidebarFilter = instance.web.Widget.extend({
+    instance.web_calendar.SidebarFilter = Widget.extend({
         events: {
             'change input:checkbox': 'filter_click',
             'click span.color_filter': 'select_previous',
@@ -1439,4 +1446,8 @@ openerp.web_calendar = function(instance) {
         }
     });
 
-};
+    core.view_registry.add('calendar', CalendarView);
+
+    return CalendarView;
+});
+

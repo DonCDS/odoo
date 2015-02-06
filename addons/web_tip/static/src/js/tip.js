@@ -1,12 +1,20 @@
-(function() {
+odoo.define(['web.core', 'web.Class', 'web.WebClient', 'web.form_widgets', 'web.utils'], function (require) {
+
+    var core = require('web.core'),
+        Class = require('web.Class'),
+        utils = require('web.utils'),
+        WebClient = require('web.WebClient'),
+        form_widgets = require('web.form_widgets');
+
+    var bus = core.bus;
 
     var instance = openerp;
 
-    instance.web.Tip = instance.web.Class.extend({
+    instance.web.Tip = Class.extend({
         init: function() {
             var self = this;
             self.tips = [];
-            self.tip_mutex = new $.Mutex();
+            self.tip_mutex = new utils.Mutex();
             self.$overlay = null;
             self.$element = null;
 
@@ -18,7 +26,7 @@
                 })
             ;
 
-            instance.web.bus.on('action', this, function(action) {
+            core.bus.on('action', this, function(action) {
                 self.on_action(action);
             });
 
@@ -255,6 +263,10 @@
                 instance.web.bus.on('resize', this, function() {
                     self.reposition();
                 });
+
+                instance.web.bus.on('please_reposition_tip', this, function () {
+                    self.reposition();
+                });
             } else {
                def.reject();
             }
@@ -296,17 +308,19 @@
         }
     });
 
-    instance.web.WebClient = instance.web.WebClient.extend({
+    WebClient.include({
         show_application: function() {
             this._super();
             this.tip_handler = new instance.web.Tip();
         }
     });
 
-    instance.web.form.FieldStatus = instance.web.form.FieldStatus.extend({
+    var FieldStatus = core.form_widget_registry.get('statusbar');
+
+    FieldStatus.include({
         render_value: function() {
             this._super();
-            instance.webclient.tip_handler.reposition();
+            this.trigger('please_reposition_tip');
         }
     });
-})();
+});

@@ -1,11 +1,17 @@
-openerp.hr = function(session) {
+odoo.define(['web.Widget', 'mail.mail'], function (Widget, mail) {
+
+    var Widget = this.require('web.Widget'),
+        mail = this.require('mail.mail');
+        
+    var session = openerp;
     var _t = session.web._t;
     var QWeb = session.web.qweb;
 
+    session.suggestions = {};
     var suggestions = session.suggestions;
     var removed_suggested_employee = session.suggestions.removed_suggested_employee = [];
 
-    suggestions.Employees = session.web.Widget.extend({
+    suggestions.Employees = Widget.extend({
         events: {
             'click .oe_suggestion_remove.oe_suggestion_employee': 'stop_employee_suggestion',
             'click .oe_suggestion_remove_item.oe_suggestion_employee': 'remove_employee_suggestion',
@@ -67,7 +73,7 @@ openerp.hr = function(session) {
         }
     });
 
-    session.mail.WallSidebar.include({
+    mail.WallSidebar.include({
         start: function () {
             this._super.apply(this, arguments);
             var sug_employees = new suggestions.Employees(this);
@@ -75,4 +81,4 @@ openerp.hr = function(session) {
         },
     });
 
-};
+});

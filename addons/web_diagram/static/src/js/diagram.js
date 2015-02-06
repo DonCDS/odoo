@@ -1,13 +1,20 @@
+odoo.define('web_diagram.DiagramView', ['web.View', 'web.translation', 'qweb', 'web.core'], function (require) {
 /*---------------------------------------------------------
  * OpenERP diagram library
  *---------------------------------------------------------*/
+"use strict";
 
-openerp.web_diagram = function (instance) {
-var QWeb = instance.web.qweb,
-      _t = instance.web._t,
-     _lt = instance.web._lt;
-instance.web.views.add('diagram', 'instance.web.DiagramView');
-instance.web.DiagramView = instance.web.View.extend({
+var QWeb = require('qweb'),
+    core = require('web.core'),
+    translation = require('web.translation'),
+    View = require('web.View');
+
+var instance = openerp;
+
+var _t = translation._t,
+    _lt = translation._lt;
+
+var DiagramView = View.extend({
     display_name: _lt('Diagram'),
     view_type: 'diagram',
     searchable: false,
@@ -420,4 +427,9 @@ instance.web.DiagramView = instance.web.View.extend({
         return $.when(this._super(), this.execute_pager_action('reload'));
     }
 });
-};
+
+core.view_registry.add('diagram', DiagramView);
+
+return DiagramView;
+
+});

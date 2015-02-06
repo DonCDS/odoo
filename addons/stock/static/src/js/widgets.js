@@ -1,5 +1,7 @@
-function openerp_picking_widgets(instance){
+odoo.require(['web.Widget', 'web.core', 'web.Class'], function (Widget, core, Class) {
 
+    var instance = openerp;
+    instance.stock = {};
     var module = instance.stock;
     var _t     = instance.web._t;
     var QWeb   = instance.web.qweb;
@@ -8,7 +10,7 @@ function openerp_picking_widgets(instance){
     // Widgets that want to display fullscreen on mobile phone need to extend this
     // widget.
 
-    module.MobileWidget = instance.web.Widget.extend({
+    module.MobileWidget = Widget.extend({
         start: function(){
             if(!$('#oe-mobilewidget-viewport').length){
                 $('head').append('<meta id="oe-mobilewidget-viewport" name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">');
@@ -21,7 +23,7 @@ function openerp_picking_widgets(instance){
         },
     });
 
-    module.PickingEditorWidget = instance.web.Widget.extend({
+    module.PickingEditorWidget = Widget.extend({
         template: 'PickingEditorWidget',
         init: function(parent,options){
             this._super(parent,options);
@@ -590,7 +592,7 @@ function openerp_picking_widgets(instance){
             instance.webclient.set_content_full_screen(false);
         },
     });
-    openerp.web.client_actions.add('stock.menu', 'instance.stock.PickingMenuWidget');
+    core.client_actions.add('stock.menu', 'instance.stock.PickingMenuWidget');
 
     module.PickingMainWidget = module.MobileWidget.extend({
         template: 'PickingMainWidget',
@@ -1018,9 +1020,9 @@ function openerp_picking_widgets(instance){
             instance.webclient.set_content_full_screen(false);
         },
     });
-    openerp.web.client_actions.add('stock.ui', 'instance.stock.PickingMainWidget');
+    core.client_actions.add('stock.ui', 'instance.stock.PickingMainWidget');
 
-    module.BarcodeScanner = instance.web.Class.extend({
+    module.BarcodeScanner = Class.extend({
         connect: function(callback){
             var code = "";
             var timeStamp = 0;
@@ -1056,9 +1058,5 @@ function openerp_picking_widgets(instance){
         },
     });
 
-}
 
-openerp.stock = function(openerp) {
-    openerp.stock = openerp.stock || {};
-    openerp_picking_widgets(openerp);
-}
+});

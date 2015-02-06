@@ -1,13 +1,20 @@
-openerp.board = function(instance) {
-var QWeb = instance.web.qweb,
-    _t = instance.web._t;
+odoo.define(['qweb', 'web.form_widgets', 'web.FavoriteMenu', 'web.core', 'web.form_common'], function (require) {
+
+var QWeb = require('qweb'),
+    form_widgets = require('web.form_widgets'),
+    core = require('web.core'),
+    form_common = require('web.form_common'),
+    FavoriteMenu = require('web.FavoriteMenu');
+
+var instance = openerp;
+var _t = instance.web._t;
 
 if (!instance.board) {
     /** @namespace */
     instance.board = {};
 }
 
-instance.web.form.DashBoard = instance.web.form.FormWidget.extend({
+instance.web.form.DashBoard = form_common.FormWidget.extend({
     events: {
         'click .oe_dashboard_link_change_layout': 'on_change_layout',
         'click h2.oe_header span.oe_header_txt': function (ev) {
@@ -317,12 +324,13 @@ instance.web.form.DashBoardLegacy = instance.web.form.DashBoard.extend({
     }
 });
 
-instance.web.form.tags.add('hpaned', 'instance.web.form.DashBoardLegacy');
-instance.web.form.tags.add('vpaned', 'instance.web.form.DashBoardLegacy');
-instance.web.form.tags.add('board', 'instance.web.form.DashBoard');
+core.form_tag_registry
+    .add('hpaned', instance.web.form.DashBoardLegacy)
+    .add('vpaned', instance.web.form.DashBoardLegacy)
+    .add('board', instance.web.form.DashBoard);
 
 
-instance.web.search.FavoriteMenu.include({
+FavoriteMenu.include({
     prepare_dropdown_menu: function (filters) {
         var self = this;
         this._super(filters);
@@ -404,4 +412,4 @@ instance.web.search.FavoriteMenu.include({
     },
 });
 
-};
+});

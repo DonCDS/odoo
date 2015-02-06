@@ -1,4 +1,8 @@
-openerp_FieldMany2ManyTagsEmail = function(instance) {
+odoo.define(['web.form_relational', 'web.core'], function (require) {
+
+var form_relational = require('web.form_relational'),
+    core = require('web.core');
+var instance = openerp;
 var _t = instance.web._t;
 
 /**
@@ -6,7 +10,9 @@ var _t = instance.web._t;
  * When the user add a partner and the partner don't have an email, open a popup to purpose to add an email.
  * The user can choose to add an email or cancel and close the popup.
  */
-instance.web.form.FieldMany2ManyTagsEmail = instance.web.form.FieldMany2ManyTags.extend({
+var FieldMany2ManyTags = core.form_widget_registry.get('many2many_tags');
+
+instance.web.form.FieldMany2ManyTagsEmail = FieldMany2ManyTags.extend({
 
     start: function() {
         this.values = [];
@@ -81,6 +87,6 @@ instance.web.form.FieldMany2ManyTagsEmail = instance.web.form.FieldMany2ManyTags
 /**
  * Registry of form fields
  */
-instance.web.form.widgets.add('many2many_tags_email', 'instance.web.form.FieldMany2ManyTagsEmail');
+core.form_widget_registry.add('many2many_tags_email', instance.web.form.FieldMany2ManyTagsEmail);
 
-};
+});

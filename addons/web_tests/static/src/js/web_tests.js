@@ -1,8 +1,12 @@
-openerp.web_tests = function (instance) {
-    instance.web.client_actions.add(
-        'buncha-forms', 'instance.web_tests.BunchaForms');
+odoo.define(['web.core', 'web.Widget'], function (require) {
+"use strict";
+
+    var core = require('web.core'),
+        Widget = require('web.Widget');
+
+    var instance = openerp;
     instance.web_tests = {};
-    instance.web_tests.BunchaForms = instance.web.Widget.extend({
+    var BunchaForms = Widget.extend({
         init: function (parent) {
             this._super(parent);
             this.dataset = new instance.web.DataSetSearch(this, 'test.listview.relations');
@@ -34,4 +38,7 @@ openerp.web_tests = function (instance) {
             }, this);
         }
     });
-};
+
+    core.action_registry.add('buncha-forms', BunchaForms);
+
+});

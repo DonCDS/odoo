@@ -1,9 +1,21 @@
-openerp.calendar = function(instance) {
-    var _t = instance.web._t,
-        _lt = instance.web._lt;
-    var QWeb = instance.web.qweb;
+odoo.define(['web.Widget', 'web_calendar.CalendarView', 'web.WebClient', 'web.form_relational', 'web.core'], function (require) {
 
-    instance.calendar = {};
+var Widget = require('web.Widget'),
+    core = require('web.core'),
+    CalendarView = require('web_calendar.CalendarView'),
+    WebClient = require('web.WebClient'),
+    form_relational = require('web.form_relational');
+
+var exports = {};
+
+var FieldMany2ManyTags = core.form_widget_registry.get('many2many_tags');
+
+var instance = openerp;
+var _t = instance.web._t,
+    _lt = instance.web._lt;
+var QWeb = instance.web.qweb;
+
+instance.calendar = {};
     
 function reload_favorite_list(result) {
         var self = current = result;
@@ -62,7 +74,7 @@ function reload_favorite_list(result) {
                 });
             });
         }
-    instance.web_calendar.CalendarView.include({
+    CalendarView.include({
         extraSideBar: function(){
             this._super();
             if (this.useContacts){
@@ -132,7 +144,7 @@ function reload_favorite_list(result) {
         },
     });
 
-    instance.web.WebClient = instance.web.WebClient.extend({
+WebClient.include({
         
 
         get_notif_box: function(me) {
@@ -204,7 +216,7 @@ function reload_favorite_list(result) {
     });
     
 
-    instance.calendar.invitation = instance.web.Widget.extend({
+    instance.calendar.invitation = Widget.extend({
 
         init: function(parent, db, action, id, view, attendee_data) {
             this._super(parent); // ? parent ?
@@ -238,7 +250,7 @@ function reload_favorite_list(result) {
         },
     });
 
-    instance.web.form.Many2ManyAttendee = instance.web.form.FieldMany2ManyTags.extend({
+    instance.web.form.Many2ManyAttendee = FieldMany2ManyTags.extend({
         tag_template: "many2manyattendee",
         initialize_texttext: function() {
             return _.extend(this._super(),{
@@ -266,7 +278,7 @@ function reload_favorite_list(result) {
             }
         }
     });
-    instance.web.form.widgets.add('many2manyattendee', 'instance.web.form.Many2ManyAttendee');
+    core.form_widget_registry.add('many2manyattendee', instance.web.form.Many2ManyAttendee);
 
     instance.calendar.event = function (db, action, id, view, attendee_data) {
         instance.session.session_bind(instance.session.origin).done(function () {
@@ -274,9 +286,5 @@ function reload_favorite_list(result) {
         });
     };
     
-    
-    
-    
-   
-};
-
+    return exports;    
+});

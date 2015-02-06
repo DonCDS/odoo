@@ -1,9 +1,12 @@
-openerp.edi = function(instance) {
+odoo.define(['web.Widget'], function (require) {
+
+var Widget = require('web.Widget');
+var instance = openerp;
 var _t = instance.web._t;
 instance.edi = {};
 
 
-instance.edi.EdiImport = instance.web.Widget.extend({
+instance.edi.EdiImport = Widget.extend({
 
     init: function(parent,url) {
         this._super();
@@ -72,4 +75,4 @@ instance.edi.edi_import = function (url) {
     });
 }
 
-};
+});

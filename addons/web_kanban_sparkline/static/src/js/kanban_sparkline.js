@@ -1,11 +1,16 @@
-openerp.web_kanban_sparkline = function (instance) {
+odoo.define(['web_kanban.common'], function (require) {
+
+var kanban_common = require('web_kanban.common');
+
+var AbstractField = kanban_common.AbstractField,
+    fields_registry = kanban_common.registry;
 
 /**
  * Kanban widgets: Sparkline
  *
  */
 
-instance.web_kanban.SparklineBarWidget = instance.web_kanban.AbstractField.extend({
+var SparklineBarWidget = AbstractField.extend({
     className: "oe_sparkline_bar",
     start: function() {
         var self = this;
@@ -35,7 +40,7 @@ instance.web_kanban.SparklineBarWidget = instance.web_kanban.AbstractField.exten
     },
 });
 
-instance.web_kanban.fields_registry.add("sparkline_bar", "instance.web_kanban.SparklineBarWidget");
+fields_registry.add("sparkline_bar", SparklineBarWidget);
 
 
-}
+});

@@ -1,4 +1,8 @@
-openerp.report = function(instance) {
+odoo.define(['web.ActionManager'], function (require) {
+
+    var ActionManager = require('web.ActionManager');
+
+    var instance = openerp;
     var wkhtmltopdf_state;
 
     var trigger_download = function(session, response, c, action, options) {
@@ -15,7 +19,7 @@ openerp.report = function(instance) {
         });
     };
 
-    instance.web.ActionManager = instance.web.ActionManager.extend({
+    ActionManager.include({
         ir_actions_report_xml: function(action, options) {
             var self = this;
             instance.web.blockUI();
@@ -94,4 +98,5 @@ workers to print a pdf version of the reports.'), true);
             }
         }
     });
-};
+
+});

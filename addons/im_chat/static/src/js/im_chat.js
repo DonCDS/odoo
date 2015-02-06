@@ -1,4 +1,4 @@
-(function(){
+odoo.require(['web.Widget', 'web.Model', 'web.session'], function (Widget, Model, session) {
 
     "use strict";
 
@@ -9,7 +9,7 @@
     var USERS_LIMIT = 20;
     var im_chat = openerp.im_chat = {};
 
-    im_chat.ConversationManager = openerp.Widget.extend({
+    im_chat.ConversationManager = Widget.extend({
         init: function(parent, options) {
             var self = this;
             this._super(parent);
@@ -163,7 +163,7 @@
         }
     });
 
-    im_chat.Conversation = openerp.Widget.extend({
+    im_chat.Conversation = Widget.extend({
         className: "openerp_style oe_im_chatview",
         events: {
             "keydown input": "keydown",
@@ -444,7 +444,7 @@
         }
     });
 
-    im_chat.UserWidget = openerp.Widget.extend({
+    im_chat.UserWidget = Widget.extend({
         "template": "im_chat.UserWidget",
         events: {
             "click": "activate_user",
@@ -472,7 +472,7 @@
         },
     });
 
-    im_chat.InstantMessaging = openerp.Widget.extend({
+    im_chat.InstantMessaging = Widget.extend({
         template: "im_chat.InstantMessaging",
         events: {
             "keydown .oe_im_searchbox": "input_change",
@@ -514,7 +514,7 @@
             this.c_manager.on("im_new_user_status", this, this.update_users_status);
 
             // fetch the unread message and the recent activity (e.i. to re-init in case of refreshing page)
-            openerp.session.rpc("/im_chat/init",{}).then(function(notifications) {
+            session.rpc("/im_chat/init",{}).then(function(notifications) {
                 _.each(notifications, function(notif){
                     self.c_manager.on_notification(notif);
                 });
@@ -596,7 +596,7 @@
         }
     });
 
-    im_chat.ImTopButton = openerp.Widget.extend({
+    im_chat.ImTopButton = Widget.extend({
         template:'im_chat.ImTopButton',
         events: {
             "click": "clicked",
@@ -628,4 +628,4 @@
     }
 
     return im_chat;
-})();
+});

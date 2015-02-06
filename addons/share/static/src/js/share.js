@@ -1,5 +1,12 @@
+odoo.define(['web.Model', 'mail.mail', 'web.ViewManager', 'web.session', 'web.Sidebar'], function (require) {
 
-openerp.share = function(session) {
+    var Model = require('web.Model'),
+        mail = require('mail.mail'),
+        ViewManager = require('web.ViewManager'),
+        Sidebar = require('web.Sidebar'),
+        real_session = require('web.session');
+
+    var session = openerp;
     var _t = session.web._t;
     var has_action_id = false;
 
@@ -34,23 +41,23 @@ openerp.share = function(session) {
     }
 
     function has_share(yes, no) {
-        if (!session.session.share_flag) {
-            session.session.share_flag = $.Deferred(function() {
-                var func = new session.web.Model("share.wizard").get_func("has_share");
-                func(session.session.uid).then(function(res) {
+        if (!real_session.share_flag) {
+            real_session.share_flag = $.Deferred(function() {
+                var func = new Model("share.wizard").get_func("has_share");
+                func(real_session.uid).then(function(res) {
                     if(res) {
-                        session.session.share_flag.resolve();
+                        real_session.share_flag.resolve();
                     } else {
-                        session.session.share_flag.reject();
+                        real_session.share_flag.reject();
                     }
                 });
             });
         }
-        session.session.share_flag.done(yes).fail(no);
+        real_session.share_flag.done(yes).fail(no);
     }
 
     /* Extend the Sidebar to add Share and Embed links in the 'More' menu */
-    session.web.Sidebar = session.web.Sidebar.extend({
+    Sidebar = Sidebar.include({
 
         start: function() {
             var self = this;
@@ -84,7 +91,7 @@ openerp.share = function(session) {
      *   an action. We do this because 'invite' is based on the share
      *   mechanism, and it tries to share an action.
      */
-    session.mail.RecordThread.include( {
+    mail.RecordThread.include( {
         start: function() {
             start_res = this._super.apply(this, arguments);
             if (has_action_id) {
@@ -94,7 +101,7 @@ openerp.share = function(session) {
         }
     });
 
-    session.web.ViewManager.include({
+    ViewManager.include({
         start: function() {
             var self = this;
             this.check_if_action_is_defined();
@@ -118,5 +125,5 @@ openerp.share = function(session) {
             launch_wizard(this, this.views[this.active_view].controller, 'emails', true);
         },
     });
-};
 
+});

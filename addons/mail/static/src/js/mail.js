@@ -1,120 +1,29 @@
-openerp.mail = function (session) {
+odoo.define('mail.mail', ['web.translation', 'web.form_widgets', 'web.time_utils', 'mail.utils', 'web.Widget', 'qweb', 'web.session', 'web.utils', 'web.UserMenu', 'web.pyeval', 'web.core', 'web.data', 'web.SearchView', 'web.form_common'], function (require) {
+
+    var translation = require('web.translation'),
+        form_widgets = require('web.form_widgets'),
+        time_utils = require('web.time_utils'),
+        core = require('web.core'),
+        mail_utils = require('mail.utils'),
+        Widget = require('web.Widget'),
+        qweb = require('qweb'),
+        real_session = require('web.session'),
+        utils = require('web.utils'),
+        pyeval = require('web.pyeval'),
+        data = require('web.data'),
+        SearchView = require('web.SearchView'),
+        form_common = require('web.form_common'),
+        UserMenu = require('web.UserMenu');
+
+
+    var exports = {};
+
+    var session = openerp;
     var _t = session.web._t,
        _lt = session.web._lt;
 
-    var mail = session.mail;
-
-    openerp_mail_followers(session, mail);          // import mail_followers.js
-    openerp_FieldMany2ManyTagsEmail(session);       // import manyy2many_tags_email.js
-    openerp_announcement(session);
-
-    /**
-     * ------------------------------------------------------------
-     * ChatterUtils
-     * ------------------------------------------------------------
-     * 
-     * This class holds a few tools method for Chatter.
-     * Some regular expressions not used anymore, kept because I want to
-     * - (^|\s)@((\w|@|\.)*): @login@log.log
-     * - (^|\s)\[(\w+).(\w+),(\d)\|*((\w|[@ .,])*)\]: [ir.attachment,3|My Label],
-     *   for internal links
-     */
-
-    mail.ChatterUtils = {
-
-        /** parse text to find email: Tagada <address@mail.fr> -> [Tagada, address@mail.fr] or False */
-        parse_email: function (text) {
-            var result = text.match(/(.*)<(.*@.*)>/);
-            if (result) {
-                return [_.str.trim(result[1]), _.str.trim(result[2])];
-            }
-            result = text.match(/(.*@.*)/);
-            if (result) {
-                return [_.str.trim(result[1]), _.str.trim(result[1])];
-            }
-            return [text, false];
-        },
-
-        /* Get an image in /web/binary/image?... */
-        get_image: function (session, model, field, id, resize) {
-            var r = resize ? encodeURIComponent(resize) : '';
-            id = id || '';
-            return session.url('/web/binary/image', {model: model, field: field, id: id, resize: r});
-        },
-
-        /* Get the url of an attachment {'id': id} */
-        get_attachment_url: function (session, message_id, attachment_id) {
-            return session.url('/mail/download_attachment', {
-                'model': 'mail.message',
-                'id': message_id,
-                'method': 'download_attachment',
-                'attachment_id': attachment_id
-            });
-        },
-
-        /**
-         * Replaces some expressions
-         * - :name - shortcut to an image
-         */
-        do_replace_expressions: function (string) {
-            var icon_list = ['al', 'pinky']
-            /* special shortcut: :name, try to find an icon if in list */
-            var regex_login = new RegExp(/(^|\s):((\w)*)/g);
-            var regex_res = regex_login.exec(string);
-            while (regex_res != null) {
-                var icon_name = regex_res[2];
-                if (_.include(icon_list, icon_name))
-                    string = string.replace(regex_res[0], regex_res[1] + '<img src="/mail/static/src/img/_' + icon_name + '.png" width="22px" height="22px" alt="' + icon_name + '"/>');
-                regex_res = regex_login.exec(string);
-            }
-            return string;
-        },
-
-        /**
-         * Replaces textarea text into html text (add <p>, <a>)
-         * TDE note : should be done server-side, in Python -> use mail.compose.message ?
-         */
-        get_text2html: function (text) {
-            return text
-                .replace(/((?:https?|ftp):\/\/[\S]+)/g,'<a href="$1">$1</a> ')
-                .replace(/[\n\r]/g,'<br/>')                
-        },
-
-        /* Returns the complete domain with "&" 
-         * TDE note: please add some comments to explain how/why
-         */
-        expand_domain: function (domain) {
-            var new_domain = [];
-            var nb_and = -1;
-            // TDE note: smarted code maybe ?
-            for ( var k = domain.length-1; k >= 0 ; k-- ) {
-                if ( typeof domain[k] != 'array' && typeof domain[k] != 'object' ) {
-                    nb_and -= 2;
-                    continue;
-                }
-                nb_and += 1;
-            }
-
-            for (var k = 0; k < nb_and ; k++) {
-                domain.unshift('&');
-            }
-
-            return domain;
-        },
-
-        // inserts zero width space between each letter of a string so that
-        // the word will correctly wrap in html boxes smaller than the text
-        breakword: function(str){
-            var out = '';
-            if (!str) {
-                return str;
-            }
-            for(var i = 0, len = str.length; i < len; i++){
-                out += _.str.escapeHTML(str[i]) + '&#8203;';
-            }
-            return out;
-        },
-    };
+    openerp.mail = {}; //session.mail;
+    var mail = openerp.mail;
 
 
     /**
@@ -126,7 +35,7 @@ openerp.mail = function (session) {
      * the various variables common to those models.
      */
 
-    mail.MessageCommon = session.web.Widget.extend({
+    mail.MessageCommon = Widget.extend({
 
     /**
      * ------------------------------------------------------------
@@ -187,7 +96,6 @@ openerp.mail = function (session) {
             this.date = datasets.date;
             this.user_pid = datasets.user_pid || false;
             this.format_data();
-
             // update record_name: Partner profile
             if (this.model == 'res.partner') {
                 this.record_name = 'Partner Profile of ' + this.record_name;
@@ -217,7 +125,7 @@ openerp.mail = function (session) {
         format_data: function () {
 
             //formating and add some fields for render
-            this.date = this.date ? session.web.str_to_datetime(this.date) : false;
+            this.date = this.date ? time_utils.str_to_datetime(this.date) : false;
             this.display_date = moment(new Date(this.date)).format('ddd MMM DD YYYY LT');
             if (this.date && new Date().getTime()-this.date.getTime() < 7*24*60*60*1000) {
                 this.timerelative = $.timeago(this.date);
@@ -227,12 +135,12 @@ openerp.mail = function (session) {
             } else if (this.type == 'email' && (!this.author_id || !this.author_id[0])) {
                 this.avatar = ('/mail/static/src/img/email_icon.png');
             } else if (this.author_id && this.template != 'mail.compose_message') {
-                this.avatar = mail.ChatterUtils.get_image(this.session, 'res.partner', 'image_small', this.author_id[0]);
+                this.avatar = mail_utils.get_image(this.session, 'res.partner', 'image_small', this.author_id[0]);
             } else {
-                this.avatar = mail.ChatterUtils.get_image(this.session, 'res.users', 'image_small', this.session.uid);
+                this.avatar = mail_utils.get_image(real_session, 'res.users', 'image_small', real_session.uid);
             }
             if (this.author_id && this.author_id[1]) {
-                var parsed_email = mail.ChatterUtils.parse_email(this.author_id[1]);
+                var parsed_email = mail_utils.parse_email(this.author_id[1]);
                 this.author_id.push(parsed_email[0], parsed_email[1]);
             }
             if (this.partner_ids && this.partner_ids.length > 3) {
@@ -252,18 +160,18 @@ openerp.mail = function (session) {
             for (var l in this.attachment_ids) {
                 var attach = this.attachment_ids[l];
                 if (!attach.formating) {
-                    attach.url = mail.ChatterUtils.get_attachment_url(this.session, this.id, attach.id);
-                    attach.name = mail.ChatterUtils.breakword(attach.name || attach.filename);
+                    attach.url = mail_utils.get_attachment_url(real_session, this.id, attach.id);
+                    attach.name = mail_utils.breakword(attach.name || attach.filename);
                     attach.formating = true;
                 }
             }
-            this.$(".oe_msg_attachment_list").html( session.web.qweb.render('mail.thread.message.attachments', {'widget': this}) );
+            this.$(".oe_msg_attachment_list").html( qweb.render('mail.thread.message.attachments', {'widget': this}) );
         },
 
         /* return the link to resized image
          */
         attachments_resize_image: function (id, resize) {
-            return mail.ChatterUtils.get_image(this.session, 'ir.attachment', 'datas', id, resize);
+            return mail_utils.get_image(real_session, 'ir.attachment', 'datas', id, resize);
         },
 
         /* get all child message id linked.
@@ -384,7 +292,7 @@ openerp.mail = function (session) {
         start: function () {
             this._super.apply(this, arguments);
 
-            this.ds_attachment = new session.web.DataSetSearch(this, 'ir.attachment');
+            this.ds_attachment = new data.DataSetSearch(this, 'ir.attachment');
             this.fileupload_id = _.uniqueId('oe_fileupload_temp');
             $(window).on(this.fileupload_id, this.on_attachment_loaded);
 
@@ -446,7 +354,7 @@ openerp.mail = function (session) {
                             'id': result.id,
                             'name': result.name,
                             'filename': result.filename,
-                            'url': mail.ChatterUtils.get_attachment_url(this.session, this.id, result.id)
+                            'url': mail_utils.get_attachment_url(this.session, this.id, result.id)
                         };
                     }
                 }
@@ -518,7 +426,7 @@ openerp.mail = function (session) {
             $.when(recipient_done).done(function (partner_ids) {
                 var context = {
                     'default_parent_id': self.id,
-                    'default_body': mail.ChatterUtils.get_text2html(self.$el ? (self.$el.find('textarea:not(.oe_compact)').val() || '') : ''),
+                    'default_body': mail_utils.get_text2html(self.$el ? (self.$el.find('textarea:not(.oe_compact)').val() || '') : ''),
                     'default_attachment_ids': _.map(self.attachment_ids, function (file) {return file.id;}),
                     'default_partner_ids': partner_ids,
                     'default_is_log': self.is_log,
@@ -548,7 +456,7 @@ openerp.mail = function (session) {
         },
 
         reinit: function() {
-            var $render = $( session.web.qweb.render('mail.compose_message', {'widget': this}) );
+            var $render = $( qweb.render('mail.compose_message', {'widget': this}) );
 
             $render.insertAfter(this.$el.last());
             this.$el.remove();
@@ -607,7 +515,7 @@ openerp.mail = function (session) {
 
                     var partner_name = partner_info.full_name;
                     var partner_id = partner_info.partner_id;
-                    var parsed_email = mail.ChatterUtils.parse_email(partner_name);
+                    var parsed_email = mail_utils.parse_email(partner_name);
 
                     var pop = new session.web.form.FormOpenPopup(this);                    
                     pop.show_element(
@@ -733,7 +641,7 @@ openerp.mail = function (session) {
                 suggested_partners = this.parent_thread.ds_thread.call('message_get_suggested_recipients', [[this.context.default_res_id], this.context]).done(function (additional_recipients) {
                     var thread_recipients = additional_recipients[self.context.default_res_id];
                     _.each(thread_recipients, function (recipient) {
-                        var parsed_email = mail.ChatterUtils.parse_email(recipient[1]);
+                        var parsed_email = mail_utils.parse_email(recipient[1]);
                         if (_.indexOf(email_addresses, parsed_email[1]) == -1) {
                             self.recipients.push({
                                 'checked': true,
@@ -914,8 +822,8 @@ openerp.mail = function (session) {
             }
             this.display_attachments();
 
-            this.ds_notification = new session.web.DataSetSearch(this, 'mail.notification');
-            this.ds_message = new session.web.DataSetSearch(this, 'mail.message');
+            this.ds_notification = new data.DataSetSearch(this, 'mail.notification');
+            this.ds_message = new data.DataSetSearch(this, 'mail.message');
         },
 
         /**
@@ -1100,7 +1008,7 @@ openerp.mail = function (session) {
 
             var messages = [this].concat(this.get_childs());
             var message_ids = _.map(messages, function (msg) { return msg.id;});
-            var domain = mail.ChatterUtils.expand_domain( this.options.root_thread.domain )
+            var domain = mail_utils.expand_domain( this.options.root_thread.domain )
                 .concat([["id", "in", message_ids ]]);
 
             return this.parent_thread.ds_message.call('message_read', [undefined, domain, [], !!this.parent_thread.options.display_indented_thread, this.context, this.parent_thread.id])
@@ -1234,7 +1142,7 @@ openerp.mail = function (session) {
      * - - sub message (parent_id = root message)
      * - - - sub thread
      */
-    mail.Thread = session.web.Widget.extend({
+    exports.Thread = mail.Thread = Widget.extend({
         template: 'mail.thread',
 
         /**
@@ -1254,7 +1162,7 @@ openerp.mail = function (session) {
         init: function (parent, datasets, options) {
             var self = this;
             this._super(parent, options);
-            this.MailWidget = parent instanceof mail.Widget ? parent : false;
+            this.MailWidget = parent instanceof MailWidget ? parent : false;
             this.domain = options.domain || [];
             this.context = _.extend(options.context || {});
 
@@ -1284,9 +1192,9 @@ openerp.mail = function (session) {
             // object compose message
             this.compose_message = false;
 
-            this.ds_thread = new session.web.DataSetSearch(this, this.context.default_model || 'mail.thread');
-            this.ds_message = new session.web.DataSetSearch(this, 'mail.message');
-            this.render_mutex = new $.Mutex();
+            this.ds_thread = new data.DataSetSearch(this, this.context.default_model || 'mail.thread');
+            this.ds_message = new data.DataSetSearch(this, 'mail.message');
+            this.render_mutex = new utils.Mutex();
         },
         
         start: function () {
@@ -1451,7 +1359,7 @@ openerp.mail = function (session) {
          *display the message "there are no message" on the thread
         */
         no_message: function () {
-            var no_message = $(session.web.qweb.render('mail.wall_no_message', {}));
+            var no_message = $(qweb.render('mail.wall_no_message', {}));
             if (this.options.help) {
                 no_message.html(this.options.help);
             }
@@ -1628,8 +1536,8 @@ openerp.mail = function (session) {
 
             if ( msg_up && msg_up.type == "expandable" && msg_down && msg_down.type == "expandable") {
                 // concat two expandable message and add this message to this dom
-                msg_up.domain = mail.ChatterUtils.expand_domain( msg_up.domain );
-                msg_down.domain = mail.ChatterUtils.expand_domain( msg_down.domain );
+                msg_up.domain = mail_utils.expand_domain( msg_up.domain );
+                msg_down.domain = mail_utils.expand_domain( msg_down.domain );
 
                 msg_down.domain = ['|','|'].concat( msg_up.domain ).concat( message_dom ).concat( msg_down.domain );
 
@@ -1644,7 +1552,7 @@ openerp.mail = function (session) {
 
             } else if ( msg_up && msg_up.type == "expandable") {
                 // concat preview expandable message and this message to this dom
-                msg_up.domain = mail.ChatterUtils.expand_domain( msg_up.domain );
+                msg_up.domain = mail_utils.expand_domain( msg_up.domain );
                 msg_up.domain = ['|'].concat( msg_up.domain ).concat( message_dom );
                 
                 msg_up.nb_messages++;
@@ -1653,7 +1561,7 @@ openerp.mail = function (session) {
 
             } else if ( msg_down && msg_down.type == "expandable") {
                 // concat next expandable message and this message to this dom
-                msg_down.domain = mail.ChatterUtils.expand_domain( msg_down.domain );
+                msg_down.domain = mail_utils.expand_domain( msg_down.domain );
                 msg_down.domain = ['|'].concat( msg_down.domain ).concat( message_dom );
                 
                 // it's maybe a message expandable for the max limit read message
@@ -1692,7 +1600,6 @@ openerp.mail = function (session) {
             return true;
         },
     });
-
     /**
      * ------------------------------------------------------------
      * mail : root Widget
@@ -1702,8 +1609,7 @@ openerp.mail = function (session) {
      * use is to receive a context and a domain, and to delegate the message
      * fetching and displaying to the Thread widget.
      */
-    session.web.client_actions.add('mail.Widget', 'session.mail.Widget');
-    mail.Widget = session.web.Widget.extend({
+    var MailWidget = Widget.extend({
         template: 'mail.Root',
 
         /**
@@ -1805,6 +1711,7 @@ openerp.mail = function (session) {
         },
 
     });
+    core.action_registry.add('mail.Widget', MailWidget);
 
 
     /**
@@ -1817,8 +1724,7 @@ openerp.mail = function (session) {
      * fetching and displaying to the Thread widget.
      * Use Help on the field to display a custom "no message loaded"
      */
-    session.web.form.widgets.add('mail_thread', 'openerp.mail.RecordThread');
-    mail.RecordThread = session.web.form.AbstractField.extend({
+    mail.RecordThread = form_common.AbstractField.extend({
         template: 'mail.record_thread',
 
         init: function (parent, node) {
@@ -1864,7 +1770,7 @@ openerp.mail = function (session) {
         render_value: function () {
             var self = this;
 
-            if (! this.view.datarecord.id || session.web.BufferedDataSet.virtual_id_regex.test(this.view.datarecord.id)) {
+            if (! this.view.datarecord.id || data.BufferedDataSet.virtual_id_regex.test(this.view.datarecord.id)) {
                 this.$('oe_mail_thread').hide();
                 return;
             }
@@ -1884,14 +1790,15 @@ openerp.mail = function (session) {
                 this.root.destroy();
             }
             // create and render Thread widget
-            this.root = new mail.Widget(this, _.extend(this.node, {
+            this.root = new MailWidget(this, _.extend(this.node, {
                 'domain' : (this.domain || []).concat([['model', '=', this.view.model], ['res_id', '=', this.view.datarecord.id]]),
             }));
 
             return this.root.replace(this.$('.oe_mail-placeholder'));
         },
     });
-
+    core.form_widget_registry.add('mail_thread', mail.RecordThread);
+    exports.RecordThread = mail.RecordThread;
 
     /**
      * ------------------------------------------------------------
@@ -1901,9 +1808,10 @@ openerp.mail = function (session) {
      * This widget handles the display of a sidebar on the Wall. Its main use
      * is to display group and employees suggestion (if hr is installed).
      */
-    mail.WallSidebar = session.web.Widget.extend({
+    mail.WallSidebar = Widget.extend({
         template: 'mail.wall.sidebar',
     });
+    exports.WallSidebar = mail.WallSidebar;
 
 
     /**
@@ -1916,8 +1824,8 @@ openerp.mail = function (session) {
      * fetching and displaying to the Thread widget.
      */
 
-    session.web.client_actions.add('mail.wall', 'session.mail.Wall');
-    mail.Wall = session.web.Widget.extend({
+
+    var MailWall = Widget.extend({
         template: 'mail.wall',
 
         /**
@@ -1979,9 +1887,9 @@ openerp.mail = function (session) {
          */
         load_searchview: function (defaults) {
             var self = this,
-                ds_msg = new session.web.DataSetSearch(this, 'mail.message'),
+                ds_msg = new data.DataSetSearch(this, 'mail.message'),
                 options = { $buttons: this.$('.oe-search-options') };
-            this.searchview = new session.web.SearchView(this, ds_msg, false, defaults || {}, options);
+            this.searchview = new SearchView(this, ds_msg, false, defaults || {}, options);
             this.searchview.on('search_data', this, this.do_searchview_search);
             this.searchview.appendTo(this.$('.oe-view-manager-search-view')).then(function () {
                 self.searchview.toggle_visibility(true);
@@ -2001,7 +1909,7 @@ openerp.mail = function (session) {
          */
         do_searchview_search: function (domains, contexts, groupbys) {
             var self = this;
-            session.web.pyeval.eval_domains_and_contexts({
+            pyeval.eval_domains_and_contexts({
                 domains: domains || [],
                 contexts: contexts || [],
                 group_by_seq: groupbys || []
@@ -2021,7 +1929,7 @@ openerp.mail = function (session) {
             var domain = this.domain.concat(search && search['domain'] ? search['domain'] : []);
             var context = _.extend(this.context, search && search['context'] ? search['context'] : {});
 
-            this.root = new mail.Widget(this, _.extend(this.action, {
+            this.root = new MailWidget(this, _.extend(this.action, {
                 'domain' : domain,
                 'context' : context,
             }));
@@ -2049,6 +1957,7 @@ openerp.mail = function (session) {
             this.$(".oe_write_onwall").click(function (event) { self.root.thread.on_compose_message(event); });
         }
     });
+    core.action_registry.add('mail.wall', MailWall);
 
     /**
      * ------------------------------------------------------------
@@ -2058,7 +1967,7 @@ openerp.mail = function (session) {
      * Load here widgets that could depend on widgets defined in mail.js
      */
 
-    openerp.mail.suggestions(session, mail);        // import suggestion.js (suggestion widget)
+    // openerp.mail.suggestions(session, mail);        // import suggestion.js (suggestion widget)
 
     /**
      * ------------------------------------------------------------
@@ -2067,7 +1976,7 @@ openerp.mail = function (session) {
      *
      * Add a link on the top user bar for write a full mail
      */
-    session.web.ComposeMessageTopButton = session.web.Widget.extend({
+    session.web.ComposeMessageTopButton = Widget.extend({
         template:'mail.compose_message_top_button',
         events: {
             "click": "on_compose_message",
@@ -2089,4 +1998,7 @@ openerp.mail = function (session) {
 
     // Put the ComposeMessageTopButton widget in the systray menu
     session.web.SystrayItems.push(session.web.ComposeMessageTopButton);
-};
+
+    return exports;
+
+});

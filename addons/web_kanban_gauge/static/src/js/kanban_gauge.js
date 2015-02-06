@@ -1,5 +1,12 @@
-openerp.web_kanban_gauge = function (instance) {
+odoo.define('web_kanban_gauge.widget', ['web.core', 'web_kanban.common'], function (require) {
 
+var core = require('web.core'),
+    kanban_common = require('web_kanban.common');
+
+var AbstractField = kanban_common.AbstractField,
+    fields_registry = kanban_common.registry;
+
+var instance = openerp;
 /**
  * Kanban widgets: GaugeWidget
  * options
@@ -17,10 +24,10 @@ openerp.web_kanban_gauge = function (instance) {
  * - on_click_label: optional label of the input displayed when clicking
  *
  */
-var _t = instance.web._t,
-   _lt = instance.web._lt;
+var _t = core._t,
+   _lt = core._lt;
 
-instance.web_kanban.GaugeWidget = instance.web_kanban.AbstractField.extend({
+var GaugeWidget = AbstractField.extend({
     className: "oe_gauge",
 
     start: function() {
@@ -156,6 +163,6 @@ instance.web_kanban.GaugeWidget = instance.web_kanban.AbstractField.extend({
     },
 });
 
-instance.web_kanban.fields_registry.add("gauge", "instance.web_kanban.GaugeWidget");
+fields_registry.add("gauge", GaugeWidget);
 
-}
+});

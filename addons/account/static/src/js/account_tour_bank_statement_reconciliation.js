@@ -1,7 +1,9 @@
 (function () {
     'use strict';
 
-    var _t = openerp._t;
+    // TO CHANGE
+    var _t = function () {};
+    // var _t = openerp._t;
 
     openerp.Tour.register({
         id: 'bank_statement_reconciliation',

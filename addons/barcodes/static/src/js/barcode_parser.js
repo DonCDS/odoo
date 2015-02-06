@@ -1,13 +1,14 @@
-openerp.barcodes = function(instance) {
+odoo.require(['web.Class'], function (Class) {
     "use strict";
 
+    var instance = openerp;
     instance.barcodes = {};
     var module = instance.barcodes;
 
     // The BarcodeParser is used to detect what is the category
     // of a barcode (product, partner, ...) and extract an encoded value
     // (like weight, price, etc.)
-    module.BarcodeParser = instance.web.Class.extend({
+    module.BarcodeParser = Class.extend({
         init: function(attributes) {
             var self = this;
             this.nomenclature_id = attributes.nomenclature_id;
@@ -226,4 +227,4 @@ openerp.barcodes = function(instance) {
             return parsed_result;
         },
     });
-}
+});

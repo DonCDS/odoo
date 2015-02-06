@@ -1,10 +1,15 @@
-openerp.base = function(instance) {
+odoo.define(['web.core', 'web.Widget'], function (require) {
+    var core = require('web.core'),
+        Widget = require('web.Widget');
+        
+    var instance = openerp;
+    instance.base = {};
 
     instance.base.apps_client = null;
 
     var _t = instance.web._t;
 
-    instance.base.Apps = instance.web.Widget.extend({
+    var Apps = Widget.extend({
         template: 'EmptyComponent',
         remote_action_tag: 'loempia.embed',
         failback_action_id: 'base.open_module_tree',
@@ -185,11 +190,11 @@ openerp.base = function(instance) {
         },
     });
 
-    instance.base.AppsUpdates = instance.base.Apps.extend({
+    var AppsUpdates = Apps.extend({
         remote_action_tag: 'loempia.embed.updates',
     });
 
-    instance.web.client_actions.add("apps", "instance.base.Apps");
-    instance.web.client_actions.add("apps.updates", "instance.base.AppsUpdates");
+    core.action_registry.add("apps", Apps);
+    core.action_registry.add("apps.updates", AppsUpdates);
 
-};
+});

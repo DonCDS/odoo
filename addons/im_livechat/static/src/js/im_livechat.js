@@ -1,4 +1,5 @@
-(function() {
+odoo.require(['web.utils'], function (utils) {
+
 
     "use strict";
 
@@ -117,7 +118,7 @@
         },
         setup: function(db, channel, options, rule){
             var self = this;
-            var session = openerp.get_cookie(im_livechat.COOKIE_NAME);
+            var session = utils.get_cookie(im_livechat.COOKIE_NAME);
             if(session){
                 self.build_button(channel, options, JSON.parse(session), rule);
             }else{
@@ -272,4 +273,4 @@
 
     return im_livechat;
 
-})();
+});

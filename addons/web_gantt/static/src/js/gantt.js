@@ -1,13 +1,20 @@
+odoo.define('web_gantt.GanttView', ['qweb', 'web.View', 'web.translation', 'web.core'], function (require) {
 /*---------------------------------------------------------
- * OpenERP web_gantt
+ * Odoo web_gantt
  *---------------------------------------------------------*/
-openerp.web_gantt = function (instance) {
-var _t = instance.web._t,
-   _lt = instance.web._lt;
-var QWeb = instance.web.qweb;
-instance.web.views.add('gantt', 'instance.web_gantt.GanttView');
 
-instance.web_gantt.GanttView = instance.web.View.extend({
+var QWeb = require('qweb'),
+    View = require('web.View'),
+    core = require('web.core'),
+    translation = require('web.translation');
+
+var instance = openerp;
+var _t = translation._t,
+    _lt = translation._lt;
+
+instance.web_gantt = {};
+
+instance.web_gantt.GanttView = View.extend({
     display_name: _lt('Gantt'),
     template: "GanttView",
     view_type: "gantt",
@@ -255,4 +262,7 @@ instance.web_gantt.GanttView = instance.web.View.extend({
     },
 });
 
-};
+core.view_registry.add('gantt', instance.web_gantt.GanttView);
+
+return instance.web_gantt.GanttView;
+});

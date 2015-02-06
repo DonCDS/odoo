@@ -1,13 +1,18 @@
-(function(){
-
+odoo.define('im_odoo_support.odoo_support', ['web.translation', 'web.UserMenu', 'web.Widget', 'web.WebClient', 'web.utils'], function (require) {
     "use strict";
 
-    var _t = openerp._t;
+    var translation = require('web.translation'),
+        UserMenu = require('web.UserMenu'),
+        Widget = require('web.Widget'),
+        WebClient = require('web.WebClient'),
+        utils = require('web.utils');
+
+    var _t = translation._t;
     openerp.im_odoo_support = {};
     var COOKIE_NAME = 'livechat_conversation';
     var SERVICE_URL = 'https://services.odoo.com/';
 
-    openerp.im_odoo_support.OdooSupport = openerp.Widget.extend({
+    openerp.im_odoo_support.OdooSupport = Widget.extend({
         init: function(login, uuid, params, options){
             var self = this;
             this._super();
@@ -24,9 +29,9 @@
         },
         bind_actions: function(event, button){
             if(button === 'usermenu'){
-                openerp.client.$('.oe_user_menu_placeholder .odoo_support_contact').on('click', this, _.bind(this.click_action, this));
+                $('.oe_user_menu_placeholder .odoo_support_contact').on('click', this, _.bind(this.click_action, this));
                 // check auto start if cookie
-                var session = openerp.get_cookie(COOKIE_NAME);
+                var session = utils.get_cookie(COOKIE_NAME);
                 if(session){
                     this.start_support();
                 }
@@ -38,7 +43,7 @@
             }
         },
         click_action: function(){
-            var session = openerp.get_cookie(COOKIE_NAME);
+            var session = utils.get_cookie(COOKIE_NAME);
             if(!session){
                 this.start_support();
             }
@@ -131,11 +136,11 @@
         });
     }
 
-    openerp.web.UserMenu.include({
+    UserMenu.include({
         do_update: function(){
             $(window).trigger('odoo_support_ready_to_bind', 'usermenu');
             return this._super.apply(this, arguments);
         },
     });
 
-})();
+});

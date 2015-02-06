@@ -1,11 +1,18 @@
-openerp.mail.suggestions = function(session, mail) {
+odoo.define(['qweb', 'mail.mail', 'web.Widget', 'web.session', 'web.data'], function (require) {
+
+var QWeb = require('qweb'),
+    mail = require('mail.mail'),
+    Widget = require('web.Widget'),
+    data = require('web.data'),
+    real_session = require('web.session');
+
+    var session = openerp;
     var _t = session.web._t;
-    var QWeb = session.web.qweb;
 
     var suggestions = session.suggestions = {};
     var removed_suggested_group = session.suggestions.removed_suggested_group = [];
 
-    suggestions.Groups = session.web.Widget.extend({
+    suggestions.Groups = Widget.extend({
         events: {
             'click .oe_suggestion_remove.oe_suggestion_group': 'stop_group_suggestion',
             'click .oe_suggestion_remove_item.oe_suggestion_group': 'remove_group_suggestion',
@@ -14,8 +21,8 @@ openerp.mail.suggestions = function(session, mail) {
 
         init: function () {
             this._super.apply(this, arguments);
-            this.mail_group = new session.web.DataSetSearch(this, 'mail.group');
-            this.res_users = new session.web.DataSetSearch(this, 'res.users');
+            this.mail_group = new data.DataSetSearch(this, 'mail.group');
+            this.res_users = new data.DataSetSearch(this, 'res.users');
             this.groups = [];
         },
 
@@ -28,7 +35,7 @@ openerp.mail.suggestions = function(session, mail) {
             var self = this;
             var group = self.mail_group.call('get_suggested_thread', {'removed_suggested_threads': removed_suggested_group}).then(function (res) {
                 _(res).each(function (result) {
-                    result['image']=self.session.url('/web/binary/image', {model: 'mail.group', field: 'image_small', id: result.id});
+                    result['image']=real_session.url('/web/binary/image', {model: 'mail.group', field: 'image_small', id: result.id});
                 });
                 self.groups = res;
             });
@@ -67,7 +74,7 @@ openerp.mail.suggestions = function(session, mail) {
         }
     });
 
-    session.mail.WallSidebar.include({
+    mail.WallSidebar.include({
         start: function () {
             this._super.apply(this, arguments);
             var sug_groups = new suggestions.Groups(this);
@@ -75,4 +82,4 @@ openerp.mail.suggestions = function(session, mail) {
         },
     });
 
-};
+});
