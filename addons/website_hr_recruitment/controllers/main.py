@@ -116,6 +116,18 @@ class website_hr_recruitment(http.Controller):
         # Retro-compatibility for saas-3. "phone" field should be replace by "partner_phone" in the template in trunk.
         value['partner_phone'] = post.pop('phone', False)
 
+        is_partner_list = request.session.model('res.partner').search([('email', '=', post.get('email_from').replace(" ", ""))], 0, 0, 0, request.session.context)
+        if not is_partner_list:
+            value_partner = {
+                'name': post.get('partner_name'),
+                'email': post.get('email_from'),
+                'phone': value['partner_phone'],
+            }
+            partner = env['res.partner'].sudo().create(value_partner)
+            value['partner_id'] = partner.id
+        else:
+            value['partner_id'] = is_partner_list[0]
+
         applicant = env['hr.applicant'].create(value)
         if post['ufile']:
             name = applicant.partner_name if applicant.partner_name else applicant.name
