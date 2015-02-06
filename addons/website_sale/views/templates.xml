@@ -1240,4 +1240,18 @@
     </xpath>
 </template>
 </data>
+
+<!-- My Orders Page: product lines are links to the shop -->
+<template id="order_invoice" inherit_id="website_portal.order_invoice">
+  <xpath expr="//div[@id='product_links']" position="replace">
+    <div class="col-md-1 text-center">
+      <a t-att-href="'/shop/product/%s' % str(ol.product_id.product_tmpl_id.id)">
+        <img t-att-src="'/website/image/product.product/%s/image_small/48x48' % ol.product_id.id"/>
+      </a>
+    </div>
+    <div id='product_name' class="col-md-8">
+      <a t-att-href="'/shop/product/%s' % str(ol.product_id.product_tmpl_id.id)"><span t-field="ol.product_id.name"/></a>
+    </div>
+  </xpath>
+</template>
 </openerp>
