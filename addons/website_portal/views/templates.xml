@@ -118,7 +118,7 @@
     <template id="quotations" name="Quotations">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Current Quotations</h3>
+                <h3 class="panel-title">Current Quotations <small><a href="/account/orders">View All</a></small></h3>
             </div>
             <div class="panel-body">
                 <t t-if="not cust_quotations">
@@ -134,7 +134,7 @@
                         <t t-foreach="cust_quotations" t-as="quotation">
                             <tr>
                                 <td>                                   
-                                    <a t-att-href="'report/pdf/sale.report_saleorder/'+str(quotation.id)"><t t-esc="quotation.name"/></a>
+                                    <a t-att-href="'/account/orders/'+str(quotation.id)"><t t-esc="quotation.name"/></a>
                                 </td>
                                 <td><t t-esc="quotation.date_order"/></td>
                                 <td><span t-field="quotation.amount_total" t-field-options='{"widget": "monetary", "display_currency": "quotation.company_id.currency_id"}'/></td>
@@ -149,7 +149,7 @@
     <template id="sale_orders" name="Sale Orders">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Your Orders</h3>
+                <h3 class="panel-title">Your Orders <small><a href="/account/orders">View All</a></small></h3>
             </div>
             <div class="panel-body">
                 <t t-if="not cust_orders">
@@ -166,7 +166,7 @@
                         <t t-foreach="cust_orders" t-as="order">
                             <tr>
                                 <td>
-                                    <a t-att-href="'report/pdf/sale.report_saleorder/'+str(order.id)"><t t-esc="order.name"/></a>
+                                    <a t-att-href="'/account/orders/'+str(order.id)"><t t-esc="order.name"/></a>
                                 </td>
                                 <td><t t-esc="order.date_confirm"/></td>
                                 <td><span t-field="order.amount_total" t-field-options='{"widget": "monetary", "display_currency": "order.company_id.currency_id"}'/></td>
@@ -177,8 +177,11 @@
                                     <t t-if="order.state == 'manual'">
                                         <span class="label label-success"><i class="fa fa-fw fa-check"/> New</span>
                                     </t>
-                                    <t t-if="order.state in ['shipping_except','invoice_excpet']">
+                                    <t t-if="order.state in ['shipping_except','invoice_except']">
                                         <span class="label label-danger"><i class="fa fa-fw fa-warning"/> Problem</span>
+                                    </t>
+                                    <t t-if="order.state == 'done'">
+                                        <span class="label label-success"><i class="fa fa-fw fa-check"/> Done</span>
                                     </t>
                                 </td>
                             </tr>
@@ -248,5 +251,223 @@
         </xpath>
     </template>
 
+    <template id="orders_followup" name="Odoo - Follow your Orders">
+      <t t-call="website.layout">
+        <div id="wrap">
+            <div class="container">
+              <div class="oe_structure">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <ol class="breadcrumb">
+                            <li><a href="/account">My Account</a></li>
+                            <li><a href="/account/orders/">Orders</a></li>
+                            <t t-if="len(orders)==1">
+                                <li>
+                                    <t t-if="orders[0].state == 'sent'">
+                                        Quotation N°
+                                    </t>
+                                    <t t-if="orders[0].state != 'sent'">
+                                        Order N°
+                                    </t>
+                                    <t t-esc="orders[0].name"/></li>
+                            </t>
+                        </ol>
+                    </div>
+                </div>
+                <h1 class="text-center">
+                  Odoo Orders History
+                </h1>
+                <h2 class="text-center text-muted">
+                  Follow your Orders
+                </h2>
+              </div>
+              <div id="optional_placeholder"></div>
+              <div class="container">
+
+                <t t-call="website_portal.orders_followup_navbar"/>
+
+                <t t-foreach="orders" t-as="o">
+                  <div class='row'>
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <h4>
+                              <t t-if="o.state == 'sent'">
+                                Quotation N°
+                              </t>
+                              <t t-if="o.state != 'sent'">
+                                Order N°
+                              </t>
+                              <span t-field="o.name"/>
+                            </h4>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="panel-body">
+                        <!-- <hr/> -->
+                        <div class="mb8">
+                            <strong>Date:</strong> <span t-field="o.create_date" t-field-options='{"widget": "date"}'/>
+                        </div>
+                        <div class='row'>
+                          <div class="col-md-6">
+                            <div>
+                              <strong>Invoicing Address</strong>
+                            </div>
+                            <div>
+                              <address t-field="o.partner_invoice_id" t-field-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                            </div>
+                            <t t-set="invoices" t-value="[i for i in o.invoice_ids if i.state not in ['draft', 'cancel']]"/>
+                            <t t-if="invoices">
+                              <div>
+                                <strong>Invoices</strong>
+                              </div>
+                              <div>
+                                <t t-foreach="invoices" t-as="i">
+                                  <t t-set="report_url" t-value="'/report/pdf/account.report_invoice/%s' % i.id"/>
+                                  <div>
+                                    <a t-att-href="report_url"><span class="fa fa-download"/></a>
+                                    <a t-att-href="report_url"><span t-field="i.number"/></a>
+                                    <span class="text-muted" t-field="i.date_invoice"/>
+                                    <t t-if="i.state == 'paid'">
+                                      <span class="label label-success orders_label_text_align"><i class="fa fa-fw fa-check"/> Paid</span>
+                                    </t>
+                                    <t t-if="i.state != 'paid'">
+                                      <span class="label label-info orders_label_text_align"><i class="fa fa-fw fa-clock-o"/> Waiting</span>
+                                    </t>
+                                  </div>
+                                </t>
+                              </div>
+                            </t>
+                          </div>
+                          <div id="shipping_address" class="col-md-6">
+                            <div>
+                              <strong>Shipping Address</strong>
+                            </div>
+                            <div>
+                              <address t-field="o.partner_shipping_id" t-field-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr/>
+
+                        <div id="product_lines">
+                          <!-- Product lines come here -->
+                        </div>
+
+                        <hr/>
+
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div>
+                              <strong>Contact</strong>
+                            </div>
+                            <div t-field="o.user_id.partner_id" t-field-options='{"widget": "contact", "fields": ["email", "phone"]}'/>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="row">
+                              <div class="col-md-10 text-right">
+                                Untaxed Amount:
+                              </div>
+                              <div class="col-md-2 text-right">
+                                <span t-field="o.amount_untaxed" t-field-options='{"widget": "monetary", "display_currency": "o.company_id.currency_id"}'/>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-10 text-right">
+                                Taxes:
+                              </div>
+                              <div class="col-md-2 text-right">
+                                <span t-field="o.amount_tax" t-field-options='{"widget": "monetary", "display_currency": "o.company_id.currency_id"}'/>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-10 text-right">
+                                <strong>Total:</strong>
+                              </div>
+                              <div class="col-md-2 text-right">
+                                <strong><span t-field="o.amount_total" t-field-options='{"widget": "monetary", "display_currency": "o.company_id.currency_id"}'/></strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+
+                <t t-if="len(orders) >= 2">
+                  <t t-call="website_portal.orders_followup_navbar"/>
+                </t>
+
+              </div>
+              <div class="oe_structure mb32"/>
+          </div>
+        </div>
+      </t>
+    </template>
+
+    <template id="sales_backend_access" inherit_id='website_portal.orders_followup' customize_show="True" name="Backend Access" active="False">
+      <xpath expr="//div[@id='optional_placeholder']" position="inside">
+        <h4 class="text-muted text-center mt64 mb64">
+          If you wish to access the complete application to manage your orders, you can follow
+          <a href="/web#action=portal_sale.action_orders_portal">this link</a>.
+        </h4>
+      </xpath>
+    </template>
+
+    <template id="order_invoice" name="Display Products similarly to Invoice form view" inherit_id="website_portal.orders_followup">
+      <xpath expr="//div[@id='product_lines']" position="inside">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-1">
+          <strong>Product</strong>
+        </div>
+        <div class="col-md-1 text-right">
+          <strong>Unit Price</strong>
+        </div>
+        <div class="col-md-1 text-right">
+          <strong>Quantity</strong>
+        </div>
+        <div class="col-md-1 text-right">
+          <strong>Subtotal</strong>
+        </div>
+      </div>
+      <t t-foreach="o.order_line" t-as="ol">
+        <div class="row orders_vertical_align">
+          <div class="col-md-1 text-center">
+              <img t-att-src="'/website/image/product.product/%s/image_small/48x48' % ol.product_id.id"/>
+          </div>
+          <div id='product_name' class="col-md-8">
+            <span t-field="ol.product_id.name"/>
+          </div>
+          <div class="col-md-1 text-right">
+            <span t-field="ol.price_unit" t-field-options='{"widget": "monetary", "display_currency": "o.company_id.currency_id"}'/>
+          </div>
+          <div class="col-md-1 text-right">
+            <t t-if="ol._name == 'sale.order.line'">
+              <span t-field="ol.product_uom_qty"/>
+            </t>
+            <t t-if="ol._name == 'account.invoice.line'">
+              <span t-field="ol.quantity"/>
+            </t>
+          </div>
+          <div class="col-md-1 text-right">
+            <span t-field="ol.price_subtotal" t-field-options='{"widget": "monetary", "display_currency": "o.company_id.currency_id"}'/>
+          </div>
+        </div>
+      </t>
+    </xpath>
+    </template>
+
+    <template id="orders_followup_navbar" name="Navbar for My Orders page">
+      <div class="row">
+        <div class="col-md-12">
+          <span class="pull-right">
+            <t t-call="website.pager"/>
+          </span>
+        </div>
+      </div>
+    </template>
 
 </odoo>

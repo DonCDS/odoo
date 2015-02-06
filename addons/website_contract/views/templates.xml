@@ -12,6 +12,14 @@
             <div id="wrap">
                 <div class="container">
                     <div class="row">
+                        <div class="col-sm-4">
+                            <ol class="breadcrumb">
+                                <li><a href="/account">My Account</a></li>
+                                <li>Contract <t t-esc="account.name"/></li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-12">
                             <h3>Contract Details</h3>
                             <div class="col-md-5 col-md-offset-1">
