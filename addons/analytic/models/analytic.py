@@ -252,7 +252,6 @@ class account_analytic_account(osv.osv):
         return user.company_id.currency_id.id
 
     _defaults = {
-#        'type': 'normal',
         'company_id': _default_company,
         'code' : lambda obj, cr, uid, context: obj.pool.get('ir.sequence').next_by_code(cr, uid, 'account.analytic.account'),
         'state': 'open',

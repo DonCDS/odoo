@@ -113,7 +113,7 @@
             <field name="model">account.analytic.account</field>
             <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
             <field name="arch" type="xml">
-                <xpath expr='//div[@name="project"]' position='inside'>
+                <xpath expr='//div[@name="contract"]' position='inside'>
                     <field name="invoice_on_timesheets" attrs="{'invisible': [('is_contract','=',False)]}" on_change="onchange_invoice_on_timesheets(invoice_on_timesheets)"/>
                     <label for="invoice_on_timesheets" attrs="{'invisible': [('is_contract','=',False)]}"/>
                 </xpath>

@@ -17,7 +17,7 @@
                                 <field name="name" class="oe_inline"/>
                             </h1>
                             <div name="project"/>
-                            <div invisible="context.get('default_is_contract', False)">
+                            <div invisible="context.get('default_is_contract', False)" name="contract">
                                 <field name="is_contract"/>
                                 <label for="is_contract"/>
                                 <field name="is_project" invisible="1"/>

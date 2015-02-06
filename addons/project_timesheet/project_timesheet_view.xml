@@ -31,21 +31,24 @@
                     <attribute name="invisible">0</attribute>
                 </xpath>
                 <xpath expr='//div[@name="options_active"]' position='inside'>
-                    <field name="invoice_on_timesheets" attrs="{'invisible': [('is_contract','=',False)]}" class="oe_inline"/>
-                    <label for="invoice_on_timesheets" attrs="{'invisible': [('is_contract','=',False)]}"/>
                     <field name="is_contract" class="oe_inline"/>
                     <label for="is_contract"/>
+                    <field name="invoice_on_timesheets" attrs="{'invisible': [('is_contract','=',False)]}" class="oe_inline"/>
+                    <label for="invoice_on_timesheets" attrs="{'invisible': [('is_contract','=',False)]}"/>
                 </xpath>
                 <xpath expr='//group[@name="align"]' position='inside'>
-                    <div attrs="{'invisible': ['|',('is_contract', '=', False),('analytic_account_id', '=', False)]}">
+                    <div attrs="{'invisible': [('is_contract', '=', False)]}">
                         <p>
                             To invoice or setup invoicing and renewal options, go to the related contract:
                             <field name="analytic_account_id" readonly="1" required="0" class="oe_inline" nolabel="1"/>.
                         </p>
                     </div>
                 </xpath>
+                <xpath expr='//field[@name="partner_id"]' position="attributes">
+                    <attribute name="attrs">{'required': [('is_contract', '=', True),('invoice_on_timesheets','=',True)]}</attribute>
+                </xpath>
                 <xpath expr='//div[@name="buttons"]' position="inside">
-                    <button class="oe_inline oe_stat_button" name="open_timesheets" type="object" attrs="{'invisible':[('invoice_on_timesheets','=',False)]}"
+                    <button class="oe_inline oe_stat_button" name="open_timesheets" type="object" attrs="{'invisible':['|',('is_contract', '=', False), ('invoice_on_timesheets','=',False)]}"
                         icon="fa-calendar" string="Timesheets"/>
                 </xpath>
                 <xpath expr='//field[@name="partner_id"]' position='after'>

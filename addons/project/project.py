@@ -1273,7 +1273,6 @@ class account_analytic_account(osv.osv):
             project_values = {
                 'name': vals.get('name'),
                 'analytic_account_id': analytic_account_id,
-#                'type': vals.get('type','contract'),
                 'is_contract': vals.get('is_contract', False),
             }
             return project_pool.create(cr, uid, project_values, context=context)
