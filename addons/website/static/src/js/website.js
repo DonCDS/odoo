@@ -319,39 +319,9 @@
                 });
         });
 
-        // $(".btn .btn-primary .mt8").on('click', function (ev){
-        //     var $el = $(ev.target);
-        //     console.log($el)
-        //     $el.button('loading');
-        // });
-
-        $("button, input[type='submit']").click(function (e) {
-            var $el = $(e.target);
-            if ($el, 'clicked'){
-                // alert('dsf');
-                return true;
-            } else {
-                return false
-            }
-            // console.log(e)
-            // $el.prop('disabled', true);
-            // alert('ad');
-            // e.preventDefault();
-            // return false;
-        }); 
-
-        // $( "button, input[type='submit']" ).on('click', function (ev){
-        //     var $el = $(ev.target);
-        //     var $load = $el.siblings("textarea");
-        //     if ($load){
-        //         $el.button('loading');
-        //     } else {
-        //         return false
-        //     }//.find('textarea')
-        //     // console.log($load)
-        //     // alert('sd');
-        //     // $load.button('loading');
-        // });
+        $(".post-comment").on('click', function (ev){
+            $(this).button('loading');
+        });
 
         /* ----- KANBAN WEBSITE ---- */
         $('.js_kanban').each(function () {
