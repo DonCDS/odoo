@@ -566,7 +566,7 @@
                                                     </p>
                                                 </div>
                                                 <textarea rows="3" name="comment" class="form-control" placeholder="Write a comment..."></textarea>
-                                                <button type="submit" class="btn btn-primary mt8">Post</button>
+                                                <button type="submit" data-loading-text="Please wait..." class="btn btn-primary mt8">Post</button>
                                             </div>
 
                                         </div>

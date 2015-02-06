@@ -24,6 +24,12 @@ $(document).ready(function () {
         $(el).text(display_str);
     });
 
+    // $('.btn, .btn-primary, .mt8').on('click', function (ev){
+    //     var $el = $(ev.target);
+    //     console.log($el)
+    //     $el.button('loading');
+    // });
+
     /*
      * Like/Dislike Buttons Widget
      */

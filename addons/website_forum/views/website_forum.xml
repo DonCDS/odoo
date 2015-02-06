@@ -846,7 +846,7 @@
                         t-attf-action="/forum/#{slug(forum)}/post/#{slug(object)}/comment" method="POST">
                     <input name="post_id" t-att-value="object.id" type="hidden" class="mt8"/>
                     <textarea name="comment" class="form-control" placeholder="Comment this post..."/>
-                    <button type="submit" class="btn btn-primary mt8">Post</button>
+                    <button type="submit" data-loading-text="Please wait..." class="btn btn-primary mt8">Post</button>
                 </form>
             </div>
         </div>
