@@ -2682,103 +2682,103 @@
         <record id="a50" model="account.account.template">
             <field name="name">ACTIONS PROPRES</field>
             <field name="code">50</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a510" model="account.account.template">
             <field name="name">Valeur d'acquisition</field>
             <field name="code">510</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a511" model="account.account.template">
             <field name="name">Montants non appelés</field>
             <field name="code">511</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a519" model="account.account.template">
             <field name="name">Réductions de valeur actées</field>
             <field name="code">519</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a520" model="account.account.template">
             <field name="name">Valeur d'acquisition</field>
             <field name="code">520</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a529" model="account.account.template">
             <field name="name">Réductions de valeur actées</field>
             <field name="code">529</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a530" model="account.account.template">
             <field name="name">De plus d'un an</field>
             <field name="code">530</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a531" model="account.account.template">
             <field name="name">De plus d'un mois et à un an au plus</field>
             <field name="code">531</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a532" model="account.account.template">
             <field name="name">D'un mois au plus</field>
             <field name="code">532</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a539" model="account.account.template">
             <field name="name">Réductions de valeur actées</field>
             <field name="code">539</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a540" model="account.account.template">
             <field name="name">Chèques à encaisser</field>
             <field name="code">540</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a541" model="account.account.template">
             <field name="name">Coupons à encaisser</field>
             <field name="code">541</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a560" model="account.account.template">
             <field name="name">Compte courant</field>
             <field name="code">560</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a561" model="account.account.template">
             <field name="name">Chèques émis</field>
             <field name="code">561</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="cash" model="account.account.template">
             <field name="name">Caisse principale</field>
             <field name="code">5700</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a578" model="account.account.template">
             <field name="name">Caisses - timbres</field>
             <field name="code">578</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a580" model="account.account.template">
             <field name="name">Transferts</field>
             <field name="code">580</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a_expense" model="account.account.template">

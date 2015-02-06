@@ -2031,19 +2031,19 @@
     <record id="pcg_501" model="account.account.template">
         <field name="name">Actiuni detinute la entitatile afiliate</field>
         <field name="code">501</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_505" model="account.account.template">
         <field name="name">Obligatiuni emise si rascumparate</field>
         <field name="code">505</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_506" model="account.account.template">
         <field name="name">Obligatiuni</field>
         <field name="code">506</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_508" model="account.account.template">
@@ -2055,13 +2055,13 @@
     <record id="pcg_5081" model="account.account.template">
         <field name="name">Alte titluri de plasament</field>
         <field name="code">5081</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5088" model="account.account.template">
         <field name="name">Dobanzi la obligatiuni si alte titluri de plasament</field>
         <field name="code">5088</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_509" model="account.account.template">
@@ -2073,13 +2073,13 @@
     <record id="pcg_5091" model="account.account.template">
         <field name="name">Varsaminte de efctuat pentru actiunile detinute la institutiile afiliate</field>
         <field name="code">5091</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5092" model="account.account.template">
         <field name="name">Varsaminte de efctuat pentru alte investitii pe termen scurt</field>
         <field name="code">5092</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_51" model="account.account.template">
@@ -2097,19 +2097,19 @@
     <record id="pcg_5112" model="account.account.template">
         <field name="name">Cecuri de incasat</field>
         <field name="code">5112</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5113" model="account.account.template">
         <field name="name">Efecte de incasat</field>
         <field name="code">5113</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5114" model="account.account.template">
         <field name="name">Efecte remise spre scontare</field>
         <field name="code">5114</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="ro_pcg_cash" model="account.account.template">
@@ -2123,20 +2123,20 @@
     <record id="pcg_5121" model="account.account.template">
         <field name="name">Conturi la banci in lei</field>
         <field name="code">5121</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
 
     <record id="pcg_5124" model="account.account.template">
         <field name="name">Conturi la banci in valuta</field>
         <field name="code">5124</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5125" model="account.account.template">
         <field name="name">Sume in curs de decontare</field>
         <field name="code">5125</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_518" model="account.account.template">
@@ -2148,13 +2148,13 @@
     <record id="pcg_5186" model="account.account.template">
         <field name="name">Dobanzi de platit</field>
         <field name="code">5186</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5187" model="account.account.template">
         <field name="name">Dobanzi de incasat</field>
         <field name="code">5187</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_519" model="account.account.template">
@@ -2166,49 +2166,49 @@
     <record id="pcg_5191" model="account.account.template">
         <field name="name">Credite bancare pe termen scurt</field>
         <field name="code">5191</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5192" model="account.account.template">
         <field name="name">Credite bancare pe termen scurt nerambursate la scadenta</field>
         <field name="code">5192</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5193" model="account.account.template">
         <field name="name">Credite externe guvernamentale</field>
         <field name="code">5193</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5194" model="account.account.template">
         <field name="name">Credite externe garantate de stat</field>
         <field name="code">5194</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5195" model="account.account.template">
         <field name="name">Credite externe garantate de banci</field>
         <field name="code">5195</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5196" model="account.account.template">
         <field name="name">Credite de la trezoreria statului</field>
         <field name="code">5196</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5197" model="account.account.template">
         <field name="name">Credite interne garantate de stat</field>
         <field name="code">5197</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5198" model="account.account.template">
         <field name="name">Dobanzi aferente creditelor pe termen scurt</field>
         <field name="code">5198</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_53" model="account.account.template">
@@ -2226,13 +2226,13 @@
     <record id="pcg_5311" model="account.account.template">
         <field name="name">Casa in lei</field>
         <field name="code">5311</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5314" model="account.account.template">
         <field name="name">Casa in valuta</field>
         <field name="code">5314</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_532" model="account.account.template">
@@ -2244,25 +2244,25 @@
     <record id="pcg_5321" model="account.account.template">
         <field name="name">Timbre fiscale si postale</field>
         <field name="code">5321</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5322" model="account.account.template">
         <field name="name">Bilete de tratament si odihna</field>
         <field name="code">5322</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5323" model="account.account.template">
         <field name="name">Tichete si bilete de calatorie</field>
         <field name="code">5323</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5328" model="account.account.template">
         <field name="name">Alte valori</field>
         <field name="code">5328</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_54" model="account.account.template">
@@ -2280,13 +2280,13 @@
     <record id="pcg_5411" model="account.account.template">
         <field name="name">Acreditive in lei</field>
         <field name="code">5411</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5412" model="account.account.template">
         <field name="name">Acreditive in valuta</field>
         <field name="code">5412</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_542" model="account.account.template">
@@ -2306,7 +2306,7 @@
     <record id="pcg_581" model="account.account.template">
         <field name="name">Viramente interne</field>
         <field name="code">581</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
         <field name="reconcile" eval="True"/>
     </record>
 
@@ -2319,25 +2319,25 @@
     <record id="pcg_591" model="account.account.template">
         <field name="name">Ajustari pentru pierderea de valoare a actiunilor detinute la entitatile afiliate</field>
         <field name="code">591</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_595" model="account.account.template">
         <field name="name">Ajustari pentru pierderea de valoare a obligatiunilor emise si recuperate</field>
         <field name="code">595</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_596" model="account.account.template">
         <field name="name">Ajustari pentru pierderea de valoare a obligatiunilor</field>
         <field name="code">596</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_598" model="account.account.template">
         <field name="name">Ajustari pentru pierderea de valoare a altor invesitii pe termen scurt si creante asimilate</field>
         <field name="code">598</field>
-        <field name="user_type" ref="account.data_account_type_cash"/>
+        <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_Clasele_6_si_7" model="account.account.template">

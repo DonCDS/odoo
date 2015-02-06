@@ -3374,13 +3374,13 @@
     <record id="pcg_501" model="account.account.template">
       <field name="name">Parts dans entreprises liées</field>
       <field name="code">501</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_502" model="account.account.template">
       <field name="name">Actions propres</field>
       <field name="code">502</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_503" model="account.account.template">
@@ -3392,25 +3392,25 @@
     <record id="pcg_5031" model="account.account.template">
       <field name="name">Titres cotés</field>
       <field name="code">5031</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5035" model="account.account.template">
       <field name="name">Titres non cotés</field>
       <field name="code">5035</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_504" model="account.account.template">
       <field name="name">Autres titres conférant un droit de propriété</field>
       <field name="code">504</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_505" model="account.account.template">
       <field name="name">Obligations et bons émis par la société et rachetés par elle</field>
       <field name="code">505</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_506" model="account.account.template">
@@ -3422,19 +3422,19 @@
     <record id="pcg_5061" model="account.account.template">
       <field name="name">Titres cotés</field>
       <field name="code">5061</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5065" model="account.account.template">
       <field name="name">Titres non cotés</field>
       <field name="code">5065</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_507" model="account.account.template">
       <field name="name">Bons du Trésor et bons de caisse à court terme</field>
       <field name="code">507</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_508" model="account.account.template">
@@ -3446,25 +3446,25 @@
     <record id="pcg_5081" model="account.account.template">
       <field name="name">Autres valeurs mobilières</field>
       <field name="code">5081</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5082" model="account.account.template">
       <field name="name">Bons de souscription</field>
       <field name="code">5082</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5088" model="account.account.template">
       <field name="name">Intérêts courus sur obligations, bons et valeurs assimilées</field>
       <field name="code">5088</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_509" model="account.account.template">
       <field name="name">Versements restant à effectuer sur valeurs mobilières de placement non libérées</field>
       <field name="code">509</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_51" model="account.account.template">
@@ -3482,25 +3482,25 @@
     <record id="pcg_5111" model="account.account.template">
       <field name="name">Coupons échus à l'encaissement</field>
       <field name="code">5111</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5112" model="account.account.template">
       <field name="name">Chèques à encaisser</field>
       <field name="code">5112</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5113" model="account.account.template">
       <field name="name">Effets à l'encaissement</field>
       <field name="code">5113</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5114" model="account.account.template">
       <field name="name">Effets à l'escompte</field>
       <field name="code">5114</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="fr_pcg_cash" model="account.account.template">
@@ -3521,31 +3521,31 @@
     <record id="pcg_5124" model="account.account.template">
       <field name="name">Comptes en devises</field>
       <field name="code">5124</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_514" model="account.account.template">
       <field name="name">Chèques postaux</field>
       <field name="code">514</field>
-          <field name="user_type" ref="account.data_account_type_cash"/>
+          <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_515" model="account.account.template">
       <field name="name">Caisses du Trésor et des établissements publics</field>
       <field name="code">515</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_516" model="account.account.template">
       <field name="name">Sociétés de bourse</field>
       <field name="code">516</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_517" model="account.account.template">
       <field name="name">Autres organismes financiers</field>
       <field name="code">517</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_518" model="account.account.template">
@@ -3557,13 +3557,13 @@
     <record id="pcg_5181" model="account.account.template">
       <field name="name">Intérêts courus à payer</field>
       <field name="code">5181</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5188" model="account.account.template">
       <field name="name">Intérêts courus à recevoir</field>
       <field name="code">5188</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_519" model="account.account.template">
@@ -3575,19 +3575,19 @@
     <record id="pcg_5191" model="account.account.template">
       <field name="name">Crédit de mobilisation de créances commerciales (CMCC)</field>
       <field name="code">5191</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5193" model="account.account.template">
       <field name="name">Mobilisation de créances nées à l'étranger</field>
       <field name="code">5193</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5198" model="account.account.template">
       <field name="name">Intérêts courus sur concours bancaires courants</field>
       <field name="code">5198</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_52" model="account.account.template">
@@ -3611,25 +3611,25 @@
     <record id="pcg_5311" model="account.account.template">
       <field name="name">Caisse en monnaie nationale</field>
       <field name="code">5311</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5314" model="account.account.template">
       <field name="name">Caisse en devises</field>
       <field name="code">5314</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_532" model="account.account.template">
       <field name="name">Caisse succursale (ou usine) A</field>
       <field name="code">532</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_533" model="account.account.template">
       <field name="name">Caisse succursale (ou usine) B</field>
       <field name="code">533</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_54" model="account.account.template">
@@ -3660,25 +3660,25 @@
     <record id="pcg_5903" model="account.account.template">
       <field name="name">Actions</field>
       <field name="code">5903</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5904" model="account.account.template">
       <field name="name">Autres titres conférant un droit de propriété </field>
       <field name="code">5904</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5906" model="account.account.template">
       <field name="name">Obligations</field>
       <field name="code">5906</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_5908" model="account.account.template">
       <field name="name">Autres valeurs mobilières de placement et créances assimilées (provisions)</field>
       <field name="code">5908</field>
-      <field name="user_type" ref="account.data_account_type_cash"/>
+      <field name="user_type" ref="account.data_account_type_liquidity"/>
     </record>
 
     <record id="pcg_Classes_6_et_7" model="account.account.template">

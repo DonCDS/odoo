@@ -47,14 +47,14 @@
 		<record model="account.account.template" id="uae_account_3665">
 			<field name="name">Main Safe</field>
 			<field name="code">101111</field>
-			<field name="user_type" ref="account.data_account_type_cash" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
 		<record model="account.account.template" id="uae_account_3666">
 			<field name="name">Main Safe - Foreign Currency</field>
 			<field name="code">101112</field>
-			<field name="user_type" ref="account.data_account_type_cash" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
@@ -68,14 +68,14 @@
 		<record model="account.account.template" id="uae_account_3668">
 			<field name="name">Petty Cash - Admininistration</field>
 			<field name="code">101120</field>
-			<field name="user_type" ref="account.data_account_type_cash" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
 		<record model="account.account.template" id="uae_account_3669">
 			<field name="name">Petty Cash - Others</field>
 			<field name="code">101121</field>
-			<field name="user_type" ref="account.data_account_type_cash" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
@@ -131,28 +131,28 @@
 		<record model="account.account.template" id="uae_account_3677">
 			<field name="name">Visa &amp; Master Credit Cards</field>
 			<field name="code">101311</field>
-			<field name="user_type" ref="account.data_account_type_bank" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
 		<record model="account.account.template" id="uae_account_3678">
 			<field name="name">Gateway Credit Cards</field>
 			<field name="code">101312</field>
-			<field name="user_type" ref="account.data_account_type_bank" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
 		<record model="account.account.template" id="uae_account_3679">
 			<field name="name">Manual Visa &amp; Master Cards</field>
 			<field name="code">101313</field>
-			<field name="user_type" ref="account.data_account_type_bank" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 
 		<record model="account.account.template" id="uae_account_3680">
 			<field name="name">PayPal Account</field>
 			<field name="code">101314</field>
-			<field name="user_type" ref="account.data_account_type_bank" />
+			<field name="user_type" ref="account.data_account_type_liquidity" />
 			<field name="reconcile" eval="False" />
 		</record>
 

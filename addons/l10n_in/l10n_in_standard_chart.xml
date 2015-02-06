@@ -38,25 +38,25 @@
         <record model="account.account.template" id="p10011">
             <field name="name">Cash - Regular Checking</field>
             <field name="code">10011</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="p10012">
             <field name="name">Cash - Payroll Checking</field>
             <field name="code">10012</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="p10013">
             <field name="name">Petty Cash Fund</field>
             <field name="code">10013</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="p10014">
             <field name="name">Cash Account</field>
             <field name="code">10014</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="p1002">
@@ -600,7 +600,7 @@
         <record model="account.account.template" id="p2113">
             <field name="name">Bank Charges</field>
             <field name="code">2113</field>
-            <field name="user_type" ref="account.data_account_type_bank"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="p2114">

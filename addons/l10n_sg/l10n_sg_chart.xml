@@ -26,49 +26,49 @@
         <record model="account.account.template" id="account_account_688">
             <field name="name">Cash and cash equivalents</field>
             <field name="code">100</field>
-            <field name="user_type" ref="account.data_account_type_cash" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 
         <record model="account.account.template" id="account_account_689">
             <field name="name">Cash on hand</field>
             <field name="code">100001</field>
-            <field name="user_type" ref="account.data_account_type_cash" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 
         <record model="account.account.template" id="account_account_690">
             <field name="name">Current</field>
             <field name="code">100002</field>
-            <field name="user_type" ref="account.data_account_type_bank" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 
         <record model="account.account.template" id="account_account_691">
             <field name="name">Money market</field>
             <field name="code">100003</field>
-            <field name="user_type" ref="account.data_account_type_cash" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 
         <record model="account.account.template" id="account_account_692">
             <field name="name">Rents held in trust</field>
             <field name="code">100004</field>
-            <field name="user_type" ref="account.data_account_type_cash" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 
         <record model="account.account.template" id="account_account_693">
             <field name="name">Savings</field>
             <field name="code">100005</field>
-            <field name="user_type" ref="account.data_account_type_cash" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 
         <record model="account.account.template" id="account_account_694">
             <field name="name">Client trust account</field>
             <field name="code">100006</field>
-            <field name="user_type" ref="account.data_account_type_cash" />
+            <field name="user_type" ref="account.data_account_type_liquidity" />
             <field name="reconcile" eval="False" />
         </record>
 

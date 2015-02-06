@@ -939,43 +939,43 @@
                 <record id="a_1000" model="account.account.template">
                     <field name="name">Kas</field>
                     <field name="code">1000</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1010" model="account.account.template">
                     <field name="name">Kleine kas</field>
                     <field name="code">1010</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1020" model="account.account.template">
                     <field name="name">Kas  valuta</field>
                     <field name="code">1020</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1100" model="account.account.template">
                     <field name="name">ABN-AMRO bank</field>
                     <field name="code">1100</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1110" model="account.account.template">
                     <field name="name">RABO bank</field>
                     <field name="code">1110</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1120" model="account.account.template">
                     <field name="name">BIZNER bank</field>
                     <field name="code">1120</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1200" model="account.account.template">
                     <field name="name">Postbank</field>
                     <field name="code">1200</field>
-                    <field name="user_type" ref="account.data_account_type_cash"/>
+                    <field name="user_type" ref="account.data_account_type_liquidity"/>
                     <field name="reconcile" eval="False"/>
                 </record>
                 <record id="a_1220" model="account.account.template">
@@ -1265,162 +1265,162 @@
             <record id="a_2000" model="account.account.template">
                 <field name="name">Netto lonen</field>
                 <field name="code">2000</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2100" model="account.account.template">
                 <field name="name">Tussenrekening balans</field>
                 <field name="code">2100</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2110" model="account.account.template">
                 <field name="name">Tussenrek. autom. betalingen</field>
                 <field name="code">2110</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2120" model="account.account.template">
                 <field name="name">Tussenrek. autom. loonbetalingen</field>
                 <field name="code">2120</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2200" model="account.account.template">
                 <field name="name">Betaalwijze contant</field>
                 <field name="code">2200</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record><record id="a_2210" model="account.account.template">
                 <field name="name">Betaalwijze pin</field>
                 <field name="code">2210</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2211" model="account.account.template">
                 <field name="name">Tussenrekening pin</field>
                 <field name="code">2211</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2220" model="account.account.template">
                 <field name="name">Betaalwijze chipknip</field>
                 <field name="code">2220</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2221" model="account.account.template">
                 <field name="name">Tussenrekening chipknip</field>
                 <field name="code">2221</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2230" model="account.account.template">
                 <field name="name">Betaalwijze cadeaubonnen</field>
                 <field name="code">2230</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2231" model="account.account.template">
                 <field name="name">Tussenrek. cadeaubonbetalingen</field>
                 <field name="code">2231</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2240" model="account.account.template">
                 <field name="name">Tussenrekening correcties</field>
                 <field name="code">2240</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2250" model="account.account.template">
                 <field name="name">Kassa 1</field>
                 <field name="code">2250</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2251" model="account.account.template">
                 <field name="name">Kassa 2</field>
                 <field name="code">2251</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2500" model="account.account.template">
                 <field name="name">Vraagposten</field>
                 <field name="code">2500</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2600" model="account.account.template">
                 <field name="name">Inkopen Nederland laag</field>
                 <field name="code">2600</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2601" model="account.account.template">
                 <field name="name">Inkopen Nederland hoog</field>
                 <field name="code">2601</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2602" model="account.account.template">
                 <field name="name">Inkopen Nederland overig</field>
                 <field name="code">2602</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2603" model="account.account.template">
                 <field name="name">Inkopen Nederland onbelast</field>
                 <field name="code">2603</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2604" model="account.account.template">
                 <field name="name">Inkopen Nederland verlegd</field>
                 <field name="code">2604</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2620" model="account.account.template">
                 <field name="name">Inkopen binnen EU laag</field>
                 <field name="code">2620</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2621" model="account.account.template">
                 <field name="name">Inkopen binnen EU hoog</field>
                 <field name="code">2621</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2622" model="account.account.template">
                 <field name="name">Inkopen binnen EU overig</field>
                 <field name="code">2622</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2630" model="account.account.template">
                 <field name="name">Inkopen buiten EU laag</field>
                 <field name="code">2630</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2631" model="account.account.template">
                 <field name="name">Inkopen buiten EU hoog</field>
                 <field name="code">2631</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2632" model="account.account.template">
                 <field name="name">Inkopen buiten EU overig</field>
                 <field name="code">2632</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_2800" model="account.account.template">
                 <field name="name">Tegenrekening Inkopen</field>
                 <field name="code">2800</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
 
@@ -1433,103 +1433,103 @@
             <record id="a_3000" model="account.account.template">
                 <field name="name">Goederen 1</field>
                 <field name="code">3000</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3001" model="account.account.template">
                 <field name="name">Goederen 2</field>
                 <field name="code">3001</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3050" model="account.account.template">
                 <field name="name">Grondstoffen 1</field>
                 <field name="code">3050</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3051" model="account.account.template">
                 <field name="name">Grondstoffen 2</field>
                 <field name="code">3051</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3100" model="account.account.template">
                 <field name="name">Hulpstoffen 1</field>
                 <field name="code">3100</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3101" model="account.account.template">
                 <field name="name">Hulpstoffen 2</field>
                 <field name="code">3101</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3150" model="account.account.template">
                 <field name="name">Halffabrikaten 1</field>
                 <field name="code">3150</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3151" model="account.account.template">
                 <field name="name">Halffabrikaten 2</field>
                 <field name="code">3151</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3200" model="account.account.template">
                 <field name="name">Onderhanden werk</field>
                 <field name="code">3200</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3500" model="account.account.template">
                 <field name="name">Gereed product 1</field>
                 <field name="code">3500</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3501" model="account.account.template">
                 <field name="name">Gereed product 2</field>
                 <field name="code">3501</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3600" model="account.account.template">
                 <field name="name">Goederen in consignatie</field>
                 <field name="code">3600</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3650" model="account.account.template">
                 <field name="name">Verpakkingsmateriaal</field>
                 <field name="code">3650</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3700" model="account.account.template">
                 <field name="name">Emballage</field>
                 <field name="code">3700</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3750" model="account.account.template">
                 <field name="name">Kantoorbenodigdheden</field>
                 <field name="code">3750</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3800" model="account.account.template">
                 <field name="name">Zegels</field>
                 <field name="code">3800</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_3898" model="account.account.template">
                 <field name="name">Goederen onderweg</field>
                 <field name="code">3898</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             
@@ -2910,7 +2910,7 @@
             <record id="a_9990" model="account.account.template">
                 <field name="name">Memoriaal</field>
                 <field name="code">9990</field>
-                <field name="user_type" ref="account.data_account_type_cash"/>
+                <field name="user_type" ref="account.data_account_type_liquidity"/>
                 <field name="reconcile" eval="False"/>
             </record>
             <record id="a_9999" model="account.account.template">

@@ -918,19 +918,19 @@
         <record model="account.account.template" id="c12141">
             <field name="name">Cash-In-Hand</field>
             <field name="code">12141</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="c121411">
             <field name="name">Cash Balance</field>
             <field name="code">121411</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="c121412">
             <field name="name">Petty Cash Balance</field>
             <field name="code">121412</field>
-            <field name="user_type" ref="account.data_account_type_cash"/>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
             <field name="reconcile" eval="False"/>
         </record>
         <record model="account.account.template" id="c12142">
