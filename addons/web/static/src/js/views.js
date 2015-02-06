@@ -10,6 +10,42 @@ openerp.web.views = {};
 var QWeb = instance.web.qweb,
     _t = instance.web._t;
 
+var State = instance.web.Class.extend({
+    init: function(title) {
+        this.title = title;
+        this.id = _.uniqueId("state_id");
+    },
+    destroy: function() {},
+    get_title: function() { return this.title; },
+    get_id: function() { return this.id; },
+});
+
+var WidgetState = State.extend({
+    init: function(title, widget) {
+        this._super(title, widget);
+
+        this.widget = widget;
+        if (this.widget.get('title')) {
+            this.title = title;
+        } else {
+            this.widget.set('title', title);
+        }
+    },
+    destroy: function() { this.widget.destroy(); },
+});
+
+var FunctionState = State.extend({
+    init: function(title) {
+        this._super(title);
+
+        this.widget = {
+            view_stack: [{
+                controller: { get: function () { return this.title; }}
+            }]
+        };
+    }
+});
+
 instance.web.ActionManager = instance.web.Widget.extend({
     template: "ActionManager",
     init: function(parent) {
@@ -19,13 +55,16 @@ instance.web.ActionManager = instance.web.Widget.extend({
         this.webclient = parent;
         this.dialog = null;
         this.dialog_widget = null;
-        this.widgets = [];
+        this.states = [];
+
         this.on('history_back', this, this.proxy('history_back'));
 
+        // Instantiate the unique main control panel used by every widget in this.states
         this.main_control_panel = new instance.web.ControlPanel(this);
     },
     start: function() {
         this._super();
+        // Append the main control panel to the DOM (inside the ActionManager jQuery element)
         this.main_control_panel.appendTo(this.$el);
     },
     dialog_stop: function (reason) {
@@ -35,7 +74,7 @@ instance.web.ActionManager = instance.web.Widget.extend({
         this.dialog = null;
     },
     /**
-     * Add a new widget to the action manager
+     * Add a new state to the action manager
      *
      * widget: typically, widgets added are instance.web.ViewManager.  The action manager
      *      uses this list of widget to handle the breadcrumbs.
@@ -44,118 +83,125 @@ instance.web.ActionManager = instance.web.Widget.extend({
      * options.clear_breadcrumbs: boolean, if true, current widgets are destroyed
      * options.replace_breadcrumb: boolean, if true, replace current breadcrumb
      */
-    push_widget: function(widget, action, options) {
+    push_state: function(widget, action, options) {
         var self = this,
             to_destroy,
             old_widget = this.inner_widget;
         options = options || {};
 
         if (options.clear_breadcrumbs) {
-            to_destroy = this.widgets;
-            this.widgets = [];
+            to_destroy = this.states;
+            this.states = [];
         } else if (options.replace_breadcrumb) { // AAB: replace_breadcrumb does not seem to be used anywhere
-            to_destroy = _.last(this.widgets);
-            this.widgets = _.initial(this.widgets);
+            to_destroy = _.last(this.states);
+            this.states = _.initial(this.states);
         }
+        var new_state,
+            title = action.display_name || action.name;
         if (widget instanceof instance.web.Widget) {
-            var title = widget.get('title') || action.display_name || action.name;
-            widget.set('title', title);
-            this.widgets.push(widget);
+            new_state = new WidgetState(title, widget);
         } else {
-            this.widgets.push({
-                view_stack: [{
-                    controller: {get: function () {return action.display_name || action.name; }},
-                }],
-                destroy: function () {},
-            });
+            new_state = new FunctionState(title);
         }
-        _.last(this.widgets).__on_reverse_breadcrumb = options.on_reverse_breadcrumb;
+        this.states.push(new_state);
+
+        _.last(this.states).__on_reverse_breadcrumb = options.on_reverse_breadcrumb;
         this.inner_action = action;
         this.inner_widget = widget;
+
+        // Sets the main ControlPanel state
+        // AAB: temporary restrict the use of main control panel
+        if (action.target === 'current' && action.type === 'ir.actions.act_window') {
+            this.main_control_panel.set_state(new_state);
+        }
+
         return $.when(this.inner_widget.appendTo(this.$el)).done(function () {
-            // AAB: widget.$header does not exist anymore
-            if ((action.target !== 'inline') && (!action.flags.headless) && widget.$header) {
-                widget.$header.show();
-            }
             if (old_widget) {
                 old_widget.$el.hide();
             }
             if (options.clear_breadcrumbs) {
-                self.clear_widgets(to_destroy);
+                self.clear_states(to_destroy);
             }
         });
     },
     get_breadcrumbs: function () {
-        return _.flatten(_.map(this.widgets, function (widget) {
-            if (widget instanceof instance.web.ViewManager) {
-                return widget.view_stack.map(function (view, index) { 
+        return _.flatten(_.map(this.states, function (state) {
+            if (state.widget instanceof instance.web.ViewManager) {
+                return state.widget.view_stack.map(function (view, index) {
                     return {
-                        title: view.controller.get('title') || widget.title,
+                        title: view.controller.get('title') || state.get_title(),
                         index: index,
-                        widget: widget,
+                        widget: state,
                     }; 
                 });
             } else {
-                return {title: widget.get('title'), widget: widget };
+                return { title: state.get_title(), widget: state };
             }
         }), true);
     },
     get_title: function () {
-        if (this.widgets.length === 1) {
+        if (this.states.length === 1) {
             // horrible hack to display the action title instead of "New" for the actions
             // that use a form view to edit something that do not correspond to a real model
             // for example, point of sale "Your Session" or most settings form,
-            var widget = this.widgets[0];
-            if (widget instanceof instance.web.ViewManager && widget.view_stack.length === 1) {
-                return widget.title;
+            var state = this.states[0];
+            if (state.widget instanceof instance.web.ViewManager && state.widget.view_stack.length === 1) {
+                return state.get_title();
             }
         }
         return _.pluck(this.get_breadcrumbs(), 'title').join(' / ');
     },
-    get_widgets: function () {
-        return this.widgets.slice(0);
+    get_states: function () {
+        return _.pluck(this.states, 'widget');
     },
     history_back: function() {
-        var widget = _.last(this.widgets);
-        if (widget instanceof instance.web.ViewManager) {
-            var nbr_views = widget.view_stack.length;
+        var state = _.last(this.states);
+        if (state.widget instanceof instance.web.ViewManager) {
+            var nbr_views = state.widget.view_stack.length;
             if (nbr_views > 1) {
-                return this.select_widget(widget, nbr_views - 2);
+                return this.select_state(state, nbr_views - 2);
             } 
         } 
-        if (this.widgets.length > 1) {
-            widget = this.widgets[this.widgets.length - 2];
-            var index = widget.view_stack && widget.view_stack.length - 1;
-            return this.select_widget(widget, index);
+        if (this.states.length > 1) {
+            state = this.states[this.states.length - 2];
+            var index = state.widget.view_stack && state.widget.view_stack.length - 1;
+            return this.select_state(state, index);
         }
         return $.Deferred().reject();
     },
-    select_widget: function(widget, index) {
+    select_state: function(state, index) {
         var self = this;
         if (this.webclient.has_uncommitted_changes()) {
             return $.Deferred().reject();
         }
-        var widget_index = this.widgets.indexOf(widget),
-            def = $.when(widget.select_view && widget.select_view(index));
+        var state_index = this.states.indexOf(state),
+            def = $.when(state.widget.select_view && state.widget.select_view(index));
 
         return def.done(function () {
-            if (widget.__on_reverse_breadcrumb) {
-                widget.__on_reverse_breadcrumb();
+            if (state.__on_reverse_breadcrumb) {
+                state.__on_reverse_breadcrumb();
             }
 
-            self.clear_widgets(self.widgets.splice(widget_index + 1));
-            self.inner_widget = _.last(self.widgets);
-            self.main_control_panel.set_context(self.inner_widget);
+            var last_state = _.last(self.states);
+            self.inner_widget = last_state.widget;
+            self.main_control_panel.set_state(last_state);
+            // clear_states must be done after main_control_panel.set_state
+            // to prevent leaving stuff in the history
+            self.clear_states(self.states.splice(state_index + 1));
             if (self.inner_widget.do_show) {
                 self.inner_widget.do_show();
             }
         });
     },
-    clear_widgets: function(widgets) {
-        _.each(widgets || this.widgets, this.main_control_panel.clear_history, this.main_control_panel);
-        _.invoke(widgets || this.widgets, 'destroy');
-        if (!widgets) {
-            this.widgets = [];
+    clear_states: function(states) {
+        var self = this;
+
+        _.map(states || this.states, function(state) {
+            state.destroy();
+            self.main_control_panel.clear_history(state.get_id());
+        });
+        if (!states) {
+            this.states = [];
             this.inner_widget = null;
         }
     },
@@ -363,7 +409,7 @@ instance.web.ActionManager = instance.web.Widget.extend({
     },
     null_action: function() {
         this.dialog_stop();
-        this.clear_widgets();
+        this.clear_states();
     },
     /**
      *
@@ -429,16 +475,13 @@ instance.web.ActionManager = instance.web.Widget.extend({
         }
         widget = executor.widget();
         this.dialog_stop(executor.action);
-        return this.push_widget(widget, executor.action, options);
+        return this.push_state(widget, executor.action, options);
     },
     ir_actions_act_window: function (action, options) {
         var self = this;
         return this.ir_actions_common({
             widget: function () { 
-                if (action.target === 'current') {
-                    var control_panel = self.main_control_panel;
-                }
-                return new instance.web.ViewManager(self, null, null, null, action, control_panel);
+                return new instance.web.ViewManager(self, null, null, null, action);
             },
             action: action,
             klass: 'oe_act_window',
@@ -575,40 +618,41 @@ instance.web.ControlPanel = instance.web.Widget.extend({
 
         return this._super();
     },
-    set_context: function(context) {
+    set_state: function(state) {
         var self = this;
+        // AAB: this will be removed later. Communication will be done through a dedicated bus
+        // instantiated by the ControlPanel and shared between every widget interacting with it
+        state.widget.set_control_panel(this);
+        // Detach control panel elements in which sub-elements are inserted by other widgets
+        // Store them to re-attach them if we come back to that state (e.g. using breadcrumbs)
+        if (this.current_state_id) {
+            this.history[this.current_state_id] = {
+                '$buttons': this.$buttons.contents().detach(),
+                '$switch_buttons': this.$switch_buttons.contents().detach(),
+                '$pager': this.$pager.contents().detach(),
+                '$sidebar': this.$sidebar.contents().detach(),
+            };
+        }
 
-        this.action = context.action;
-        this.flags = context.flags;
-        this.active_view = context.active_view;
-        this.dataset = context.dataset;
-        this.views = context.views;
-        this.title = context.title; // needed for Favorites of searchview
-        this.view_order = context.view_order;
+        this.current_state_id = state.get_id();
+        this.action = state.widget.action;
+        this.flags = state.widget.flags;
+        this.active_view = state.widget.active_view;
+        this.dataset = state.widget.dataset;
+        this.views = state.widget.views;
+        this.title = state.widget.title; // needed for Favorites of searchview
+        this.view_order = state.widget.view_order;
         this.multiple_views = (this.view_order.length > 1);
 
         // Hide the ControlPanel in headless mode
         this.flags.headless ? this.do_hide() : this.do_show();
 
-        // Detach control panel elements in which sub-elements are inserted by other widgets
-        // Store them to re-attach them if we come back to that context (e.g. using breadcrumbs)
-        if (this.context_id) { // this.context_id is the id of the previously loaded context
-            this.history[this.context_id] = {
-                'buttons': this.$buttons.contents().detach(),
-                'switch_buttons': this.$switch_buttons.contents().detach(),
-                'pager': this.$pager.contents().detach(),
-                'sidebar': this.$sidebar.contents().detach(),
-            };
-        }
-        debugger;
-        this.context_id = context.uniq_id;
-
-        if (this.history[this.context_id]) { // This context has already been rendered once
-            var historic_elements = this.history[this.context_id];
-            historic_elements.buttons.appendTo(this.$buttons);
-            historic_elements.switch_buttons.appendTo(this.$switch_buttons);
-            historic_elements.pager.appendTo(this.$pager);
-            historic_elements.sidebar.appendTo(this.$sidebar);
+        if (this.history[this.current_state_id]) { // This state has already been rendered once
+            var historic_elements = this.history[this.current_state_id];
+            historic_elements.$buttons.appendTo(this.$buttons);
+            historic_elements.$switch_buttons.appendTo(this.$switch_buttons);
+            historic_elements.$pager.appendTo(this.$pager);
+            historic_elements.$sidebar.appendTo(this.$sidebar);
         } else {
             // Render buttons and switch-buttons and append them to the ControlPanel
             var buttons = QWeb.render('ControlPanel.buttons', {views: self.views});
@@ -629,8 +673,8 @@ instance.web.ControlPanel = instance.web.Widget.extend({
             });
         }
     },
-    clear_history: function(context_id) {
-        delete this.history[context_id];
+    clear_history: function(state_id) {
+        delete this.history[state_id];
     },
     /**
      * Triggers an event when switch-buttons are clicked on
@@ -663,6 +707,7 @@ instance.web.ControlPanel = instance.web.Widget.extend({
         var self = this;
         if (!this.action_manager) return;
         var breadcrumbs = this.action_manager.get_breadcrumbs();
+
         if (!breadcrumbs.length) return;
 
         var $breadcrumbs = breadcrumbs.map(function (bc, index) {
@@ -679,7 +724,7 @@ instance.web.ControlPanel = instance.web.Widget.extend({
                     .toggleClass('active', is_last);
             if (!is_last) {
                 $bc.click(function () {
-                    $.when(self.action_manager.select_widget(bc.widget, bc.index)).done(function() {
+                    $.when(self.action_manager.select_state(bc.widget, bc.index)).done(function() {
                         self.update_breadcrumbs();
                     });
                 });
@@ -993,24 +1038,6 @@ instance.web.ViewManager = instance.web.Widget.extend({
             self.view_order.push(view_descr);
             self.views[view_type] = view_descr;
         });
-
-        // Associate a unique ID the the VM
-        // AAB: temporary solution to deal with the CP's history
-        var guid = (function() {
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                           .toString(16)
-                           .substring(1);
-            }
-            return function() {
-                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                   s4() + '-' + s4() + s4() + s4();
-            };
-        })();
-        this.uniq_id = guid();
-
-        // Send current context to ControlPanel
-        this.set_control_panel(control_panel);
     },
     /**
      * @returns {jQuery.Deferred} initial view loading promise
@@ -1057,9 +1084,6 @@ instance.web.ViewManager = instance.web.Widget.extend({
                     this.switch_mode(view_type);
                 }
             });
-
-            // Sets the ControlPanel context (views, active_view...)
-            this.control_panel.set_context(this);
         }
     },
     /**
