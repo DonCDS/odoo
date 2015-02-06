@@ -2,8 +2,12 @@ import csv
 import itertools
 import logging
 import operator
-import xlrd
 from odsreader import *
+
+try:
+    import xlrd
+except ImportError:
+    xlrd = None
 
 try:
     from cStringIO import StringIO
@@ -14,6 +18,7 @@ import psycopg2
 
 from openerp.osv import orm, fields
 from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 FIELDS_RECURSION_LIMIT = 2
 ERROR_PREVIEW_BYTES = 200
@@ -132,7 +137,10 @@ class ir_import(orm.TransientModel):
         if record.file_type == 'text/csv':
             rows = self._read_csv(record, options)
         elif record.file_type == 'application/vnd.ms-excel' or record.file_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-            rows = self._read_xls_xlsx(record)
+            if xlrd is None:
+                raise UserError(_(" XLRD library not found. XLS/XLSX file would not import."))
+            else:
+                rows = self._read_xls_xlsx(record)
         elif record.file_type == 'application/vnd.oasis.opendocument.spreadsheet':
             rows = self._read_ods(record)
         return rows
