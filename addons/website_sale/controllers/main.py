@@ -215,7 +215,6 @@ class website_sale(http.Controller):
         values = {
             'search': search,
             'category': category,
-            'attrib_values': attrib_values,
             'attrib_set': attrib_set,
             'pager': pager,
             'pricelist': pricelist,
@@ -268,7 +267,6 @@ class website_sale(http.Controller):
             'search': search,
             'category': category,
             'pricelist': pricelist,
-            'attrib_values': attrib_values,
             'compute_currency': compute_currency,
             'attrib_set': attrib_set,
             'keep': keep,

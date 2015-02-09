@@ -324,6 +324,54 @@
             website.init_kanban(this);
         });
 
+        $('.js_select2_category').select2({
+            allowClear: true,
+            placeholder: "Select Category",
+            query: function (query) {
+                var model = this.element.data('model'),
+                    term =  query.term;
+                openerp.jsonRpc("/web/dataset/call_kw", 'call', {
+                    model: model,
+                    method: 'search_read',
+                    args: [],
+                    kwargs: {
+                        domain: [['name', 'ilike', term]],
+                        fields: ['name'],
+                        order: 'name asc',
+                        limit: 20,
+                        context: website.get_context()
+                    }
+                }).then(function(data){
+                    var categories = {results: []};
+                    _.each(data, function (obj) {
+                        categories.results.push({id: obj.id, text: obj.name});
+                    });
+                    query.callback(categories);
+                });
+            }
+        });
+        $('.js_search_redirect').on('click', function(){
+            var url = $(this).data('url'),
+                $search_bar = $(this).parents('.js_search_bar'),
+                query = $search_bar.find('.js_search_input').val(),
+                category_id = $search_bar.find('.js_select2_category').select2('val'),
+                redirect_url;
+
+            if (!category_id){
+                redirect_url = _.str.sprintf(url.replace('/category/%s', ''), query);
+            }else{
+                redirect_url = _.str.sprintf(url, category_id, query);
+            }
+            //keep query string
+            var current_query = $.deparam.querystring(),
+                redirect_query = $.deparam.querystring(redirect_url),
+                query_string;
+            query_string = $.param(_.extend(current_query, redirect_query), true);
+            redirect_url = $.param.querystring(redirect_url, query_string, 2);
+
+            window.location = redirect_url;
+        });
+
         setTimeout(function () {
             if (window.location.hash.indexOf("scrollTop=") > -1) {
                 window.document.body.scrollTop = +location.hash.match(/scrollTop=([0-9]+)/)[1];
