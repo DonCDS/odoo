@@ -44,24 +44,16 @@
 
 	website.snippet.SaveMenu = website.EditorBar.include({
 		saveElement: function($el){
-			if($el.hasClass('o_menu_parent')){
-                //a mettre dans clean_for_save
-            	$el.children('ul').css('visibility', '');
-            	$el.off('mouseenter');
-            	$el.removeClass('open');
-				if($el.find('ul').length === 0){
-            		$el.children('a').children('.caret').remove();
-            		$el.children('.dropdown-menu').remove();
-				}else{
-					$el.children('a').attr('data-toggle', 'dropdown');
-            		$el.children('a').addClass('dropdown-toggle');
-				}
+            debugger;
+			if($el.hasClass('o_menu_parent') || $el.hasClass('o_menu') || $el.hasClass('o_menu_admin')){
+                debugger;
+
                 var markup = $el.prop('outerHTML');
                 console.log(markup);
                 result = openerp.jsonRpc('/website/save_menu', 'save_menu', {
-                    value: markup,
-                    xpath: $el.data('oe-xpath') || null,
-                    context: website.get_context(),
+                    'value': markup,
+                    'xpath': $el.data('oe-xpath') || null,
+                    'context': website.get_context() || null,
                 });
 			}else{
                 var result = this._super($el);

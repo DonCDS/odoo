@@ -1798,7 +1798,6 @@
             this.$target.find("li:has(.o_ul_toggle_self, .o_ul_toggle_next), li:has(>ul,>ol):not(:has(>li))").css('list-style', 'none');
         },
         clean_for_save: function () {
-            debugger;
             this._super();
             if (!this.$target.hasClass('o_ul_folded')) {
                 this.$target.find(".o_close").removeClass("o_close");
@@ -2110,6 +2109,20 @@
             });
 
         },
+
+        clean_for_save: function(){
+            this._super();
+            this.$target.children('ul').css('visibility', '');
+            this.$target.off('mouseenter');
+            this.$target.removeClass('open');
+            if(this.$target.children('ul').children().length === 0){
+                this.$target.children('a').children('.caret').remove();
+                this.$target.children('.dropdown-menu').remove();
+            }else{
+                this.$target.children('a').attr('data-toggle', 'dropdown');
+                this.$target.children('a').addClass('dropdown-toggle');
+            }
+        }
     });
 
     /* t-field options */

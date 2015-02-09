@@ -793,17 +793,13 @@
 
     <div name="Link" class="o_block_menu_link">
         <li class="o_menu_link">
-            <a href="/page/homepage">
-                <span>Link</span>
-            </a>
+            <a href="/page/homepage">Link</a>
         </li>
     </div>
 
     <div name="Menu" class="o_block_menu_parent">
         <li class="o_menu_parent open">
-            <a href="/page/homepage">
-                <span>Home</span>
-            </a>
+            <a href="/page/homepage">Home</a>
         </li>
     </div>
 
