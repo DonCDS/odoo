@@ -1097,9 +1097,6 @@
 .openerp .oe-control-panel-content .oe-pager-buttons {
   min-height: 30px;
 }
-.openerp .oe_view_manager_inline > .oe-control-panel-content, .openerp .oe_view_manager_inlineview > .oe-control-panel-content {
-  display: none;
-}
 .openerp .o-modal-header > div {
   margin-left: 45%;
 }

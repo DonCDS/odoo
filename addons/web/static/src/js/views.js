@@ -116,7 +116,8 @@ instance.web.ActionManager = instance.web.Widget.extend({
 
         // Sets the main ControlPanel state
         // AAB: temporary restrict the use of main control panel
-        if (action.target === 'current' && action.type === 'ir.actions.act_window') {
+        // inline stands for dashboards
+        if ((action.target === 'current' || action.target === 'inline') && action.type === 'ir.actions.act_window') {
             this.main_control_panel.set_state(new_state, true);
         }
 
@@ -995,7 +996,7 @@ instance.web.ViewManager = instance.web.Widget.extend({
      * @param {Array} [views] List of [view_id, view_type]
      * @param {Object} [flags] various boolean describing UI state
      */
-    init: function(parent, dataset, views, flags, action, control_panel) {
+    init: function(parent, dataset, views, flags, action) {
         if (action) {
             flags = action.flags || {};
             if (!('auto_search' in flags)) {
@@ -1003,14 +1004,16 @@ instance.web.ViewManager = instance.web.Widget.extend({
             }
             if (action.res_model === 'board.board' && action.view_mode === 'form') {
                 action.target = 'inline';
+                debugger;
                 // Special case for Dashboards
                 _.extend(flags, {
-                    views_switcher : false,
-                    display_title : false,
-                    search_view : false,
-                    pager : false,
-                    sidebar : false,
-                    action_buttons : false
+                    headless: true,
+                    views_switcher: false,
+                    display_title: false,
+                    search_view: false,
+                    pager: false,
+                    sidebar: false,
+                    action_buttons: false
                 });
             }
             this.action = action;
