@@ -666,9 +666,11 @@ instance.web.ControlPanel = instance.web.Widget.extend({
         } else {
             // Render buttons and switch-buttons and append them to the ControlPanel
             var buttons = QWeb.render('ControlPanel.buttons', {views: self.views});
-            var switch_buttons = QWeb.render('ControlPanel.switch-buttons', {views: self.view_order});
             $(buttons).appendTo(this.$buttons);
-            $(switch_buttons).appendTo(this.$switch_buttons);
+            if (this.view_order.length > 1) {
+                var switch_buttons = QWeb.render('ControlPanel.switch-buttons', {views: self.view_order});
+                $(switch_buttons).appendTo(this.$switch_buttons);
+            }
 
             _.each(this.views, function (view) {
                 // Expose control panel elements to the views so that they can insert stuff in them
