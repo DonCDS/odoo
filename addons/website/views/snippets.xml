@@ -791,9 +791,19 @@
         </li>
     </div>
 
-    <div name="link" class="o_block_menu_link">
+    <div name="Link" class="o_block_menu_link">
         <li class="o_menu_link">
-            <a href="/page/homepage">Link</a>
+            <a href="/page/homepage">
+                <span>Link</span>
+            </a>
+        </li>
+    </div>
+
+    <div name="Menu" class="o_block_menu_parent">
+        <li class="o_menu_parent open">
+            <a href="/page/homepage">
+                <span>Home</span>
+            </a>
         </li>
     </div>
 
@@ -984,6 +994,12 @@
     <div data-js="menu_link" 
         data-selector=".o_menu_link"
         data-drop-in=".o_column_list"
+        data-no-check="true">
+    </div>
+
+    <div data-js="menu_parent" 
+        data-selector=".o_menu_parent"
+        data-drop-near=".o_menu_parent"
         data-no-check="true">
     </div>
 

@@ -28,15 +28,15 @@
                     $('.oe_current_dropdown').removeClass("oe_current_dropdown");
                 }
             });
-            $(".o_parent_menu:not(:has(ul))").children('a').append('<span class="caret"></span>');
-            $(".o_parent_menu:not(:has(ul))").children('a').after('<ul class="dropdown-menu o_editable_menu" role="menu"></ul>');
-            $(".o_parent_menu").children('a').removeAttr('data-toggle class');
-            $(".o_parent_menu").addClass('open');
-            $(".o_parent_menu").children('ul').css('visibility', 'hidden');
-            $(".o_parent_menu").droppable({
+            $(".o_menu_parent:not(:has(ul))").children('a').append('<span class="caret"></span>');
+            $(".o_menu_parent:not(:has(ul))").children('a').after('<ul class="dropdown-menu o_editable_menu" role="menu"></ul>');
+            $(".o_menu_parent").children('a').removeAttr('data-toggle class');
+            $(".o_menu_parent").addClass('open');
+            $(".o_menu_parent").children('ul').css('visibility', 'hidden');
+            $(".o_menu_parent").droppable({
                 over:function(){self.open_dropdown_hover($(this));}
             });
-            $("body").on("mouseenter", ".o_parent_menu", function () {
+            $("body").on("mouseenter", ".o_menu_parent", function () {
                 self.open_dropdown_hover($(this));
             });
         },
@@ -44,7 +44,7 @@
 
 	website.snippet.SaveMenu = website.EditorBar.include({
 		saveElement: function($el){
-			if($el.hasClass('o_parent_menu')){
+			if($el.hasClass('o_menu_parent')){
                 //a mettre dans clean_for_save
             	$el.children('ul').css('visibility', '');
             	$el.off('mouseenter');

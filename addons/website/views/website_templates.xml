@@ -32,7 +32,7 @@
 <template id="website.submenu" name="Submenu">
     <ul class="nav navbar-nav navbar-right o_editable" id="top_menu">
         <t t-foreach="website.menu_id.child_id" t-as="submenu">
-            <li t-if="not submenu.child_id" class="o_parent_menu" t-att-class="
+            <li t-if="not submenu.child_id" class="o_menu_parent" t-att-class="
                 ((submenu.url != '/' and request.httprequest.path.startswith(submenu.url)) or
                  request.httprequest.path == submenu.url) and 'active'
                 ">
@@ -40,7 +40,7 @@
                     <span t-field="submenu.name"/>
                 </a>
             </li>
-            <li t-if="submenu.child_id" class="o_parent_menu" t-attf-class="dropdown #{
+            <li t-if="submenu.child_id" class="o_menu_parent" t-attf-class="dropdown #{
                 ((submenu.url != '/' and [1 for submenu in submenu.child_id if request.httprequest.path.startswith(submenu.url)]) or
                  request.httprequest.path == submenu.url) and 'active'
                 }">
