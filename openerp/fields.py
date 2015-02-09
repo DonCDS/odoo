@@ -416,24 +416,28 @@ class Field(object):
         """ Setup the attributes of a non-related field. """
         recs = env[self.model_name]
 
+        # determine depends for computed fields
         def make_depends(deps):
-            return tuple(deps(recs) if callable(deps) else deps)
+            return deps(recs) if callable(deps) else deps
 
-        # convert compute into a callable and determine depends
         if isinstance(self.compute, basestring):
             # if the compute method has been overridden, concatenate all their _depends
-            self.depends = ()
+            depends = []
             for method in resolve_all_mro(type(recs), self.compute, reverse=True):
-                self.depends += make_depends(getattr(method, '_depends', ()))
-            self.compute = getattr(type(recs), self.compute)
+                depends += make_depends(getattr(method, '_depends', ()))
+            self.depends = tuple(depends)
         else:
             self.depends = make_depends(getattr(self.compute, '_depends', ()))
 
-        # convert inverse and search into callables
-        if isinstance(self.inverse, basestring):
-            self.inverse = getattr(type(recs), self.inverse)
-        if isinstance(self.search, basestring):
-            self.search = getattr(type(recs), self.search)
+        # convert compute, inverse and search into callables
+        def make_callable(method):
+            if isinstance(method, basestring):
+                return lambda recs: getattr(recs, method)()
+            return method
+
+        self._compute = make_callable(self.compute)
+        self._inverse = make_callable(self.inverse)
+        self._search = make_callable(self.search)
 
     #
     # Setup of related fields
@@ -462,12 +466,12 @@ class Field(object):
 
         # determine dependencies, compute, inverse, and search
         self.depends = ('.'.join(self.related),)
-        self.compute = self._compute_related
+        self._compute = self._compute_related
         if not (self.readonly or field.readonly):
-            self.inverse = self._inverse_related
+            self._inverse = self._inverse_related
         if field._description_searchable:
             # allow searching on self only if the related field is searchable
-            self.search = self._search_related
+            self._search = self._search_related
 
         # copy attributes from field to self (string, help, etc.)
         for attr, prop in self.related_attrs:
@@ -824,7 +828,7 @@ class Field(object):
         for field in self.computed_fields:
             records._cache[field] = field.null(records.env)
             records.env.computed[field].update(records._ids)
-        self.compute(records)
+        self._compute(records)
         for field in self.computed_fields:
             records.env.computed[field].difference_update(records._ids)
 
@@ -869,7 +873,7 @@ class Field(object):
             # read the field from database
             record._prefetch_field(self)
 
-        elif self.compute:
+        elif self._compute:
             # this is either a non-stored computed field, or a stored computed
             # field in draft mode
             if self.recursive:
@@ -884,20 +888,20 @@ class Field(object):
 
     def determine_draft_value(self, record):
         """ Determine the value of `self` for the given draft `record`. """
-        if self.compute:
+        if self._compute:
             self._compute_value(record)
         else:
             record._cache[self] = SpecialValue(self.null(record.env))
 
     def determine_inverse(self, records):
         """ Given the value of `self` on `records`, inverse the computation. """
-        if self.inverse:
-            self.inverse(records)
+        if self._inverse:
+            self._inverse(records)
 
     def determine_domain(self, records, operator, value):
         """ Return a domain representing a condition on `self`. """
-        if self.search:
-            return self.search(records, operator, value)
+        if self._search:
+            return self._search(records, operator, value)
         else:
             return [(self.name, operator, value)]
 

@@ -3703,7 +3703,7 @@ class BaseModel(object):
             if field:
                 if field.column or field.inherited:
                     old_vals[key] = val
-                if field.inverse and not field.inherited:
+                if field._inverse and not field.inherited:
                     new_vals[key] = val
             else:
                 unknown.append(key)
@@ -4003,7 +4003,7 @@ class BaseModel(object):
             if field:
                 if field.column or field.inherited:
                     old_vals[key] = val
-                if field.inverse and not field.inherited:
+                if field._inverse and not field.inherited:
                     new_vals[key] = val
             else:
                 unknown.append(key)
