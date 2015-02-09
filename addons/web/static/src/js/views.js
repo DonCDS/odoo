@@ -61,6 +61,11 @@ instance.web.ActionManager = instance.web.Widget.extend({
 
         // Instantiate the unique main control panel used by every widget in this.states
         this.main_control_panel = new instance.web.ControlPanel(this);
+        // Listen to event "switch_view" trigerred on the control panel when clicking
+        // on switch buttons. Forward this event to the current inner_widget
+        this.main_control_panel.on("switch_view", this, function(view_type) {
+            this.inner_widget.trigger("switch_view", view_type);
+        });
     },
     start: function() {
         this._super();
@@ -112,7 +117,7 @@ instance.web.ActionManager = instance.web.Widget.extend({
         // Sets the main ControlPanel state
         // AAB: temporary restrict the use of main control panel
         if (action.target === 'current' && action.type === 'ir.actions.act_window') {
-            this.main_control_panel.set_state(new_state);
+            this.main_control_panel.set_state(new_state, true);
         }
 
         return $.when(this.inner_widget.appendTo(this.$el)).done(function () {
@@ -182,12 +187,13 @@ instance.web.ActionManager = instance.web.Widget.extend({
                 state.__on_reverse_breadcrumb();
             }
 
+            self.clear_states(self.states.splice(state_index + 1));
             var last_state = _.last(self.states);
             self.inner_widget = last_state.widget;
-            self.main_control_panel.set_state(last_state);
-            // clear_states must be done after main_control_panel.set_state
-            // to prevent leaving stuff in the history
-            self.clear_states(self.states.splice(state_index + 1));
+
+            // Set the control panel new state without saving the current one to be consistent
+            // with the AM behavior
+            self.main_control_panel.set_state(last_state, false);
             if (self.inner_widget.do_show) {
                 self.inner_widget.do_show();
             }
@@ -618,20 +624,24 @@ instance.web.ControlPanel = instance.web.Widget.extend({
 
         return this._super();
     },
-    set_state: function(state) {
+    set_state: function(state, store_old) {
         var self = this;
         // AAB: this will be removed later. Communication will be done through a dedicated bus
         // instantiated by the ControlPanel and shared between every widget interacting with it
         state.widget.set_control_panel(this);
+
         // Detach control panel elements in which sub-elements are inserted by other widgets
-        // Store them to re-attach them if we come back to that state (e.g. using breadcrumbs)
         if (this.current_state_id) {
-            this.history[this.current_state_id] = {
+            var old_content = {
                 '$buttons': this.$buttons.contents().detach(),
                 '$switch_buttons': this.$switch_buttons.contents().detach(),
                 '$pager': this.$pager.contents().detach(),
                 '$sidebar': this.$sidebar.contents().detach(),
             };
+        }
+        // Store them to re-attach them if we come back to that state (e.g. using breadcrumbs)
+        if (old_content && store_old === true) {
+            this.history[this.current_state_id] = old_content;
         }
 
         this.current_state_id = state.get_id();
@@ -764,7 +774,8 @@ instance.web.ControlPanel = instance.web.Widget.extend({
         this.searchview = new SearchView(this, this.dataset, view_id, search_defaults, options);
 
         this.searchview.on('search_data', this, this.search.bind(this));
-        return this.searchview.appendTo(this.$(".oe-cp-search-view:first"));
+        this.search_view_loaded = this.searchview.appendTo(this.$(".oe-cp-search-view:first"));
+        return this.search_view_loaded;
     },
     update_search_view: function() {
         if (this.searchview) {
@@ -1038,6 +1049,15 @@ instance.web.ViewManager = instance.web.Widget.extend({
             self.view_order.push(view_descr);
             self.views[view_type] = view_descr;
         });
+
+        // Listen to event 'switch_view' indicating that the VM must now display view wiew_type
+        this.on('switch_view', this, function(view_type) {
+            if (view_type === 'form' && this.active_view && this.active_view.type === 'form') {
+                this._display_view(view_type);
+            } else {
+                this.switch_mode(view_type);
+            }
+        });
     },
     /**
      * @returns {jQuery.Deferred} initial view loading promise
@@ -1063,28 +1083,18 @@ instance.web.ViewManager = instance.web.Widget.extend({
 
         if (self.control_panel) {
             // Tell the ControlPanel to setup its search view
-            self.search_view_loaded = self.control_panel.setup_search_view();
+            var search_view_loaded = self.control_panel.setup_search_view();
         }
         else {
-            self.search_view_loaded = $.Deferred().resolve();
+            var search_view_loaded = $.Deferred().resolve();
         }
 
         self.main_view_loaded = self.switch_mode(default_view, null, default_options);
 
-        return $.when(self.main_view_loaded, self.search_view_loaded);
+        return $.when(self.main_view_loaded, search_view_loaded);
     },
     set_control_panel: function(control_panel) {
         this.control_panel = control_panel;
-        if (this.control_panel) {
-            // Listen to event 'switch_view' trigerred when clicking on switch-buttons
-            this.control_panel.on('switch_view', this, function(view_type) {
-                if (view_type === 'form' && this.active_view && this.active_view.type === 'form') {
-                    this._display_view(view_type);
-                } else {
-                    this.switch_mode(view_type);
-                }
-            });
-        }
     },
     /**
      * Needed for dashboard.js to add Favorites to Dashboard
