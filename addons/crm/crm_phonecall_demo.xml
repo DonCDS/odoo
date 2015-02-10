@@ -35,7 +35,7 @@
             <field eval="'2'" name="priority"/>
             <field name="user_id" ref="base.user_demo"/>
             <field name="name">Ask for convenient time of meeting</field>
-            <field name="state">open</field>
+            <field name="state">to_do</field>
             <field name="partner_phone">+1 786 525 0724</field>
             <field name="section_id" ref="sales_team.crm_case_section_2"/>
             <field eval="1" name="active"/>
@@ -61,7 +61,7 @@
             <field eval="'1'" name="priority"/>
             <field name="user_id" ref="base.user_root"/>
             <field name="name">More information on the proposed deal</field>
-            <field name="state">pending</field>
+            <field name="state">to_do</field>
             <field name="partner_phone">+1 312 349 2324</field>
             <field name="section_id" ref="sales_team.crm_case_section_1"/>
             <field eval="1" name="active"/>
@@ -72,7 +72,7 @@
             <field eval="'1'" name="priority"/>
             <field name="user_id" ref="base.user_root"/>
             <field name="name">Proposal for discount offer</field>
-            <field name="state">open</field>
+            <field name="state">to_do</field>
             <field name="partner_phone">+34 230 953 485</field>
             <field name="section_id" ref="sales_team.crm_case_section_2"/>
             <field eval="time.strftime('%Y-%m-28 14:15:30')" name="date"/>
