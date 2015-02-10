@@ -319,12 +319,13 @@
                 });
         });
 
-        $(".post-comment").on('click', function (){
-            var $textarea = $(this).siblings('input:text, textarea');
+        $(".post-comment").on('click', function (ev){
+            var $el = $(ev.target)
+            var $textarea = $el.siblings('input:text, textarea');
             if ($textarea.val() == ''){
                 return false;
             } else {
-                $(this).button('loading');
+                $el.button('loading');
             }
         });
 
