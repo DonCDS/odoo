@@ -7,6 +7,7 @@ import openerp
 import openerp.service.report
 import uuid
 import collections
+from locale import getpreferredencoding
 from werkzeug.exceptions import BadRequest
 from datetime import datetime, timedelta
 from dateutil import parser
@@ -1440,7 +1441,13 @@ class calendar_event(osv.Model):
         elif interval == 'time':
             dummy, format_time = self.get_date_formats(cr, uid, context=context)
             res = date.strftime(format_time + " %Z")
-        return res
+        return res.decode(getpreferredencoding(do_setlocale=False))
+        # %A, %B formats and some others can return non-ASCII strings (1) (by example: months names
+        # in French) according to user locale and locale encoding. Templates that use this result
+        # are expecting Unicode strings (2), so we decode it to Unicode, so that it won't fail.
+        #
+        # (1) https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+        # (2) http://jinja.pocoo.org/docs/dev/api/#unicode
 
     def search(self, cr, uid, args, offset=0, limit=0, order=None, context=None, count=False):
         if context is None:
