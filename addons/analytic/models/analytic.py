@@ -172,6 +172,12 @@ class account_analytic_account(osv.osv):
                 result[rec.id] = rec.currency_id.id
         return result
 
+    def get_contract_type_selection(self, cr, uid, context=None):
+        return [('prepaid', 'Prepaid Support Hours'), ('regular', 'Regular')]
+
+    def contract_type_selection_wrapper(self, cr, uid, context=None):
+        return self.get_contract_type_selection(cr, uid, context=context)
+
     _columns = {
         'name': fields.char('Account/Contract Name', required=True, track_visibility='onchange'),
         'complete_name': fields.function(_get_full_name, type='char', string='Full Name'),
@@ -210,6 +216,11 @@ class account_analytic_account(osv.osv):
             store = {
                 'res.company': (_get_analytic_account, ['currency_id'], 10),
             }, string='Currency', type='many2one', relation='res.currency'),
+        'contract_type': fields.selection(contract_type_selection_wrapper, 'Type of Contract')
+    }
+
+    _defaults = {
+        'contract_type': 'regular',
     }
 
     def on_change_template(self, cr, uid, ids, template_id, date_start=False, context=None):
@@ -329,6 +340,7 @@ class account_analytic_line(osv.osv):
         'user_id': fields.many2one('res.users', 'User'),
         'company_id': fields.related('account_id', 'company_id', type='many2one', relation='res.company', string='Company', store=True, readonly=True),
         'journal_id': fields.many2one('account.analytic.journal', 'Analytic Journal', required=True, ondelete='restrict', select=True),
+        'partner_id': fields.related('account_id', 'partner_id', type='many2one', relation='res.partner', string='Partner', store=True),
 
     }
 
@@ -357,7 +369,6 @@ class account_analytic_line(osv.osv):
         (_check_no_view, 'You cannot create analytic line on view account.', ['account_id']),
     ]
 
-
 class account_analytic_journal(osv.osv):
     _name = 'account.analytic.journal'
     _description = 'Analytic Journal'
@@ -376,4 +387,13 @@ class account_analytic_journal(osv.osv):
         'active': True,
         'type': 'general',
         'company_id': lambda self, cr, uid, c=None: self.pool.get('res.users').browse(cr, uid, uid, c).company_id.id,
+    }
+
+class res_partner(osv.osv):
+    """ Inherits partner and adds contract information in the partner form """
+    _inherit = 'res.partner'
+
+    _columns = {
+        'contract_ids': fields.one2many('account.analytic.account', \
+                                                    'partner_id', 'Contracts', readonly=True),
     }

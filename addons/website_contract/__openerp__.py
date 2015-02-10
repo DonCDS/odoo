@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Odoo, Open Source ERP and CRM
+#    Copyright (C) 2015-Today Odoo SA (<http://www.odoo.com>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,20 +19,34 @@
 #
 ##############################################################################
 
-
 {
-    'name': 'Contracts Management: hr_expense link',
-    'version': '1.1',
-    'category': 'Hidden',
+    'name': 'Website Contract',
+    'category': 'Website',
+    'summary': 'Contract Management Frontend for your Clients',
+    'version': '1.0',
     'description': """
-This module is for modifying account analytic view to show some data related to the hr_expense module.
-======================================================================================================
-""",
-    'author': 'OpenERP S.A.',
+Allows your customers to manage their contract from a beautiful web interface.
+        """,
+    'author': 'Odoo SA',
     'website': 'https://www.odoo.com/',
-    'depends': ['hr_expense','sale_contract'],
-    'data': ['analytic_contract_hr_expense_view.xml'],
-    'demo': [],
+    'depends': [
+        'sale',
+        'sale_contract',
+        'website',
+        'website_portal',
+        'payment'
+    ],
+    'data': [
+        'views/templates.xml',
+        'views/views.xml',
+        'security/ir.model.access.csv',
+        'security/portal_contract_security.xml',
+    ],
+    'qweb': [
+    ],
+    'demo': [
+        'demo.xml',
+    ],
     'installable': True,
-    'auto_install': True,
+    'application': True,
 }

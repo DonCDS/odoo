@@ -32,67 +32,7 @@ from openerp.addons.decimal_precision import decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
 
-class account_analytic_invoice_line(osv.osv):
-    _name = "account.analytic.invoice.line"
-
-    def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict, context=None):
-        res = {}
-        for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] = line.quantity * line.price_unit
-            if line.analytic_account_id.pricelist_id:
-                cur = line.analytic_account_id.pricelist_id.currency_id
-                res[line.id] = self.pool.get('res.currency').round(cr, uid, cur, res[line.id])
-        return res
-
-    _columns = {
-        'product_id': fields.many2one('product.product','Product',required=True),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Analytic Account'),
-        'name': fields.text('Description', required=True),
-        'quantity': fields.float('Quantity', required=True),
-        'uom_id': fields.many2one('product.uom', 'Unit of Measure',required=True),
-        'price_unit': fields.float('Unit Price', required=True),
-        'price_subtotal': fields.function(_amount_line, string='Sub Total', type="float",digits_compute= dp.get_precision('Account')),
-    }
-    _defaults = {
-        'quantity' : 1,
-    }
-
-    def product_id_change(self, cr, uid, ids, product, uom_id, qty=0, name='', partner_id=False, price_unit=False, pricelist_id=False, company_id=None, context=None):
-        context = context or {}
-        uom_obj = self.pool.get('product.uom')
-        company_id = company_id or False
-        local_context = dict(context, company_id=company_id, force_company=company_id, pricelist=pricelist_id)
-
-        if not product:
-            return {'value': {'price_unit': 0.0}, 'domain':{'product_uom':[]}}
-        if partner_id:
-            part = self.pool.get('res.partner').browse(cr, uid, partner_id, context=local_context)
-            if part.lang:
-                local_context.update({'lang': part.lang})
-
-        result = {}
-        res = self.pool.get('product.product').browse(cr, uid, product, context=local_context)
-        price = False
-        if price_unit is not False:
-            price = price_unit
-        elif pricelist_id:
-            price = res.price
-        if price is False:
-            price = res.list_price
-        if not name:
-            name = self.pool.get('product.product').name_get(cr, uid, [res.id], context=local_context)[0][1]
-            if res.description_sale:
-                name += '\n'+res.description_sale
-
-        result.update({'name': name or False,'uom_id': uom_id or res.uom_id.id or False, 'price_unit': price})
-
-        res_final = {'value':result}
-        if result['uom_id'] != res.uom_id.id:
-            selected_uom = uom_obj.browse(cr, uid, result['uom_id'], context=local_context)
-            new_price = uom_obj._compute_price(cr, uid, res.uom_id.id, res_final['value']['price_unit'], result['uom_id'])
-            res_final['value']['price_unit'] = new_price
-        return res_final
-
+# reste
 
 class account_analytic_account(osv.osv):
     _name = "account.analytic.account"
@@ -524,22 +464,6 @@ class account_analytic_account(osv.osv):
         'invoiced_total' : fields.function(_sum_of_fields, type="float",multi="sum_of_all", string="Total Invoiced"),
         'remaining_total' : fields.function(_sum_of_fields, type="float",multi="sum_of_all", string="Total Remaining", help="Expectation of remaining income for this contract. Computed as the sum of remaining subtotals which, in turn, are computed as the maximum between '(Estimation - Invoiced)' and 'To Invoice' amounts"),
         'toinvoice_total' : fields.function(_sum_of_fields, type="float",multi="sum_of_all", string="Total to Invoice", help=" Sum of everything that could be invoiced for this contract."),
-        'recurring_invoice_line_ids': fields.one2many('account.analytic.invoice.line', 'analytic_account_id', 'Invoice Lines', copy=True),
-        'recurring_invoices' : fields.boolean('Generate recurring invoices automatically'),
-        'recurring_rule_type': fields.selection([
-            ('daily', 'Day(s)'),
-            ('weekly', 'Week(s)'),
-            ('monthly', 'Month(s)'),
-            ('yearly', 'Year(s)'),
-            ], 'Recurrency', help="Invoice automatically repeat at specified interval"),
-        'recurring_interval': fields.integer('Repeat Every', help="Repeat every (Days/Week/Month/Year)"),
-        'recurring_next_date': fields.date('Date of Next Invoice'),
-    }
-
-    _defaults = {
-        'recurring_interval': 1,
-        'recurring_next_date': lambda *a: time.strftime('%Y-%m-%d'),
-        'recurring_rule_type':'monthly'
     }
 
     def open_sale_order_lines(self,cr,uid,ids,context=None):
@@ -558,47 +482,6 @@ class account_analytic_account(osv.osv):
             'res_model': 'sale.order.line',
             'nodestroy': True,
         }
-
-    def on_change_template(self, cr, uid, ids, template_id, date_start=False, context=None):
-        if not template_id:
-            return {}
-        res = super(account_analytic_account, self).on_change_template(cr, uid, ids, template_id, date_start=date_start, context=context)
-
-        template = self.browse(cr, uid, template_id, context=context)
-        
-        if not ids:
-            res['value']['fix_price_invoices'] = template.fix_price_invoices
-            res['value']['amount_max'] = template.amount_max
-        if not ids:
-            res['value']['invoice_on_timesheets'] = template.invoice_on_timesheets
-            res['value']['hours_qtt_est'] = template.hours_qtt_est
-        
-        if template.to_invoice.id:
-            res['value']['to_invoice'] = template.to_invoice.id
-        if template.pricelist_id.id:
-            res['value']['pricelist_id'] = template.pricelist_id.id
-        if not ids:
-            invoice_line_ids = []
-            for x in template.recurring_invoice_line_ids:
-                invoice_line_ids.append((0, 0, {
-                    'product_id': x.product_id.id,
-                    'uom_id': x.uom_id.id,
-                    'name': x.name,
-                    'quantity': x.quantity,
-                    'price_unit': x.price_unit,
-                    'analytic_account_id': x.analytic_account_id and x.analytic_account_id.id or False,
-                }))
-            res['value']['recurring_invoices'] = template.recurring_invoices
-            res['value']['recurring_interval'] = template.recurring_interval
-            res['value']['recurring_rule_type'] = template.recurring_rule_type
-            res['value']['recurring_invoice_line_ids'] = invoice_line_ids
-        return res
-
-    def onchange_recurring_invoices(self, cr, uid, ids, recurring_invoices, date_start=False, context=None):
-        value = {}
-        if date_start and recurring_invoices:
-            value = {'value': {'recurring_next_date': date_start}}
-        return value
 
     def cron_account_analytic_account(self, cr, uid, context=None):
         context = dict(context or {})
@@ -654,6 +537,78 @@ class account_analytic_account(osv.osv):
             'res_model': 'account.analytic.line',
             'nodestroy': True,
         }
+
+# Reccuring
+
+class account_analytic_account(osv.osv):
+    _name = "account.analytic.account"
+    _inherit = "account.analytic.account"
+
+    _columns = {
+        'recurring_invoice_line_ids': fields.one2many('account.analytic.invoice.line', 'analytic_account_id', 'Invoice Lines', copy=True),
+        'recurring_invoices': fields.boolean('Generate recurring invoices automatically'),
+        'recurring_rule_type': fields.selection([('daily', 'Day(s)'), ('weekly', 'Week(s)'), ('monthly', 'Month(s)'), ('yearly', 'Year(s)'), ], 'Recurrency', help="Invoice automatically repeat at specified interval"),
+        'recurring_interval': fields.integer('Repeat Every', help="Repeat every (Days/Week/Month/Year)"),
+        'recurring_next_date': fields.date('Date of Next Invoice'),
+        'option_invoice_line_ids':  fields.one2many('account.analytic.invoice.line.option', 'analytic_account_id', 'Optional Lines', copy=True),
+        # Fields that only matters on template
+        'plan_description': fields.html(string='Plan Description', help="Describe this contract in a few lines",),
+        'user_selectable': fields.boolean(string='Allow Online Order', help="""Leave this unchecked if you don't want this contract template to be available to the customer in the frontend (for a free trial, for example)""")
+    }
+
+    def get_contract_type_selection(self, cr, uid, context=None):
+        select = super(account_analytic_account, self).get_contract_type_selection(cr, uid, context=context)
+        select.append(('subscription', 'Susbcription'))
+        return select
+
+    _defaults = {
+        'recurring_interval': 1,
+        'recurring_next_date': lambda *a: time.strftime('%Y-%m-%d'),
+        'recurring_rule_type':'monthly',
+        'user_selectable': True
+    }
+
+    def on_change_template(self, cr, uid, ids, template_id, date_start=False, context=None):
+        print 'on_change_template called'
+        if not template_id:
+            return {}
+        res = super(account_analytic_account, self).on_change_template(cr, uid, ids, template_id, date_start=date_start, context=context)
+
+        template = self.browse(cr, uid, template_id, context=context)
+        
+        res['value']['fix_price_invoices'] = template.fix_price_invoices
+        res['value']['amount_max'] = template.amount_max
+        
+        res['value']['invoice_on_timesheets'] = template.invoice_on_timesheets
+        res['value']['hours_qtt_est'] = template.hours_qtt_est
+        
+        if template.to_invoice.id:
+            res['value']['to_invoice'] = template.to_invoice.id
+        if template.pricelist_id.id:
+            res['value']['pricelist_id'] = template.pricelist_id.id
+        
+        invoice_line_ids = []
+        for x in template.recurring_invoice_line_ids:
+            invoice_line_ids.append((0, 0, {
+                'product_id': x.product_id.id,
+                'uom_id': x.uom_id.id,
+                'name': x.name,
+                'quantity': x.quantity,
+                'price_unit': x.price_unit,
+                'analytic_account_id': x.analytic_account_id and x.analytic_account_id.id or False,
+            }))
+        res['value']['recurring_invoices'] = template.recurring_invoices
+        res['value']['recurring_interval'] = template.recurring_interval
+        res['value']['recurring_rule_type'] = template.recurring_rule_type
+        res['value']['recurring_invoice_line_ids'] = invoice_line_ids
+        return res
+
+
+    def on_change_contract_type(self, cr, uid, ids, contract_type, date_start=False, context=None):
+        res = {'recurring_invoices': True if contract_type == 'subscription' else False}
+        if contract_type == 'subscription' and date_start:
+            res['recurring_next_date'] = date_start
+        return {'value': res}
 
     def _prepare_invoice_data(self, cr, uid, contract, context=None):
         context = context or {}
@@ -768,125 +723,72 @@ class account_analytic_account(osv.osv):
                             raise
         return invoice_ids
 
-class account_analytic_account_summary_user(osv.osv):
-    _name = "account_analytic_analysis.summary.user"
-    _description = "Hours Summary by User"
-    _order='user'
-    _auto = False
-    _rec_name = 'user'
+#BDO
 
-    def _unit_amount(self, cr, uid, ids, name, arg, context=None):
+
+class account_analytic_invoice_line(osv.osv):
+    _name = "account.analytic.invoice.line"
+
+    def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict, context=None):
         res = {}
-        account_obj = self.pool.get('account.analytic.account')
-        cr.execute('SELECT MAX(id) FROM res_users')
-        max_user = cr.fetchone()[0]
-        account_ids = [int(str(x/max_user - (x%max_user == 0 and 1 or 0))) for x in ids]
-        user_ids = [int(str(x-((x/max_user - (x%max_user == 0 and 1 or 0)) *max_user))) for x in ids]
-        parent_ids = tuple(account_ids) #We don't want consolidation for each of these fields because those complex computation is resource-greedy.
-        if parent_ids:
-            cr.execute('SELECT id, unit_amount ' \
-                    'FROM account_analytic_analysis_summary_user ' \
-                    'WHERE account_id IN %s ' \
-                        'AND "user" IN %s',(parent_ids, tuple(user_ids),))
-            for sum_id, unit_amount in cr.fetchall():
-                res[sum_id] = unit_amount
-        for id in ids:
-            res[id] = round(res.get(id, 0.0), 2)
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = line.quantity * line.price_unit
+            if line.analytic_account_id.pricelist_id:
+                cur = line.analytic_account_id.pricelist_id.currency_id
+                res[line.id] = self.pool.get('res.currency').round(cr, uid, cur, res[line.id])
         return res
 
     _columns = {
-        'account_id': fields.many2one('account.analytic.account', 'Analytic Account', readonly=True),
-        'unit_amount': fields.float('Total Time'),
-        'user': fields.many2one('res.users', 'User'),
+        'product_id': fields.many2one('product.product','Product',required=True),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Analytic Account'),
+        'name': fields.text('Description', required=True),
+        'quantity': fields.float('Quantity', required=True),
+        'uom_id': fields.many2one('product.uom', 'Unit of Measure',required=True),
+        'price_unit': fields.float('Unit Price', required=True),
+        'price_subtotal': fields.function(_amount_line, string='Sub Total', type="float",digits_compute= dp.get_precision('Account')),
+    }
+    _defaults = {
+        'quantity' : 1,
     }
 
-    _depends = {
-        'res.users': ['id'],
-        'account.analytic.line': ['account_id', 'journal_id', 'unit_amount', 'user_id'],
-        'account.analytic.journal': ['type'],
-    }
+    def product_id_change(self, cr, uid, ids, product, uom_id, qty=0, name='', partner_id=False, price_unit=False, pricelist_id=False, company_id=None, context=None):
+        context = context or {}
+        uom_obj = self.pool.get('product.uom')
+        company_id = company_id or False
+        local_context = dict(context, company_id=company_id, force_company=company_id, pricelist=pricelist_id)
 
-    def init(self, cr):
-        openerp.tools.sql.drop_view_if_exists(cr, 'account_analytic_analysis_summary_user')
-        cr.execute('''CREATE OR REPLACE VIEW account_analytic_analysis_summary_user AS (
-            with mu as
-                (select max(id) as max_user from res_users)
-            , lu AS
-                (SELECT   
-                 l.account_id AS account_id,   
-                 coalesce(l.user_id, 0) AS user_id,   
-                 SUM(l.unit_amount) AS unit_amount   
-             FROM account_analytic_line AS l,   
-                 account_analytic_journal AS j   
-             WHERE (j.type = 'general' ) and (j.id=l.journal_id)   
-             GROUP BY l.account_id, l.user_id   
-            )
-            select (lu.account_id * mu.max_user) + lu.user_id as id,
-                    lu.account_id as account_id,
-                    lu.user_id as "user",
-                    unit_amount
-            from lu, mu)''')
+        if not product:
+            return {'value': {'price_unit': 0.0}, 'domain':{'product_uom':[]}}
+        if partner_id:
+            part = self.pool.get('res.partner').browse(cr, uid, partner_id, context=local_context)
+            if part.lang:
+                local_context.update({'lang': part.lang})
 
-class account_analytic_account_summary_month(osv.osv):
-    _name = "account_analytic_analysis.summary.month"
-    _description = "Hours summary by month"
-    _auto = False
-    _rec_name = 'month'
+        result = {}
+        res = self.pool.get('product.product').browse(cr, uid, product, context=local_context)
+        price = False
+        if price_unit is not False:
+            price = price_unit
+        elif pricelist_id:
+            price = res.price
+        if price is False:
+            price = res.list_price
+        if not name:
+            name = self.pool.get('product.product').name_get(cr, uid, [res.id], context=local_context)[0][1]
+            if res.description_sale:
+                name += '\n'+res.description_sale
 
-    _columns = {
-        'account_id': fields.many2one('account.analytic.account', 'Analytic Account', readonly=True),
-        'unit_amount': fields.float('Total Time'),
-        'month': fields.char('Month', size=32, readonly=True),
-    }
+        result.update({'name': name or False,'uom_id': uom_id or res.uom_id.id or False, 'price_unit': price})
 
-    _depends = {
-        'account.analytic.line': ['account_id', 'date', 'journal_id', 'unit_amount'],
-        'account.analytic.journal': ['type'],
-    }
+        res_final = {'value':result}
+        if result['uom_id'] != res.uom_id.id:
+            selected_uom = uom_obj.browse(cr, uid, result['uom_id'], context=local_context)
+            new_price = uom_obj._compute_price(cr, uid, res.uom_id.id, res_final['value']['price_unit'], result['uom_id'])
+            res_final['value']['price_unit'] = new_price
+        return res_final
 
-    def init(self, cr):
-        openerp.tools.sql.drop_view_if_exists(cr, 'account_analytic_analysis_summary_month')
-        cr.execute('CREATE VIEW account_analytic_analysis_summary_month AS (' \
-                'SELECT ' \
-                    '(TO_NUMBER(TO_CHAR(d.month, \'YYYYMM\'), \'999999\') + (d.account_id  * 1000000::bigint))::bigint AS id, ' \
-                    'd.account_id AS account_id, ' \
-                    'TO_CHAR(d.month, \'Mon YYYY\') AS month, ' \
-                    'TO_NUMBER(TO_CHAR(d.month, \'YYYYMM\'), \'999999\') AS month_id, ' \
-                    'COALESCE(SUM(l.unit_amount), 0.0) AS unit_amount ' \
-                'FROM ' \
-                    '(SELECT ' \
-                        'd2.account_id, ' \
-                        'd2.month ' \
-                    'FROM ' \
-                        '(SELECT ' \
-                            'a.id AS account_id, ' \
-                            'l.month AS month ' \
-                        'FROM ' \
-                            '(SELECT ' \
-                                'DATE_TRUNC(\'month\', l.date) AS month ' \
-                            'FROM account_analytic_line AS l, ' \
-                                'account_analytic_journal AS j ' \
-                            'WHERE j.type = \'general\' ' \
-                            'GROUP BY DATE_TRUNC(\'month\', l.date) ' \
-                            ') AS l, ' \
-                            'account_analytic_account AS a ' \
-                        'GROUP BY l.month, a.id ' \
-                        ') AS d2 ' \
-                    'GROUP BY d2.account_id, d2.month ' \
-                    ') AS d ' \
-                'LEFT JOIN ' \
-                    '(SELECT ' \
-                        'l.account_id AS account_id, ' \
-                        'DATE_TRUNC(\'month\', l.date) AS month, ' \
-                        'SUM(l.unit_amount) AS unit_amount ' \
-                    'FROM account_analytic_line AS l, ' \
-                        'account_analytic_journal AS j ' \
-                    'WHERE (j.type = \'general\') and (j.id=l.journal_id) ' \
-                    'GROUP BY l.account_id, DATE_TRUNC(\'month\', l.date) ' \
-                    ') AS l '
-                    'ON (' \
-                        'd.account_id = l.account_id ' \
-                        'AND d.month = l.month' \
-                    ') ' \
-                'GROUP BY d.month, d.account_id ' \
-                ')')
+
+class account_analytic_invoice_line_option(osv.osv):
+    _inherit = "account.analytic.invoice.line"
+    _name = "account.analytic.invoice.line.option"
+    
