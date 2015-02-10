@@ -1,0 +1,163 @@
+<openerp><data>
+  
+  <!-- tree view -->
+  <record model="ir.ui.view" id="project_forecast_view_tree">
+    <field name="name">project.forecast.tree</field>
+    <field name="model">project.forecast</field>
+    <field name="arch" type="xml">
+      <tree string="Forecast List">
+	<field name="user_id"/>
+	<field name="project_id"/>
+	<field name="task_id"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- form view -->
+  <record model="ir.ui.view" id="project_forecast_view_form">
+    <field name="name">project.forecast.form</field>
+    <field name="model">project.forecast</field>
+    <field name="arch" type="xml">
+      <form string="Forecast Form">
+	<group col="4">
+	  <field name="user_id"/>
+	  <field name="start_date"/>
+	  <field name="project_id"/>
+	  <field name="end_date"/>
+	  <field name="task_id"/>
+	  <label for="time" string="Time"/>
+	  <div>
+	    <field name="time" class="oe_inline"/>
+	    % of time
+	  </div>
+	  <field name="resource_hours" widget="float_time"
+		 attrs="{'invisible': [('resource_hours', '=', 0)]}"/>
+	  <field name="effective_hours" widget="float_time"
+		 attrs="{'invisible': [('project_id', '=', False), ('task_id', '=', False)]}"/>
+	</group>
+      </form>
+    </field>
+  </record>
+
+  <!-- search view -->
+  <record model="ir.ui.view" id="project_forecast_view_search">
+    <field name="name">project.forecast.search</field>
+    <field name="model">project.forecast</field>
+    <field name="arch" type="xml">
+      <search>
+	<field name="user_id"/>
+	<field name="project_id"/>
+	<field name="task_id"/>
+	<filter name="my_activities" string="My activities"
+		domain="[('user_id', '=', uid)]"/>
+	<filter name="my_projects" string="My projects"
+		domain="[('project_id.user_id', '=', uid)]" />
+	<filter name="future" string="Future"
+		domain="[('end_date', '>=', time.strftime('%%Y-%%m-%%d 00:00:00'))]" />
+	<filter name="past" string="Past"
+		domain="[('start_date', '&lt;=', time.strftime('%%Y-%%m-%%d 22:59:59'))]" />
+	<group string="Group By">
+	  <filter name="group_by_user_id" string="User"
+		  context="{'group_by': 'user_id'}"/>
+	  <filter name="group_by_project_id" string="Project"
+		  context="{'group_by': 'project_id'}"/>
+	  <filter name="group_by_task_id" string="Task"
+		  context="{'group_by': 'task_id'}"/>
+	</group>
+      </search>
+    </field>
+  </record>
+
+  <!-- Gantt view -->
+  <record model="ir.ui.view" id="project_forecast_view_gantt">
+    <field name="name">project.forecast.gantt</field>
+    <field name="model">project.forecast</field>
+    <field name="arch" type="xml">
+      <gantt date_start="start_date" 
+	     date_stop="end_date"
+	     fold_last_level="true"
+	     round_dnd_dates="true"
+	     consolidation="time"
+	     consolidation_max = '{"user_id": 100}'
+	     consolidation_exclude = "exclude"
+	     baseline='{"project_id": ["project_start_date", "project_end_date"],
+		        "task_id": ["task_start_date", "task_end_date"]}'>
+      </gantt>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="project_forecast_view_pivot">
+    <field name="name">project.forecast.pivot</field>
+    <field name="model">project.forecast</field>
+    <field name="arch" type="xml">
+      <pivot string="Graph">
+	<field name="resource_hours" type="measure"/>
+	<field name="effective_hours" type="measure"/>
+	<field name="percentage_hours" type="measure"/>
+      </pivot>
+    </field>
+  </record>
+
+  <!-- Menu records -->
+  <record model="ir.actions.act_window" id="project_forecast_action">
+    <field name="name">Forecast</field>
+    <field name="res_model">project.forecast</field>
+    <field name="view_mode">gantt,tree,form,pivot</field>
+    <field name="context">{'group_by': ['user_id', 'project_id'],
+    'search_default_group_by_user_id': 1,
+    'search_default_group_by_project_id': 1}</field>
+  </record>
+
+  <menuitem id="project_forecast_menu" name="Forecast" 
+	    parent="project.menu_project_management"
+	    action="project_forecast_action"/>
+
+
+  <!-- modify the kanban of project -->
+  <record model="ir.actions.act_window" id="project_forcast_action_project">
+    <field name="name">Forecast with project</field>
+    <field name="res_model">project.forecast</field>
+    <field name="view_mode">gantt,tree,form,pivot,graph</field>
+    <field name="context">{'group_by': ['user_id', 'project_id'],
+    'project_id': active_id,
+    'search_default_project_id': [active_id],
+    'search_default_group_by_user_id': 1,
+    'search_default_group_by_project_id': 1}</field>
+  </record>
+
+  <record model="ir.ui.view" id="project_forecast_project_kanban_view">
+    <field name="name">project forecast project kanban</field>
+    <field name="model">project.project</field>
+    <field name="inherit_id" ref="project.view_project_kanban"/>
+    <field name="arch" type="xml">
+      <xpath expr="/kanban" position="inside">
+	<field name="allow_forecast"/>
+      </xpath>
+      <xpath expr="//div[contains(@class, 'oe_kanban_project_infos')]/div" position="inside">
+	<a t-if="record.allow_forecast.raw_value" class="oe_sparkline_bar_link" name="%(project_forcast_action_project)d" type="action">Forecast</a>
+      </xpath>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="project_forecast_project_form_view">
+    <field name="name">project forecast project form</field>
+    <field name="model">project.project</field>
+    <field name="inherit_id" ref="project.edit_project"/>
+    <field name="arch" type="xml">
+      <xpath expr="/form/sheet/div[1]/div[@name='options_active']" position="inside">
+	<div>
+	  <field name="allow_forecast" class="oe_inline" string="Allow Forecast"/>
+	  <label for="allow_forecast"/>
+	</div>
+      </xpath>
+      <xpath expr='/form/sheet/div[2]' position="inside">
+	<button class="oe_inline oe_stat_button" type="action" attrs="{'invisible':[('allow_forecast', '=', False)]}"
+		name="%(project_forcast_action_project)d" icon="fa-tasks">
+	  <div>Forecast</div>
+	</button>
+      </xpath>
+    </field>
+  </record>
+
+  
+</data></openerp>
