@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'Online Jobs',
     'category': 'Website',
     'version': '1.0',
     'summary': 'Job Descriptions And Application Forms',
     'description': """
-OpenERP Contact Form
+Odoo Contact Form
 ====================
 
         """,
-    'author': 'OpenERP SA',
+    'author': 'Odoo SA',
     'depends': ['website_partner', 'hr_recruitment', 'website_mail'],
     'data': [
         'security/ir.model.access.csv',

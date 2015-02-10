@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from openerp.osv import osv, fields
+from openerp import api, fields, models
 
 
-class hr_employee(osv.osv):
+class hr_employee(models.Model):
     _name = 'hr.employee'
     _inherit = ['hr.employee', 'website.published.mixin']
 
-    _columns = {
-        'public_info': fields.text('Public Info'),
-    }
+    public_info = fields.Text('Public Info')
 
-    def _website_url(self, cr, uid, ids, field_name, arg, context=None):
-        res = super(hr_employee, self)._website_url(cr, uid, ids, field_name, arg, context=context)
-        res.update({(employee_id, '/page/website.aboutus#team') for employee_id in ids})
+    @api.multi
+    def _website_url(self, field_name, arg):
+        res = super(hr_employee, self)._website_url(field_name, arg)
+        res.update({(employee.id, '/page/website.aboutus#team') for employee in self})
         return res

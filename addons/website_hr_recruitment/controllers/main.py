@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import base64
 
-from openerp import SUPERUSER_ID
 from openerp import http
 from openerp.tools.translate import _
 from openerp.http import request
@@ -74,7 +72,6 @@ class website_hr_recruitment(http.Controller):
     def jobs_detail(self, job, **kwargs):
         return request.render("website_hr_recruitment.detail", {
             'job': job,
-            'main_object': job,
         })
 
     @http.route('/jobs/apply/<model("hr.job"):job>', type='http', auth="public", website=True)
@@ -104,8 +101,6 @@ class website_hr_recruitment(http.Controller):
             request.session['website_hr_recruitment_default'] = post
             return request.redirect('/jobs/apply/%s' % post.get("job_id"))
 
-        # public user can't create applicants (duh)
-        env = request.env(user=SUPERUSER_ID)
         value = {
             'name': '%s\'s Application' % post.get('partner_name'),
         }
@@ -116,7 +111,8 @@ class website_hr_recruitment(http.Controller):
         # Retro-compatibility for saas-3. "phone" field should be replace by "partner_phone" in the template in trunk.
         value['partner_phone'] = post.pop('phone', False)
 
-        applicant = env['hr.applicant'].create(value)
+        # public user can't create applicants
+        applicant = request.env['hr.applicant'].sudo().create(value)
         if post['ufile']:
             name = applicant.partner_name if applicant.partner_name else applicant.name
             applicant.message_post(

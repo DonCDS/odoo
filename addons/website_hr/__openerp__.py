@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'Team Page',
     'category': 'Website',
@@ -8,7 +9,7 @@ Our Team Page
 =============
 
         """,
-    'author': 'OpenERP SA',
+    'author': 'Odoo SA',
     'depends': ['website', 'hr'],
     'demo': [
         'data/website_hr_demo.xml',
@@ -20,6 +21,5 @@ Our Team Page
         'security/ir.model.access.csv',
         'security/website_hr.xml',
     ],
-    'qweb': ['static/src/xml/*.xml'],
     'installable': True,
 }

@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from openerp.osv import osv, fields
+from openerp import api, fields, models
 
 
-class hr_job(osv.osv):
+class hr_job(models.Model):
     _name = 'hr.job'
     _inherit = ['hr.job', 'website.seo.metadata', 'website.published.mixin']
 
-    def _website_url(self, cr, uid, ids, field_name, arg, context=None):
-        res = super(hr_job, self)._website_url(cr, uid, ids, field_name, arg, context=context)
-        for job in self.browse(cr, uid, ids, context=context):
+    @api.multi
+    def _website_url(self, field_name, arg):
+        res = super(hr_job, self)._website_url(field_name, arg)
+        for job in self:
             res[job.id] = "/jobs/detail/%s" % job.id
         return res
 
-    def job_open(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'website_published': False}, context=context)
-        return super(hr_job, self).job_open(cr, uid, ids, context)
+    @api.multi
+    def job_open(self):
+        self.write({'website_published': False})
+        return super(hr_job, self).job_open()
 
-    _columns = {
-        'website_description': fields.html('Website description'),
-    }
+    website_description = fields.Html('Website description')
