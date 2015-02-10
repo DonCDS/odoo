@@ -1,10 +1,10 @@
-import json
-import random
-import hmac
-import time
-import base64
-from hashlib import sha1
+from json import loads
 from urllib2 import urlopen, Request, quote
+from base64 import standard_b64encode
+from random import randint
+from hmac import new
+from time import time
+from hashlib import sha1
 
 
 class oauth(object):
@@ -23,19 +23,24 @@ class oauth(object):
     def _get_nonce(self):
         NONCE = ""
         for i in range(32):
-            NONCE += chr(random.randint(97, 122))
+            NONCE += chr(randint(97, 122))
         return NONCE
 
     def _get_timestamp(self):
-        return str(int(time.time()))
+        return str(int(time()))
 
     def _generate_header(self, URL, signature_method, oauth_version, callback_url=None, request_token=None, oauth_verifier=None, params=None, method='POST'):
         self.parameters = {}
-        if params: self.parameters.update(params)
-        if callback_url: self.parameters['oauth_callback'] = callback_url
-        if request_token: self.parameters['oauth_token'] = request_token
-        if oauth_verifier: self.parameters['oauth_verifier'] = oauth_verifier
-        if self.Oauth_Token: self.parameters['oauth_token'] = self.Oauth_Token
+        if params:
+            self.parameters.update(params)
+        if callback_url:
+            self.parameters['oauth_callback'] = callback_url
+        if request_token:
+            self.parameters['oauth_token'] = request_token
+        if oauth_verifier:
+            self.parameters['oauth_verifier'] = oauth_verifier
+        if self.Oauth_Token:
+            self.parameters['oauth_token'] = self.Oauth_Token
         self.parameters['oauth_consumer_key'] = self.API_key
         self.parameters['oauth_nonce'] = self._get_nonce()
         self.parameters['oauth_signature_method'] = signature_method
@@ -49,7 +54,7 @@ class oauth(object):
     def _build_signature(self, URL, method):
         BASE_STRING = method + '&' + quote(URL, '') + '&' + quote(self.to_parameter_string(), '')
         SIGNING_KEY = quote(self.API_secret, '') + '&' + (quote(self.Oauth_Token_Secret, '') if self.Oauth_Token_Secret else '')
-        return base64.standard_b64encode(hmac.new(SIGNING_KEY.encode(), BASE_STRING.encode(), sha1).digest()).decode('ascii')
+        return standard_b64encode(new(SIGNING_KEY.encode(), BASE_STRING.encode(), sha1).digest()).decode('ascii')
 
     def to_header(self, realm=''):
         """Serialize as a header for an HTTPAuth request."""
@@ -102,4 +107,4 @@ class oauth(object):
         HEADER = self._generate_header(url, 'HMAC-SHA1', '1.0', method='GET')
         HTTP_REQUEST = Request(url + '?' + HEADER)
         request_response = urlopen(HTTP_REQUEST).read()
-        return json.loads(request_response)['id_str']
+        return loads(request_response)['id_str']

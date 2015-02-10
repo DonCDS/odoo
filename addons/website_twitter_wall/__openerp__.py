@@ -13,6 +13,7 @@ You can create and display as multiple walls for your concurrent sessions, manag
     'data': [
         'views/twitter_wall.xml',
         'security/ir.model.access.csv',
+        'data/twitter_data.xml',
     ],
     'installable': True,
 }

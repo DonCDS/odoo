@@ -31,18 +31,18 @@
                 <div class="container">
                     <div class="row">
                         <!-- When no wall is there diplay hint -->
-                        <div class="text-center text-muted" t-if="not walls">
+                        <div class="text-center text-muted o_not_editable" t-if="not walls">
                             <h1>Hey! No twitter wall found</h1>
                             <h3>Goto Content menu -> New Twitter Wall</h3>
                         </div>
                         <div t-foreach="walls" t-as="wall" class="col-sm-6 col-md-4">
                             <div class="odoo-wall-dislay-box mt16 mb16">
                                 <a t-attf-href="/twitter_wall/story/#{wall.id}" title="Storify" data-toggle="tooltip" class="odoo-wall-image-box">
-                                    <img t-attf-src="/website/image/website.twitter.wall/#{wall.id}/image/250x250" class="img-responsive odoo-wall-width" />
+                                    <img t-attf-src="/website/image/stream.agent/#{wall.id}/image/400x400" class="img-responsive odoo-wall-width" />
                                 </a>
                                 <div class="odoo-wall-padding">
                                     <h3 t-esc="wall.name" class="mt0 odoo-wall-text" />
-                                    <p t-esc="wall.description" class="odoo-wall-text" />
+                                    <p t-esc="wall.description" class="odoo-wall-text text-muted" />
                                     <a t-if="not wall.twitter_access_token and not is_public_user" class="pull-left" t-attf-href="/twitter_wall/authenticate/#{wall.id}">
                                         <i class="fa fa-arrow-right" /> Verify with Twitter Account
                                     </a>
@@ -62,11 +62,12 @@
         <!-- Storify view -->
         <template id="website_twitter_wall.twitter_wall_story" name="Storify">
             <t t-set="head">
+                <meta name="twitter:widgets:link-color" content="#A24689" />
                 <script src="//platform.twitter.com/widgets.js" charset="utf-8" />
             </t>
             <t t-call="website.layout">
                 <div class="oe_structure" />
-                <div t-attf-style="background-image: url(/website/image/website.twitter.wall/#{wall.id}/image);background-repeat: no-repeat;background-size: 100% 100%;">
+                <div t-attf-style="background-image: url(/website/image/stream.agent/#{wall.id}/image);background-size: cover;">
                     <div class="odoo-wall-story-cover">
                         <div class="container">
                             <h1 class="mt32 odoo-wall-story-title" t-esc="wall.name" />
@@ -95,9 +96,8 @@
                                 <div t-field="tweet.comment" />
                             </t>
                             <!-- When no tweet is there display hint -->
-                            <div class="text-muted" t-if="not tweets">
+                            <div class="text-muted o_not_editable" t-if="not tweets">
                                 <h1>Hey! No tweet found</h1>
-                                <h3>Goto live tweet for fetch some tweet</h3>
                             </div>
                         </center>
                     </div>
@@ -110,15 +110,15 @@
 
         <!-- Display live tweet page -->
         <template id="twitter_wall" name="Twitter Wall Tweet">
+            <t t-set="head">
+                <meta name="twitter:widgets:link-color" content="#A24689" />
+            </t>
             <t t-call="website.layout">
-                <t t-set="head">
-                    <script src="//platform.twitter.com/widgets.js" charset="utf-8" />
-                </t>
                 <div name="tweets_for_client">
-                    <div class="container" t-att-wall_id="wall_id">
+                    <div class="container">
                         <div class="row">
                             <center>
-                                <div class="col-sm-12" id="tweet_wall_div" />
+                                <div class="col-sm-12" t-att-wall_id="wall_id" id="tweet_wall_div" />
                             </center>
                         </div>
                     </div>

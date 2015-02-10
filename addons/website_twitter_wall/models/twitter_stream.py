@@ -1,273 +1,123 @@
-import ssl
-import json
-import httplib
-from time import sleep
-from socket import timeout
-from threading import Thread
-from openerp.tools.translate import _
-from openerp.osv import osv
-from urllib2 import urlopen, Request, quote
-import logging
-
-_logger = logging.getLogger(__name__)
-
-STREAM_VERSION = '1.1'
+from json import loads, dumps
+from thread import start_new_thread
+from urllib2 import urlopen, Request
+from base_stream import Stream, StreamListener
+from openerp import api, fields, models, SUPERUSER_ID
+from openerp.addons.web import http
+from openerp.addons.web.http import request
+from oauth import oauth
 
 
-class StreamListener(object):
+class TwitterConsumer(http.Controller):
+    tweets = {}
 
-    def __init__(self, api=None):
-        pass
+    def temp(self, tweet):
+        self.tweets[str(tweet['id'])] = tweet
 
-    def on_connect(self):
-        """Called once connected to streaming server.
-
-        This will be invoked once a successful response
-        is received from the server. Allows the listener
-        to perform some work prior to entering the read loop.
-        """
-        pass
-
-    def on_data(self, raw_data):
-        """Called when raw data is received from connection.
-
-        Override this method if you wish to manually handle
-        the stream data. Return False to stop stream and close connection.
-        """
-        data = json.loads(raw_data)
-
-    def on_status(self, status):
-        """Called when a new status arrives"""
-        return
-
-    def on_exception(self, exception):
-        """Called when an unhandled exception occurs."""
-        return
-
-    def on_delete(self, status_id, user_id):
-        """Called when a delete notice arrives for a status"""
-        return
-
-    def on_event(self, status):
-        """Called when a new event arrives"""
-        return
-
-    def on_direct_message(self, status):
-        """Called when a new direct message arrives"""
-        return
-
-    def on_limit(self, track):
-        """Called when a limitation notice arrvies"""
-        return
-
-    def on_error(self, status_code):
-        """Called when a non-200 status code is returned"""
-        return False
-
-    def on_timeout(self):
-        """Called when stream connection times out"""
-        return
-
-    def on_disconnect(self, notice):
-        """Called when twitter sends a disconnect notice
-        Disconnect codes are listed here:
-        https://dev.twitter.com/docs/streaming-apis/messages#Disconnect_messages_disconnect
-        """
-        return
+    @http.route('/twitter_wall/consume/<model("twitter.stream"):stream>/<token>', type='json', auth='public')
+    def consume(self, stream, token):
+        tweet = self.tweets[token]
+        obj = stream.agent_ids.filtered(lambda o: o.auth_user == tweet['user']['id_str']).sorted(lambda r: r.create_date, reverse=True)
+        if len(obj):
+            request.env['twitter.tweet']._process_tweet(obj[0], tweet)
 
 
-class Stream(object):
+class TwitterStream(models.Model, StreamListener):
+    _name = "twitter.stream"
 
-    host = 'stream.twitter.com'
+    streams_objs = {}
+    tc = TwitterConsumer()
 
-    def __init__(self, auth, listener, **options):
-        self.auth = auth
-        self.listener = listener
-        self.running = False
-        self.timeout = options.get("timeout", 300.0)
-        self.retry_count = options.get("retry_count")
-        self.retry_time_start = options.get("retry_time", 5.0)
-        self.retry_420_start = options.get("retry_420", 60.0)
-        self.retry_time_cap = options.get("retry_time_cap", 320.0)
-        self.snooze_time_step = options.get("snooze_time", 0.25)
-        self.snooze_time_cap = options.get("snooze_time_cap", 16)
-        self.buffer_size = options.get("buffer_size",  1500)
-        if options.get("secure", True):
-            self.scheme = "https"
-        else:
-            self.scheme = "http"
+    twitter_api_key = fields.Char("Twitter API Key")
+    twitter_api_secret = fields.Char("Twitter API Secret Key")
+    model = fields.Char("Type of Model")
+    agent_ids = fields.One2many('stream.agent', 'stream_id')
 
-        self.headers = options.get("headers") or {}
-        self.parameters = None
-        self.body = None
-        self.retry_time = self.retry_time_start
-        self.snooze_time = self.snooze_time_step
+    # Start streaming on server start
+    def _auto_end(self, cr, context=None):
+        super(TwitterStream, self)._auto_end(cr, context)
+        self.start(cr)
 
-    def _run(self):
-        # Authenticate
-        url = "%s://%s%s" % (self.scheme, self.host, self.url)
+    # Start streaming
+    def start(self, cr):
+        if not hasattr(self, '_id'):
+            stream_id = self.search(cr, SUPERUSER_ID, [], limit=1)
+            for stream in self.browse(cr, SUPERUSER_ID, stream_id):
+                stream.start_streaming()
 
-        # Connect and process the stream
-        error_counter = 0
-        conn = None
-        exception = None
-        while self.running:
-            if self.retry_count is not None and error_counter > self.retry_count:
-                # quit if error count greater than retry count
-                break
-            try:
-                if self.scheme == "http":
-                    conn = httplib.HTTPConnection(self.host, timeout=self.timeout)
-                else:
-                    conn = httplib.HTTPSConnection(self.host, timeout=self.timeout)
-                self.headers['Authorization'] = str(self.auth._generate_header(url.split('?')[0], 'HMAC-SHA1', '1.0', params=self.parameters))
-                conn.connect()
-                conn.request('POST', self.url, self.body, headers=self.headers)
-                resp = conn.getresponse()
-                if resp.status != 200:
-                    if self.listener.on_error(resp.status) is False:
-                        break
-                    error_counter += 1
-                    if resp.status == 420:
-                        self.retry_time = max(self.retry_420_start, self.retry_time)
-                    sleep(self.retry_time)
-                    self.retry_time = min(self.retry_time * 2, self.retry_time_cap)
-                else:
-                    error_counter = 0
-                    self.retry_time = self.retry_time_start
-                    self.snooze_time = self.snooze_time_step
-                    self.listener.on_connect()
-                    self._read_loop(resp)
-            except (timeout, ssl.SSLError) as exc:
-                # If it's not time out treat it like any other exception
-                if isinstance(exc, ssl.SSLError) and not (exc.args and 'timed out' in str(exc.args[0])):
-                    exception = exc
-                    break
+    @api.one
+    def start_streaming(self):
+        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        self = self.with_context(base_url=base_url)
+        if self.agent_ids:
+            def func(stream, user_ids):
+                return stream.filter(follow=user_ids)
+            auth = oauth(self.twitter_api_key, self.twitter_api_secret)
+            stream = None
+            user_ids = []
+            for agent in self.agent_ids:
+                if agent['auth_user']:
+                    auth.set_access_token(agent['twitter_access_token'], agent['twitter_access_token_secret'])
+                    stream = Stream(auth, self)
+                    user_ids.append(agent['auth_user'])
+            if user_ids:
+                self.streams_objs[self.id] = stream
+                start_new_thread(func, (stream, user_ids, ))
+            return True
 
-                if self.listener.on_timeout() is False:
-                    break
-                if self.running is False:
-                    break
-                conn.close()
-                sleep(self.snooze_time)
-                self.snooze_time = min(self.snooze_time + self.snooze_time_step,
-                                       self.snooze_time_cap)
-            except Exception as exception:
-                # any other exception is fatal, so kill loop
-                break
-        # cleanup
-        self.running = False
-        if not self.running:
-            self.listener.on_disconnect(None)
-        if conn:
-            conn.close()
+    # Stop streaming
+    def stop(self):
+        if self.streams_objs.get(self.id):
+            self.streams_objs[self.id].disconnect()
 
-        if exception:
-            # call a handler first so that the exception can be logged.
-            self.listener.on_exception(exception)
-            raise
+    # Restart streaming
+    def restart(self):
+        self.stop()
+        self.start()
 
-    def _data(self, data):
-        if self.listener.on_data(data) is False:
-            self.running = False
-
-    def _read_loop(self, resp):
-
-        while self.running and not resp.isclosed():
-            # Note: keep-alive newlines might be inserted before each length value.
-            # read until we get a digit...
-            c = '\n'
-            while c == '\n' and self.running and not resp.isclosed():
-                c = resp.read(1)
-            delimited_string = c
-
-            # read rest of delimiter length..
-            d = ''
-            while d != '\n' and self.running and not resp.isclosed():
-                d = resp.read(1)
-                delimited_string += d
-
-            # read the next twitter status object
-            if delimited_string.strip().isdigit():
-                next_status_obj = resp.read(int(delimited_string))
-                if self.running:
-                    self._data(next_status_obj)
-
-        if resp.isclosed():
-            self.on_closed(resp)
-
-    def _start(self, async):
-        self.running = True
-        if async:
-            Thread(target=self._run).start()
-        else:
-            self._run()
-
-    def on_closed(self, resp):
-        """ Called when the response has been closed by Twitter """
-        pass
-
-    def filter(self, follow=None, track=None, async=False, locations=None, stall_warnings=False, languages=None, encoding='utf8'):
-        self.parameters = {}
-        self.headers['Content-type'] = "application/x-www-form-urlencoded"
-        if self.running:
-            _logger.error('Stream object already connected!')
-        self.url = '/%s/statuses/filter.json?delimited=length' % STREAM_VERSION
-        if follow:
-            encoded_follow = [s.encode(encoding) for s in follow]
-            self.parameters['follow'] = ','.join(encoded_follow)
-        if track:
-            encoded_track = [s.encode(encoding) for s in track]
-            self.parameters['track'] = ','.join(encoded_track)
-        if locations and len(locations) > 0:
-            assert len(locations) % 4 == 0
-            self.parameters['locations'] = ','.join(['%.4f' % l for l in locations])
-        if stall_warnings:
-            self.parameters['stall_warnings'] = stall_warnings
-        if languages:
-            self.parameters['language'] = ','.join(map(str, languages))
-        self.body = '&'.join(['%s=%s' % (quote(str(k), ''), quote(str(v), '')) for k, v in self.parameters.iteritems()])
-        self.parameters['delimited'] = 'length'
-        self._start(async)
-
-    def disconnect(self):
-        if self.running is False:
-            return
-        self.listener.on_disconnect(None)
-        self.running = False
-
-
-class WallListener(StreamListener):
-
-    def __init__(self, base_url, wall):
-        super(WallListener, self).__init__()
-        self.wall = wall
-        self.base_url = base_url
-
-    def on_connect(self):
-        _logger.info('StreamListener Connect to Twitter API for wall: %s', self.wall.name)
+    def on_data(self, tweet):
+        if 'delete' not in tweet:
+            tweet = loads(tweet)
+            self.tc.temp(tweet)
+            url = "%s/%s/%s/%s" % (self._context.get('base_url'), 'twitter_wall/consume', self.id, tweet['id'])
+            urlopen(Request(url, '{}', {'Content-Type': 'application/json'}))
         return True
 
-    def on_data(self, data):
-        if 'delete' not in data:
-            tweet = json.loads(data)
-            params = {
-                'params': tweet
-            }
-            url = "%s/%s" % (self.base_url, 'twitter_wall/push_tweet')
-            req = Request(url, json.dumps(params), {'Content-Type': 'application/json'})
-            response = urlopen(req)
-        return True
 
-    def on_status(self, status):
-        return
+class StreamAgent(models.Model):
+    _name = "stream.agent"
 
-    def on_error(self, status):
-        raise osv.except_osv(_('Error!'), _('StreamListener has error :%s.') % (status))
-        return False
+    name = fields.Char('Name')
+    twitter_access_token = fields.Char('Twitter Access Token Key')
+    twitter_access_token_secret = fields.Char('Twitter Access Token Secret')
+    auth_user = fields.Char('Authenticated User Id')
+    stream_id = fields.Many2one('twitter.stream', 'Stream Id')
+    tweet_ids = fields.One2many('twitter.tweet', 'agent_id', 'Tweets')
 
-    def on_timeout(self):
-        return
+    # Override unlink method to restart streaming when deletion perform
+    @api.one
+    def unlink(self):
+        auth_user, stream = self.auth_user, self.stream_id
+        super(StreamAgent, self).unlink()
+        if auth_user:
+            stream.restart()
 
-    def on_disconnect(self, notice):
-        return False
+
+# Store tweet
+class TwitterTweet(models.Model):
+    _name = "twitter.tweet"
+
+    tweet_id = fields.Char('Tweet Id', size=256)
+    html_description = fields.Html('Tweet')
+    agent_id = fields.Many2one('stream.agent', 'Agent Id')
+    comment = fields.Html("Comment on Tweet", default="<br/>")
+
+    @api.model
+    def _process_tweet(self, obj, tweet):
+        card_url = "https://api.twitter.com/1/statuses/oembed.json?id=%s&omit_script=true" % (tweet.get('id'))
+        cardtweet = loads(urlopen(Request(card_url, None, {'Content-Type': 'application/json'})).read())
+        self.create({
+            'html_description': cardtweet.get('html', False),
+            'tweet_id': tweet.get('id'),
+            'agent_id': obj.id
+        })

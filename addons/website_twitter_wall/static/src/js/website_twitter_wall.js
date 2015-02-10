@@ -2,7 +2,7 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
     $("timeago.timeago").timeago();
     if($("div[name='tweets_for_client']").length) {
-        var twitter_wall = new openerp.website.tweet_wall($("#tweet_wall_div"), parseInt($("[wall_id]").attr("wall_id")));
+        var twitter_wall = new openerp.website.tweet_wall($("#tweet_wall_div"), parseInt($("#tweet_wall_div").attr("wall_id")));
         twitter_wall.start();
     }
 });
@@ -12,7 +12,7 @@ openerp.website.tweet_wall = openerp.Class.extend({
     template: 'twitter_tweets',
     init: function($el, wall_id, interval_time) {
         this.$el = $el;
-        this.interval_time = interval_time || 5000;
+        this.interval_time = interval_time || 2000;
         this.wall_id = wall_id;
         this.show_tweet = [];
         this.last_tweet_id = 0;
