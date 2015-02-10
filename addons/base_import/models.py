@@ -134,6 +134,7 @@ class ir_import(orm.TransientModel):
         return fields
 
     def _read_import_file(self, record, options):
+        rows = []
         if record.file_type == 'text/csv':
             rows = self._read_csv(record, options)
         elif record.file_type == 'application/vnd.ms-excel' or record.file_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':

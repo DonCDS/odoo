@@ -227,7 +227,8 @@ class test_preview(TransactionCase):
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     'bar,3,4\n'
-                    'qux,5,6\n'
+                    'qux,5,6\n',
+            'file_type': 'text/csv'
         })
 
         result = Import.parse_preview(self.cr, self.uid, id, {
@@ -235,7 +236,6 @@ class test_preview(TransactionCase):
             'separator': ',',
             'headers': True,
         })
-
         self.assertEqual(result['matches'], {0: ['name'], 1: ['somevalue'], 2: None})
         self.assertEqual(result['headers'], ['name', 'Some Value', 'Counter'])
         # Order depends on iteration order of fields_get
@@ -264,7 +264,9 @@ class test_convert_import_data(TransactionCase):
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     'bar,3,4\n'
-                    'qux,5,6\n'
+                    'qux,5,6\n',
+            'file_type': 'text/csv'
+
         })
         record = Import.browse(self.cr, self.uid, id)
         data, fields = Import._convert_import_data(
@@ -288,7 +290,8 @@ class test_convert_import_data(TransactionCase):
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     'bar,3,4\n'
-                    'qux,5,6\n'
+                    'qux,5,6\n',
+            'file_type': 'text/csv'
         })
         record = Import.browse(self.cr, self.uid, id)
         data, fields = Import._convert_import_data(
@@ -312,7 +315,8 @@ class test_convert_import_data(TransactionCase):
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     ',3,\n'
-                    ',5,6\n'
+                    ',5,6\n',
+            'file_type': 'text/csv'
         })
         record = Import.browse(self.cr, self.uid, id)
         data, fields = Import._convert_import_data(
@@ -331,7 +335,9 @@ class test_convert_import_data(TransactionCase):
         id = Import.create(self.cr, self.uid, {
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
-                    'foo,1,2\n'
+                    'foo,1,2\n',
+            'file_type': 'text/csv'
+
         })
 
         record = Import.browse(self.cr, self.uid, id)
@@ -347,7 +353,8 @@ class test_convert_import_data(TransactionCase):
         id = Import.create(self.cr, self.uid, {
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
-                    'foo,1,2\n'
+                    'foo,1,2\n',
+            'file_type': 'text/csv'
         })
 
         record = Import.browse(self.cr, self.uid, id)
