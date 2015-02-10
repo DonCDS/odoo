@@ -69,6 +69,7 @@
             this.dialog.on("planner_progress_changed", this, function(percent){
                 self.update_parent_progress_bar(percent);
             });
+            $('#PlannerModal').remove();
             this.dialog.appendTo(document.body);
         },
         // event
