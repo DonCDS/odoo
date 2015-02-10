@@ -1005,6 +1005,28 @@ take the following attributes:
   between 0 and 100
 ``default_group_by``
   name of a field to group tasks by
+``consolidation``
+  name of a field to consolidate (the value will be added on the parent level)
+``consolidation_max``
+  dictionary of integer. The key is a group_by, the value is a maximum value.
+  If the maximum value is reached, the consolidation will be red.
+``consolidation_exclude``
+  name of a boolean field. If it's true, the record will be exclude of the
+  consolidation.
+``baseline``
+  dictionary of array. The key is a group_by. The array contains two names
+  of a field, the start date and the end date of the baseline.
+``fold_last_level``
+  boolean. If it's true, the last level of the chart will be folded.
+  default: false.
+``round_dnd_dates``
+  boolean. If it's true, the date will be rounded while drag and drop.
+  default: false.
+ 
+  
+ 
+ 
+  
 
 .. previously documented content which don't seem to be used anymore:
 

@@ -2,22 +2,29 @@
 
 <templates>
     <t t-name="GanttView">
-        <div class="oe_gantt">
+        <div t-attf-class="oe_gantt chart_id_{{widget.chart_id}}">
             <button class="btn btn-primary btn-sm oe_gantt_button_create">Create</button>
-            <div class="btn-group btn-sm" data-toggle="buttons">
+            <div t-attf-class="btn-group btn-sm" data-toggle="buttons">
                 <label class="btn btn-default btn-sm">
                     <input type="radio" name="scale" value="day" /> Day
                 </label>
                 <label class="btn btn-default btn-sm">
                     <input type="radio" name="scale" value="week" /> Week
                 </label>
-                <label class="btn btn-default btn-sm">
+                <label class="btn btn-default btn-sm active">
                     <input type="radio" name="scale" value="month" /> Month
                 </label>
                 <label class="btn btn-default btn-sm">
                     <input type="radio" name="scale" value="year" /> Year
                 </label>
             </div>
+	    <div class="dates pull-right">
+	      <div class="focus_date"/>
+	      <div class="btn-group btn-group-sm oe-pager-buttons">
+		<a class="fa fa-chevron-left btn btn-default oe-pager-button" data-pager-action="previous" type="button"></a>
+		<a class="fa fa-chevron-right btn btn-default oe-pager-button" data-pager-action="next" type="button"></a>
+	      </div>
+	    </div>
             <div t-att-id="widget.chart_id" class="oe_gantt_view"/>
         </div>
     </t>

@@ -1,0 +1,91 @@
+.openerp {
+    .oe_gantt {
+        .oe_gantt_view {
+            min-height: 250px;
+
+	    .gantt_task_line{
+		&.consolidation {
+		    &.has_child {
+			background-color: transparent;
+			height: 30px !important;
+			line-height: 30px !important;
+			border-radius: 0px;
+			border: none;
+			cursor: default;
+			pointer-events: none;
+			.gantt_task_drag {
+			    &.task_right, &.task_left {
+				display: none;
+			    }
+			}
+			.inside_task_bar {
+			    position: absolute;
+			    text-align: left;
+			    overflow: hidden;
+			    color: black;
+			    height: 100%;
+			    margin-top: -2px;
+			    &.exclude {
+				background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwb2x5Z29uIG9wYWNpdHk9Ii44IiBmaWxsPSIjRDEyMDI3IiBwb2ludHM9IjAsOCA4LDAgNiwwIC0yLDgiLz48cG9seWdvbiBvcGFjaXR5PSIuOCIgZmlsbD0iI0QxMjAyNyIgcG9pbnRzPSI1LDExIDEzLDMgMTEsMyAzLDExIi8+PC9zdmc+');
+			    }
+			}
+		    }
+		    &.is_leaf {
+			height: 20px !important;
+			line-height: 20px !important;
+			margin-top: 2px;
+			.gantt_task_content {
+			    color: black;
+			    overflow: visible;
+			    padding-left: 4px;
+			    text-align: left;
+			}
+		    }
+		    .half_opacity {
+			opacity: 0.5;
+			pointer-events: none;
+		    }
+		    .gantt_task_progress {
+			background: transparent;
+		    }
+		}
+		&.gantt_dependent_task {
+		    display: none;
+		}
+
+	    }
+	    .today {
+		background: #FAF989;
+	    }
+        }
+	.gantt_task_row {
+	    .gantt_task_cell {
+		cursor: cell;
+	    }
+	    &.level_0, &.level_0.odd{
+		background-color: rgb(242, 242, 242);
+	    }
+	    &.level_1, &.level_1.odd{
+		background-color: rgb(249, 249, 249);
+	    }
+	}
+        .oe_gantt_button_create {
+            margin-left: 7px;
+        }
+        .btn-group {
+            margin-left: 175px;
+        }
+    }
+    .dates {
+	display: inline-block;
+	margin-top: 5px;
+	
+	.focus_date {
+            display: inline-block;
+	}
+        .btn-group {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+    }
+}
