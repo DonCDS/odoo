@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Odoo, Open Source Management Solution
-#    Copyright (C) 2004-2014 OpenERP S.A. (<http://odoo.com>).
+#    Copyright (C) 2004-2014 Odoo S.A. (<http://odoo.com>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,8 +21,8 @@
 {
     'name': 'Password Encryption',
     'version': '2.0',
-    'author': ['OpenERP SA', 'FS3'],
-    'maintainer': 'OpenERP SA',
+    'author': ['Odoo SA', 'FS3'],
+    'maintainer': 'Odoo SA',
     'website': 'https://www.odoo.com',
     'category': 'Tools',
     'description': """
