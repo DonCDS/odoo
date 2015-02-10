@@ -271,6 +271,7 @@ class crm_phonecall_log_wizard(models.TransientModel):
                 sec = '%.2f' % sec
                 time = str(mins) + ":" + sec[-2:]
                 message = "Call " + time + " min(s)"
+                phonecall.duration = self.custom_duration
             else:
                 message = "Call " + self.duration + " min(s)"
             if(phonecall.description):
