@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     
+    <!-- Contract templates -->
+    <record id="contract_template_1" model="account.analytic.account">
+        <field name="type">template</field>
+        <field name="name">Mobile Plan 10</field>
+        <field name="plan_description">
+            <![CDATA[
+            <ul>
+                <li>120 min calls to all networks</li>
+                <li>250 SMS</li>
+                <li>500 Mb Data</li>
+            </ul>
+            ]]>
+        </field>
+        <field name="recurring_invoices">True</field>
+        <field name="recurring_interval">1</field>
+        <field name="recurring_rule_type">monthly</field>
+        <field name="description">
+            Payment
+            All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
+
+            Shipping Policies
+            Shipping will be paid for by the buyer in the amount agreed upon by the seller at the time of purchase. If an item is lost during shipping, the total cost of item, including shipping, will be refunded to the buyer by the seller. Shipping costs may double if shipping internationally. If an item is damaged during shipping, seller will not be held responsible.
+
+            Refund/Return Policy
+            Items are entitled to be refunded or returned based on complaint. If an item is damaged during shipping, a replacement item will be sent free of charge. If an item is unsatisfactory, a written explanation is needed before the item may be considered for a refund. Buyer must take into account the description of the item before requesting a refund. If the item matches the description by the seller and the buyer is unsatisfied, seller is not responsible for refund. Exchanges are granted on a case-by-case basis.
+
+            Cancellation
+            An item may be cancelled up until payment has been processed. Once payment has been processed, the buyer is responsible for payment.
+
+            Complaints
+            Any complaints about items or sellers may be sent to our support team: support@wesellyourstuff.com or (888) 555-0198. There is no guarantee of a resolution. Each case will be looked at individually, and the seller will be in contact as well.
+        </field>
+    </record>
+
+    <record id="contract_template_2" model="account.analytic.account">
+        <field name="type">template</field>
+        <field name="name">Mobile Plan 25</field>
+        <field name="plan_description">
+            <![CDATA[
+
+            <ul>
+                <li>180 min calls to all networks</li>
+                <li>Unlimited SMS</li>
+                <li>1 Gb Data</li>
+            </ul>
+            ]]>
+        </field>
+        <field name="recurring_invoices">True</field>
+        <field name="recurring_interval">1</field>
+        <field name="recurring_rule_type">monthly</field>
+        <field name="description">
+            Payment
+            All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
+
+            Shipping Policies
+            Shipping will be paid for by the buyer in the amount agreed upon by the seller at the time of purchase. If an item is lost during shipping, the total cost of item, including shipping, will be refunded to the buyer by the seller. Shipping costs may double if shipping internationally. If an item is damaged during shipping, seller will not be held responsible.
+
+            Refund/Return Policy
+            Items are entitled to be refunded or returned based on complaint. If an item is damaged during shipping, a replacement item will be sent free of charge. If an item is unsatisfactory, a written explanation is needed before the item may be considered for a refund. Buyer must take into account the description of the item before requesting a refund. If the item matches the description by the seller and the buyer is unsatisfied, seller is not responsible for refund. Exchanges are granted on a case-by-case basis.
+
+            Cancellation
+            An item may be cancelled up until payment has been processed. Once payment has been processed, the buyer is responsible for payment.
+
+            Complaints
+            Any complaints about items or sellers may be sent to our support team: support@wesellyourstuff.com or (888) 555-0198. There is no guarantee of a resolution. Each case will be looked at individually, and the seller will be in contact as well.
+        </field>
+    </record>
+
+    <record id="contract_template_3" model="account.analytic.account">
+        <field name="type">template</field>
+        <field name="name">Mobile Plan 50</field>
+        <field name="plan_description">
+            <![CDATA[<ul>
+                <li>300 min calls to all networks</li>
+                <li>Unlimited SMS</li>
+                <li>3 Gb Data</li>
+            </ul>
+            ]]>
+        </field>
+        <field name="recurring_invoices">True</field>
+        <field name="recurring_interval">1</field>
+        <field name="recurring_rule_type">monthly</field>
+        <field name="description">
+            Payment
+            All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
+
+            Shipping Policies
+            Shipping will be paid for by the buyer in the amount agreed upon by the seller at the time of purchase. If an item is lost during shipping, the total cost of item, including shipping, will be refunded to the buyer by the seller. Shipping costs may double if shipping internationally. If an item is damaged during shipping, seller will not be held responsible.
+
+            Refund/Return Policy
+            Items are entitled to be refunded or returned based on complaint. If an item is damaged during shipping, a replacement item will be sent free of charge. If an item is unsatisfactory, a written explanation is needed before the item may be considered for a refund. Buyer must take into account the description of the item before requesting a refund. If the item matches the description by the seller and the buyer is unsatisfied, seller is not responsible for refund. Exchanges are granted on a case-by-case basis.
+
+            Cancellation
+            An item may be cancelled up until payment has been processed. Once payment has been processed, the buyer is responsible for payment.
+
+            Complaints
+            Any complaints about items or sellers may be sent to our support team: support@wesellyourstuff.com or (888) 555-0198. There is no guarantee of a resolution. Each case will be looked at individually, and the seller will be in contact as well.
+        </field>
+    </record>
+
+    <!-- Demo Contract -->
+    <record id="contract_portal_1" model="account.analytic.account">
+        <field name="name">DPU/01</field>
+        <field name="partner_id" ref="portal.partner_demo_portal"/>
+        <field name="template_id" ref="contract_template_1"/>
+        <field name="manager_id" ref="base.user_root"/>
+        <field name="type">contract</field>
+        <field name="description">
+            Payment
+            All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.
+
+            Shipping Policies
+            Shipping will be paid for by the buyer in the amount agreed upon by the seller at the time of purchase. If an item is lost during shipping, the total cost of item, including shipping, will be refunded to the buyer by the seller. Shipping costs may double if shipping internationally. If an item is damaged during shipping, seller will not be held responsible.
+
+            Refund/Return Policy
+            Items are entitled to be refunded or returned based on complaint. If an item is damaged during shipping, a replacement item will be sent free of charge. If an item is unsatisfactory, a written explanation is needed before the item may be considered for a refund. Buyer must take into account the description of the item before requesting a refund. If the item matches the description by the seller and the buyer is unsatisfied, seller is not responsible for refund. Exchanges are granted on a case-by-case basis.
+
+            Cancellation
+            An item may be cancelled up until payment has been processed. Once payment has been processed, the buyer is responsible for payment.
+
+            Complaints
+            Any complaints about items or sellers may be sent to our support team: support@wesellyourstuff.com or (888) 555-0198. There is no guarantee of a resolution. Each case will be looked at individually, and the seller will be in contact as well.
+        </field>
+    </record>
+</odoo>
