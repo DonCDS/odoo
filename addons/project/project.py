@@ -90,18 +90,6 @@ class project(osv.osv):
         return self.pool.get('mail.alias').migrate_to_alias(cr, self._name, self._table, super(project, self)._auto_init,
             'project.task', self._columns['alias_id'], 'id', alias_prefix='project+', alias_defaults={'project_id':'id'}, context=alias_context)
 
-    def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
-        if user == 1:
-            return super(project, self).search(cr, user, args, offset=offset, limit=limit, order=order, context=context, count=count)
-        if context and context.get('user_preference'):
-                cr.execute("""SELECT project.id FROM project_project project
-                           LEFT JOIN account_analytic_account account ON account.id = project.analytic_account_id
-                           LEFT JOIN project_user_rel rel ON rel.project_id = project.id
-                           WHERE (account.user_id = %s or rel.uid = %s)"""%(user, user))
-                return [(r[0]) for r in cr.fetchall()]
-        return super(project, self).search(cr, user, args, offset=offset, limit=limit, order=order,
-            context=context, count=count)
-
     def onchange_partner_id(self, cr, uid, ids, part=False, context=None):
         partner_obj = self.pool.get('res.partner')
         val = {}
@@ -172,12 +160,6 @@ class project(osv.osv):
                     res[id]['total_hours'] += total
                     res[id]['effective_hours'] += effective
                 id = child_parent[id]
-        # compute progress rates
-        for id in ids:
-            if res[id]['total_hours']:
-                res[id]['progress_rate'] = round(100.0 * res[id]['effective_hours'] / res[id]['total_hours'], 2)
-            else:
-                res[id]['progress_rate'] = 0.0
         return res
 
     def unlink(self, cr, uid, ids, context=None):
@@ -311,11 +293,6 @@ class project(osv.osv):
                 'project.project': (_get_project_and_parents, ['tasks', 'parent_id', 'child_ids'], 10),
                 'project.task': (_get_projects_from_tasks, ['planned_hours', 'remaining_hours', 'work_ids', 'stage_id'], 20),
             }),
-        'progress_rate': fields.function(_progress_rate, multi="progress", string='Progress', type='float', group_operator="avg", help="Percent of tasks closed according to the total of tasks todo.",
-            store = {
-                'project.project': (_get_project_and_parents, ['tasks', 'parent_id', 'child_ids'], 10),
-                'project.task': (_get_projects_from_tasks, ['planned_hours', 'remaining_hours', 'work_ids', 'stage_id'], 20),
-            }),
         'resource_calendar_id': fields.many2one('resource.calendar', 'Working Time', help="Timetable working hours to adjust the gantt diagram report", states={'close':[('readonly',True)]} ),
         'type_ids': fields.many2many('project.task.type', 'project_task_type_rel', 'project_id', 'type_id', 'Tasks Stages', states={'close':[('readonly',True)], 'cancelled':[('readonly',True)]}),
         'task_count': fields.function(_task_count, type='integer', string="Tasks",),
@@ -390,18 +367,6 @@ class project(osv.osv):
 
     def set_template(self, cr, uid, ids, context=None):
         return self.setActive(cr, uid, ids, value=False, context=context)
-
-    def set_done(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'close'}, context=context)
-
-    def set_cancel(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'cancelled'}, context=context)
-
-    def set_pending(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'pending'}, context=context)
-
-    def set_open(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'open'}, context=context)
 
     def reset_project(self, cr, uid, ids, context=None):
         return self.setActive(cr, uid, ids, value=True, context=context)
@@ -654,28 +619,12 @@ class task(osv.osv):
 
     def _get_default_project_id(self, cr, uid, context=None):
         """ Gives default section by checking if present in the context """
-        return (self._resolve_project_id_from_context(cr, uid, context=context) or False)
+        return context.get('default_project_id')
 
     def _get_default_stage_id(self, cr, uid, context=None):
         """ Gives default stage_id """
         project_id = self._get_default_project_id(cr, uid, context=context)
         return self.stage_find(cr, uid, [], project_id, [('fold', '=', False)], context=context)
-
-    def _resolve_project_id_from_context(self, cr, uid, context=None):
-        """ Returns ID of project based on the value of 'default_project_id'
-            context key, or None if it cannot be resolved to a single
-            project.
-        """
-        if context is None:
-            context = {}
-        if type(context.get('default_project_id')) in (int, long):
-            return context['default_project_id']
-        if isinstance(context.get('default_project_id'), basestring):
-            project_name = context['default_project_id']
-            project_ids = self.pool.get('project.project').name_search(cr, uid, name=project_name, context=context)
-            if len(project_ids) == 1:
-                return project_ids[0][0]
-        return None
 
     def _read_group_stage_ids(self, cr, uid, ids, domain, read_group_order=None, access_rights_uid=None, context=None):
         stage_obj = self.pool.get('project.task.type')
@@ -684,7 +633,7 @@ class task(osv.osv):
         if read_group_order == 'stage_id desc':
             order = '%s desc' % order
         search_domain = []
-        project_id = self._resolve_project_id_from_context(cr, uid, context=context)
+        project_id = context.get('default_project_id')
         if project_id:
             search_domain += ['|', ('project_ids', '=', project_id), ('id', 'in', ids)]
         else:
@@ -701,7 +650,7 @@ class task(osv.osv):
 
     def _read_group_user_id(self, cr, uid, ids, domain, read_group_order=None, access_rights_uid=None, context=None):
         res_users = self.pool.get('res.users')
-        project_id = self._resolve_project_id_from_context(cr, uid, context=context)
+        project_id = context.get('default_project_id')
         access_rights_uid = access_rights_uid or uid
         if project_id:
             ids += self.pool.get('project.project').read(cr, access_rights_uid, project_id, ['members'], context=context)['members']
@@ -720,11 +669,6 @@ class task(osv.osv):
         'stage_id': _read_group_stage_ids,
         'user_id': _read_group_user_id,
     }
-
-    def _str_get(self, task, level=0, border='***', context=None):
-        return border+' '+(task.user_id and task.user_id.name.upper() or '')+(level and (': L'+str(level)) or '')+(' - %.1fh / %.1fh'%(task.effective_hours or 0.0,task.planned_hours))+' '+border+'\n'+ \
-            border[0]+' '+(task.name or '')+'\n'+ \
-            (task.description or '')+'\n\n'
 
     # Compute: effective_hours, total_hours, progress
     def _hours_get(self, cr, uid, ids, field_names, args, context=None):
@@ -803,7 +747,7 @@ class task(osv.osv):
         'sequence': fields.integer('Sequence', select=True, help="Gives the sequence order when displaying a list of tasks."),
         'stage_id': fields.many2one('project.task.type', 'Stage', track_visibility='onchange', select=True,
                         domain="[('project_ids', '=', project_id)]", copy=False),
-        'categ_ids': fields.many2many('project.category', string='Tags'),
+        'tag_ids': fields.many2many('project.tags', string='Tags'),
         'kanban_state': fields.selection([('normal', 'In Progress'),('done', 'Ready for next stage'),('blocked', 'Blocked')], 'Kanban State',
                                          track_visibility='onchange',
                                          help="A task's kanban state indicates special situations affecting it:\n"
@@ -1034,25 +978,6 @@ class task(osv.osv):
             }, context=context)
             delegated_tasks[task.id] = delegated_task_id
         return delegated_tasks
-
-    def set_remaining_time(self, cr, uid, ids, remaining_time=1.0, context=None):
-        for task in self.browse(cr, uid, ids, context=context):
-            if (task.stage_id and task.stage_id.sequence <= 1) or (task.planned_hours == 0.0):
-                self.write(cr, uid, [task.id], {'planned_hours': remaining_time}, context=context)
-        self.write(cr, uid, ids, {'remaining_hours': remaining_time}, context=context)
-        return True
-
-    def set_remaining_time_1(self, cr, uid, ids, context=None):
-        return self.set_remaining_time(cr, uid, ids, 1.0, context)
-
-    def set_remaining_time_2(self, cr, uid, ids, context=None):
-        return self.set_remaining_time(cr, uid, ids, 2.0, context)
-
-    def set_remaining_time_5(self, cr, uid, ids, context=None):
-        return self.set_remaining_time(cr, uid, ids, 5.0, context)
-
-    def set_remaining_time_10(self, cr, uid, ids, context=None):
-        return self.set_remaining_time(cr, uid, ids, 10.0, context)
 
     def _store_history(self, cr, uid, ids, context=None):
         for task in self.browse(cr, uid, ids, context=context):
@@ -1423,9 +1348,9 @@ class project_task_history_cumulative(osv.osv):
         )
         """)
 
-class project_category(osv.osv):
+class project_tags(osv.osv):
     """ Category of project's task (or issue) """
-    _name = "project.category"
+    _name = "project.tags"
     _description = "Category of project's task, issue, ..."
     _columns = {
         'name': fields.char('Name', required=True, translate=True),
