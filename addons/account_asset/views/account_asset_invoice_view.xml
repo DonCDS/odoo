@@ -2,14 +2,13 @@
 <openerp>
     <data>
 
-        <!-- Fiscal Year -->
         <record model="ir.ui.view" id="view_account_invoice_asset_form">
             <field name="name">account.invoice.line.form</field>
             <field name="model">account.invoice.line</field>
             <field name="inherit_id" ref="account.view_invoice_line_form"/>
             <field name="arch" type="xml">
                 <field name="account_id" position="after">
-                    <field name="asset_category_id"/>
+                    <field name="asset_category_id" domain="[('type','=','sale')]" string="Revenue Recognition Category"/>
                 </field>
             </field>
         </record>
@@ -20,7 +19,7 @@
             <field name="inherit_id" ref="account.invoice_supplier_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='invoice_line']/tree/field[@name='quantity']" position="before">
-                    <field name="asset_category_id"/>
+                    <field name="asset_category_id" domain="[('type','=','purchase')]" context="{'default_type':'purchase'}"/>
                 </xpath>
             </field>
         </record>

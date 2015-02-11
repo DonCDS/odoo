@@ -23,5 +23,5 @@
   I compute a asset on period.
 -
   !python {model: asset.depreciation.confirmation.wizard}: |
-    context = {"active_ids": [ref("menu_asset_depreciation_confirmation_wizard")], "active_id":ref('menu_asset_depreciation_confirmation_wizard')}
+    context = {"active_ids": [ref("menu_asset_depreciation_confirmation_wizard")], "active_id":ref('menu_asset_depreciation_confirmation_wizard'), 'type': 'sale'}
     self.asset_compute(cr, uid, [ref("asset_compute_period_0")], context=context)
