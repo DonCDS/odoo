@@ -3,7 +3,6 @@
 import re
 
 from openerp import models, fields, api, _
-from openerp import SUPERUSER_ID
 from openerp.addons.website.models.website import slug
 
 
@@ -78,14 +77,14 @@ class event(models.Model):
     def _get_show_menu(self):
         self.show_menu = bool(self.menu_id)
 
-    def google_map_img(self, cr, uid, ids, zoom=8, width=298, height=298, context=None):
-        event = self.browse(cr, uid, ids[0], context=context)
-        if event.address_id:
-            return self.browse(cr, SUPERUSER_ID, ids[0], context=context).address_id.google_map_img()
+    def google_map_img(self, zoom=8, width=298, height=298):
+        self.ensure_one()
+        if self.address_id:
+            return self.sudo().address_id.google_map_img()
         return None
 
-    def google_map_link(self, cr, uid, ids, zoom=8, context=None):
-        event = self.browse(cr, uid, ids[0], context=context)
-        if event.address_id:
-            return self.browse(cr, SUPERUSER_ID, ids[0], context=context).address_id.google_map_link()
+    def google_map_link(self, zoom=8):
+        self.ensure_one()
+        if self.address_id:
+            return self.sudo().address_id.google_map_link()
         return None
