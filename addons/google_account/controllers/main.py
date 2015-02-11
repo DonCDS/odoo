@@ -1,10 +1,11 @@
-import simplejson
-import urllib
 import openerp
 from openerp import http
 from openerp.http import request
 import openerp.addons.web.controllers.main as webmain
 from openerp.addons.web.http import SessionExpiredException
+
+import simplejson
+import urllib
 from werkzeug.exceptions import BadRequest
 import werkzeug.utils
 
