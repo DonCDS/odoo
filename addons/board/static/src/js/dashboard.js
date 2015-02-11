@@ -354,14 +354,26 @@ instance.web.search.FavoriteMenu.include({
     },
     add_dashboard: function () {
         var self = this,
-            view_manager = this.findAncestor(function (a) {
-                return a instanceof instance.web.ViewManager
+            control_panel = this.findAncestor(function (a) {
+                return a instanceof instance.web.ControlPanel;
             });
-        if (!view_manager.action) {
+        if (!control_panel) {
+            this.do_warn(_t("Can't find ancestor ControlPanel"));
+            return;
+        }
+
+        var action = control_panel.get_state().get_action(),
+            active_view = control_panel.get_state().get_active_view();
+        if (!action) {
             this.do_warn(_t("Can't find dashboard action"));
             return;
         }
-        var searchview = view_manager.get_searchview(),
+        if (!active_view) {
+            this.do_warn(_t("Can't find dashboard active_view"));
+            return;
+        }
+
+        var searchview = control_panel.get_searchview(),
             data = searchview.build_search_data(),
             context = new instance.web.CompoundContext(searchview.dataset.get_context() || []),
             domain = new instance.web.CompoundDomain(searchview.dataset.get_domain() || []);
@@ -371,7 +383,7 @@ instance.web.search.FavoriteMenu.include({
         context.add({
             group_by: instance.web.pyeval.eval('groupbys', data.groupbys || [])
         });
-        context.add(view_manager.active_view.controller.get_context());
+        context.add(active_view.controller.get_context());
         var c = instance.web.pyeval.eval('context', context);
         for(var k in c) {
             if (c.hasOwnProperty(k) && /^search_default_/.test(k)) {
@@ -388,10 +400,10 @@ instance.web.search.FavoriteMenu.include({
             .then(function (board_list) {
                 return self.rpc('/board/add_to_dashboard', {
                     menu_id: board_list[0].id,                    
-                    action_id: view_manager.action.id,
+                    action_id: action.id,
                     context_to_save: c,
                     domain: d,
-                    view_mode: view_manager.active_view.type,
+                    view_mode: active_view.type,
                     name: name,
                 });
             }).then(function (r) {

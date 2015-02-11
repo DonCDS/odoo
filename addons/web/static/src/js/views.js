@@ -18,6 +18,8 @@ var State = instance.web.Class.extend({
     disable: function() {},
     destroy: function() {},
     get_title: function() { return this.title; },
+    get_action: function() {},
+    get_active_view: function() {},
 });
 
 var WidgetState = State.extend({
@@ -38,6 +40,8 @@ var WidgetState = State.extend({
     },
     set_cp_content: function(content) { this.cp_content = content; },
     get_cp_content: function() { return this.cp_content; },
+    get_action: function() { return this.widget.action; },
+    get_active_view: function() { return this.widget.active_view; },
     destroy: function() { 
         if (this.cp_content && this.cp_content.searchview) {
             this.cp_content.searchview.destroy();
@@ -612,6 +616,8 @@ instance.web.ControlPanel = instance.web.Widget.extend({
     init: function(parent) {
         this._super(parent);
 
+        this.state = null;
+
         this.action_manager = parent; // Needed for breadcrumps (TODO: remove it)
         this.action = null;
         this.flags = null;
@@ -666,6 +672,8 @@ instance.web.ControlPanel = instance.web.Widget.extend({
             old_state.set_cp_content(old_content);
         }
 
+        this.state = state;
+
         this.action = state.widget.action;
         this.flags = state.widget.flags;
         this.active_view = state.widget.active_view;
@@ -709,6 +717,9 @@ instance.web.ControlPanel = instance.web.Widget.extend({
                 self.$('.oe-cp-switch-' + view.type).tooltip();
             });
         }
+    },
+    get_state: function() {
+        return this.state;
     },
     /**
      * Triggers an event when switch-buttons are clicked on
@@ -847,6 +858,12 @@ instance.web.ControlPanel = instance.web.Widget.extend({
             this.active_search.resolve();
         }
         return this.active_search;
+    },
+    /**
+     * Needed for dashboard.js to add Favorites to Dashboard
+     */
+    get_searchview: function() {
+        return this.searchview;
     },
     on_debug_changed: function (evt) {
         var self = this,
@@ -1119,12 +1136,6 @@ instance.web.ViewManager = instance.web.Widget.extend({
     },
     set_control_panel: function(control_panel) {
         this.control_panel = control_panel;
-    },
-    /**
-     * Needed for dashboard.js to add Favorites to Dashboard
-     */
-    get_searchview: function() {
-        if (this.control_panel) return this.control_panel.searchview;
     },
     get_default_view: function() {
         return this.flags.default_view || this.view_order[0].type;
