@@ -47,7 +47,7 @@
             }).then(function (mailing_list_id) {
                 self.$target.attr("data-list-id", mailing_list_id);
                 self.$target.find('#edit_dialog').click(function(){
-                    window.open('/website_mass_mailing/popup_content_designer/'+ mailing_list_id + '?enable_editor=1', '_blank')
+                    window.location = '/web#id='+ mailing_list_id + '&view_type=form&model=mail.mass_mailing.list'
                 });
             });
         },
@@ -69,7 +69,7 @@
             edit_dialog : function(e) {
                 var newsletter_id = $('#wrapwrap').find('.banner_popup').data('list-id')
                 if (newsletter_id) {
-                    window.open('/website_mass_mailing/popup_content_designer/'+ newsletter_id + '?enable_editor=1', '_blank')
+                    window.location = '/web#id='+ newsletter_id + '&view_type=form&model=mail.mass_mailing.list'
                 }
             },
         });
