@@ -96,7 +96,6 @@
                 'email': $email.length ? $email.val() : false
             }).then(function (subscribe) {
                 self.$target.find('#banner_popup').modal('hide');
-                document.cookie = "popup-banner-"+ self.$target.data('list-id') +"=" + true + ";path=/"
                 $(document).off('mouseleave');
                 if (self.redirect_url) {
                     if (_.contains(self.redirect_url.split('/'), window.location.host) || self.redirect_url.indexOf('/')== 0) {
@@ -109,17 +108,13 @@
         },
         show_banner: function() {
             var self = this;
-            if (!openerp.get_cookie("popup-banner-"+ self.$target.data('list-id')) && self.$target && !openerp.get_cookie("close-page-"+ window.location.pathname +'-' + self.$target.data('list-id'))) {
+            if (!openerp.get_cookie("popup-banner-"+ self.$target.data('list-id')) && self.$target) {
                $('#banner_popup:first').modal('show').css({
                     'margin-top': '70px',
                     'position': 'fixed'
                 });
+                 document.cookie = "popup-banner-"+ self.$target.data('list-id') +"=" + true + ";path=/"
             }
-
-            $('#banner_popup').on('hidden.bs.modal', function (e) {
-                $(document).off('mouseleave');
-                document.cookie = "close-page-"+ window.location.pathname +'-' + self.$target.data('list-id') +"=" + true + ";path=/"
-            })
         }
     });
 
