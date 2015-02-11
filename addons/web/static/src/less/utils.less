@@ -54,4 +54,24 @@
 // ------------------------------------------------------------------
 // Vendor prfixes
 // ------------------------------------------------------------------
-// flex
+// Flex
+.o-flex-display() {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.o-flex-direction(@direction) {
+    -ms-flex-direction: @direction;
+    -webkit-flex-direction: @direction;
+    flex-direction: @direction;
+}
+
+.o-flex(@flex-grow, @flex-schrink, @flex-basis) {
+    -webkit-box-flex: @flex-grow;
+    -webkit-flex: @flex-grow @flex-schrink @flex-basis;
+    -ms-flex: @flex-grow @flex-schrink @flex-basis;
+    flex: @flex-grow @flex-schrink @flex-basis;
+}
