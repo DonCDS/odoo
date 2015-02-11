@@ -15,6 +15,13 @@
             }
         });
 
+        $('.convert_to_comment').not('.karma_required').on('click', function(e) {
+            var reply = confirm("While converting answer to comment, it will remove all the HTML tags from it. As result you will loose all the HTML formatting from it. Are you sure ?");
+            if(!reply) {
+                e.preventDefault();
+            }
+        });
+
         $('.vote_up,.vote_down').not('.karma_required').on('click', function (ev) {
             ev.preventDefault();
             var $link = $(ev.currentTarget);

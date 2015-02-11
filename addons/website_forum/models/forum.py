@@ -489,7 +489,7 @@ class Post(models.Model):
         question = self.parent_id
         values = {
             'author_id': self.create_uid.partner_id.id,
-            'body': tools.html2plaintext(self.content),
+            'body': (tools.html2plaintext(self.content, keep_inline_style=False)).replace('\n', "<br/>"),
             'type': 'comment',
             'subtype': 'mail.mt_comment',
             'date': self.create_date,

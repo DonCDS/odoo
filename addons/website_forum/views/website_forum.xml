@@ -768,7 +768,7 @@
                         <t t-call="website_forum.link_button">
                             <t t-set="url" t-value="'/forum/' + slug(forum) + '/post/' + slug(answer) + '/convert_to_comment'"/>
                             <t t-set="label" t-value="'Convert as a comment'"/>
-                            <t t-set="classes" t-value="'fa-magic'"/>
+                            <t t-set="classes" t-value="'fa-magic convert_to_comment'"/>
                             <t t-set="karma" t-value="not answer.can_comment_convert and answer.karma_comment_convert or 0"/>
                         </t>
                     </li>
