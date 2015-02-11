@@ -319,16 +319,6 @@
                 });
         });
 
-        $(".post-comment").on('click', function (ev){
-            var $el = $(ev.target)
-            var $textarea = $el.siblings('input:text, textarea');
-            if ($textarea.val() == ''){
-                return false;
-            } else {
-                $el.button('loading');
-            }
-        });
-
         /* ----- KANBAN WEBSITE ---- */
         $('.js_kanban').each(function () {
             website.init_kanban(this);

@@ -301,7 +301,7 @@
                     <div class="media-body">
                         <input name="blog_post_id" t-att-value="blog_post.id" type="hidden"/>
                         <textarea rows="3" name="comment" class="form-control" placeholder="Write a comment..."></textarea>
-                        <button type="submit" class="btn btn-primary mt8">Post</button>
+                        <button type="submit" data-loading-text="Posting..."  onclick="$(this).button('loading')" class="btn btn-primary mt8">Post</button>
                     </div>
                 </div>
             </form>
