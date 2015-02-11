@@ -267,7 +267,6 @@
                         </div>
                         <notebook>
                             <page string="Popup Content">
-                                <button name="action_edit_popup_content" type="object" string="Design Popup Content" class="oe_highlight"/>
                                 <field name="popup_content"/>
                             </page>
                         </notebook>

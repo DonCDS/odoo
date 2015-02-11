@@ -148,17 +148,6 @@ class MassMailingList(osv.Model):
         'popup_content': _default_content,
     }
 
-    def action_edit_popup_content(self, cr, uid, ids, context=None):
-        if not len(ids) == 1:
-            raise ValueError('One and only one ID allowed for this action')
-        mail = self.browse(cr, uid, ids[0], context=context)
-
-        return {
-            'name': _('Open with Visual Editor'),
-            'type': 'ir.actions.act_url',
-            'url': '/website_mass_mailing/popup_content_designer/%s?enable_editor=1' % (ids[0]),
-            'target': 'self',
-        }
 
 class MassMailingStage(osv.Model):
     """Stage for mass mailing campaigns. """
