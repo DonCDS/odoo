@@ -82,6 +82,12 @@ instance.web.ActionManager = instance.web.Widget.extend({
         this.main_control_panel.on("switch_view", this, function(view_type) {
             this.inner_widget.trigger("switch_view", view_type);
         });
+        // Listen to event "on_breadcrumb_click" trigerred on the control panel when
+        // clicking on a part of the breadcrumbs. Call select_state for this breadcrumb.
+        this.main_control_panel.on("on_breadcrumb_click", this, function(state, index) {
+            this.select_state(state, index);
+        });
+
     },
     start: function() {
         this._super();
@@ -203,7 +209,6 @@ instance.web.ActionManager = instance.web.Widget.extend({
         if (state.__on_reverse_breadcrumb) {
             state.__on_reverse_breadcrumb();
         }
-
         // Set the control panel new state
         // Put in VMState?
         // Inform the ControlPanel that the current state changed
@@ -509,7 +514,7 @@ instance.web.ActionManager = instance.web.Widget.extend({
         var self = this;
         return this.ir_actions_common({
             widget: function () { 
-                return new instance.web.ViewManager(self, null, null, null, action);
+                return new instance.web.ViewManager(self, null, null, null, action, self.main_control_panel.get_bus());
             },
             action: action,
             klass: 'oe_act_window',
@@ -616,11 +621,15 @@ instance.web.ControlPanel = instance.web.Widget.extend({
     init: function(parent) {
         this._super(parent);
 
+        this.bus = new instance.web.Bus();
+        this.bus.on("setup_search_view", this, this.setup_search_view);
+        this.bus.on("update", this, this.update);
+        this.bus.on("update_breadcrumbs", this, this.update_breadcrumbs);
+
         this.state = null;
 
-        this.action_manager = parent; // Needed for breadcrumps (TODO: remove it)
-        this.action = null;
         this.flags = null;
+        this.dataset = null;
         this.active_view = null;
         this.views = null;
         this.title = null; // Needed for Favorites of searchview
@@ -649,13 +658,13 @@ instance.web.ControlPanel = instance.web.Widget.extend({
 
         return this._super();
     },
+    get_bus: function() {
+        return this.bus;
+    },
     // Sets the state of the controlpanel (in the case of a viewmanager, set_state must be
     // called before switch_mode for the controlpanel and the viewmanager to be synchronized)
     set_state: function(state, old_state) {
         var self = this;
-        // AAB: this will be removed later. Communication will be done through a dedicated bus
-        // instantiated by the ControlPanel and shared between every widget interacting with it
-        state.widget.set_control_panel(this);
 
         // Detach control panel elements in which sub-elements are inserted by other widgets
         var old_content = {
@@ -674,7 +683,6 @@ instance.web.ControlPanel = instance.web.Widget.extend({
 
         this.state = state;
 
-        this.action = state.widget.action;
         this.flags = state.widget.flags;
         this.active_view = state.widget.active_view;
         this.dataset = state.widget.dataset;
@@ -730,28 +738,29 @@ instance.web.ControlPanel = instance.web.Widget.extend({
     },
     /**
      * Updates its status according to the active_view
+     * @param {Object} [active_view] the current active view
+     * @param {Boolean} [search_view_hidden] true if the searchview is hidden, false otherwise
+     * @param {Array} [breadcrumbs] the breadcrumbs to display
      */
-    update: function(active_view) {
-        this.active_view = active_view;
+    update: function(active_view, search_view_hidden, breadcrumbs) {
+        this.active_view = active_view; // this.active_view only used for debug view
 
-        this.update_switch_buttons();
-        this.update_search_view();
-        this.update_breadcrumbs();
+        this.update_switch_buttons(active_view);
+        this.update_search_view(search_view_hidden);
+        this.update_breadcrumbs(breadcrumbs);
         this.render_debug_view();
     },
     /**
      * Removes active class on all switch-buttons and adds it to the one of the active view
      */
-    update_switch_buttons: function() {
+    update_switch_buttons: function(active_view) {
         _.each(this.$switch_buttons.contents('button'), function(button) {
             $(button).removeClass('active');
         });
-        this.$('.oe-cp-switch-' + this.active_view.type).addClass('active');
+        this.$('.oe-cp-switch-' + active_view.type).addClass('active');
     },
-    update_breadcrumbs: function () {
+    update_breadcrumbs: function (breadcrumbs) {
         var self = this;
-        if (!this.action_manager) return;
-        var breadcrumbs = this.action_manager.get_breadcrumbs();
 
         if (!breadcrumbs.length) return;
 
@@ -769,9 +778,7 @@ instance.web.ControlPanel = instance.web.Widget.extend({
                     .toggleClass('active', is_last);
             if (!is_last) {
                 $bc.click(function () {
-                    $.when(self.action_manager.select_state(bc.widget, bc.index)).done(function() {
-                        self.update_breadcrumbs();
-                    });
+                    self.trigger("on_breadcrumb_click", bc.widget, bc.index);
                 });
             }
             return $bc;
@@ -780,14 +787,16 @@ instance.web.ControlPanel = instance.web.Widget.extend({
     /**
      * Sets up the search view.
      *
+     * @param src the widget requesting a search_view
      * @returns {jQuery.Deferred} search view startup deferred
      */
-    setup_search_view: function() {
-        var view_id = (this.action && this.action.search_view_id && this.action.search_view_id[0]) || false;
+    setup_search_view: function(src, action) {
+        var self = this;
+        var view_id = (action && action.search_view_id && action.search_view_id[0]) || false;
 
         var search_defaults = {};
 
-        var context = this.action ? this.action.context : [];
+        var context = action ? action.context : [];
         _.each(context, function (value, key) {
             var match = /^search_default_(.*)$/.exec(key);
             if (match) {
@@ -799,71 +808,27 @@ instance.web.ControlPanel = instance.web.Widget.extend({
             hidden: this.flags.search_view === false,
             disable_custom_filters: this.flags.search_disable_custom_filters,
             $buttons: this.$searchview_buttons,
-            action: this.action,
+            action: action,
         };
         var SearchView = instance.web.SearchView;
         this.searchview = new SearchView(this, this.dataset, view_id, search_defaults, options);
-        this.searchview.on('search_data', this, this.search.bind(this));
-        this.search_view_loaded = this.searchview.appendTo(this.$searchview);
-        return this.search_view_loaded;
-    },
-    update_search_view: function() {
-        if (this.searchview) {
-            var is_hidden = this.active_view.controller.searchable === false; //AAB: correct view must be loaded here (this is OK)
-            this.searchview.toggle_visibility(!is_hidden);
-            this.$title_col.toggleClass('col-md-6', !is_hidden).toggleClass('col-md-12', is_hidden);
-            this.$search_col.toggle(!is_hidden);
-        }
-    },
-    /**
-     * Executed on event "search_data" thrown by the SearchView
-     */
-    search: function(domains, contexts, groupbys) {
-        var self = this,
-            controller = this.active_view.controller, // AAB: Correct view must be loaded here
-            action_context = this.action.context || {},
-            view_context = controller.get_context();
-        instance.web.pyeval.eval_domains_and_contexts({
-            domains: [this.action.domain || []].concat(domains || []),
-            contexts: [action_context, view_context].concat(contexts || []),
-            group_by_seq: groupbys || []
-        }).done(function (results) {
-            if (results.error) {
-                self.active_search.resolve();
-                throw new Error(
-                        _.str.sprintf(_t("Failed to evaluate search criterions")+": \n%s",
-                                      JSON.stringify(results.error)));
-            }
-            self.dataset._model = new instance.web.Model(
-                self.dataset.model, results.context, results.domain);
-            var groupby = results.group_by.length
-                        ? results.group_by
-                        : action_context.group_by;
-            if (_.isString(groupby)) {
-                groupby = [groupby];
-            }
-            $.when(controller.do_search(results.domain, results.context, groupby || [])).then(function() {
-                self.active_search.resolve();
-            });
+        var search_view_loaded = this.searchview.appendTo(this.$searchview);
+        $.when(search_view_loaded).then(function() {
+            src.set_search_view(self.searchview);
         });
-    },
-    activate_search: function(view_created_def, active_view) {
-        this.active_view = active_view; // active_view must be updated as search() will call do_search on it
-        this.active_search = $.Deferred();
-        if (this.searchview &&
-                this.flags.auto_search &&
-                this.active_view.controller.searchable !== false) {
-            $.when(this.search_view_loaded,view_created_def).done(this.searchview.do_search);
-        } else {
-            this.active_search.resolve();
-        }
-        return this.active_search;
     },
     /**
      * Needed for dashboard.js to add Favorites to Dashboard
      */
     get_searchview: function() {
         return this.searchview;
+    },
+    update_search_view: function(is_hidden) {
+        if (this.searchview) {
+            this.searchview.toggle_visibility(!is_hidden);
+            this.$title_col.toggleClass('col-md-6', !is_hidden).toggleClass('col-md-12', is_hidden);
+            this.$search_col.toggle(!is_hidden);
+        }
     },
     on_debug_changed: function (evt) {
         var self = this,
@@ -1032,8 +997,9 @@ instance.web.ViewManager = instance.web.Widget.extend({
      * @param {Object} [dataset] null object (... historical reasons)
      * @param {Array} [views] List of [view_id, view_type]
      * @param {Object} [flags] various boolean describing UI state
+     * @param {Object} [cp_bus] Bus to allow communication with ControlPanel
      */
-    init: function(parent, dataset, views, flags, action) {
+    init: function(parent, dataset, views, flags, action, cp_bus) {
         if (action) {
             flags = action.flags || {};
             if (!('auto_search' in flags)) {
@@ -1072,6 +1038,7 @@ instance.web.ViewManager = instance.web.Widget.extend({
         this.active_view = null;
         this.registry = instance.web.views;
         this.title = this.action && this.action.name;
+        this.cp_bus = cp_bus;
 
         _.each(views, function (view) {
             var view_type = view[1] || view.view_type,
@@ -1122,20 +1089,56 @@ instance.web.ViewManager = instance.web.Widget.extend({
 
         this.$el.addClass("oe_view_manager_" + ((this.action && this.action.target) || 'current'));
 
-        if (self.control_panel) {
-            // Tell the ControlPanel to setup its search view
-            var search_view_loaded = self.control_panel.setup_search_view();
+        // Tell the ControlPanel to setup its search view
+        if (this.cp_bus) {
+            this.search_view_loaded = $.Deferred();
+            this.cp_bus.trigger('setup_search_view', this, this.action);
+            $.when(this.search_view_loaded).then(function() {
+                self.searchview.on('search_data', self, self.search);
+            });
         }
-        else {
-            var search_view_loaded = $.Deferred().resolve();
-        }
-
-        self.main_view_loaded = self.switch_mode(default_view, null, default_options);
-
-        return $.when(self.main_view_loaded, search_view_loaded);
+        return $.when(this.search_view_loaded).then(function() {
+            return self.switch_mode(default_view, null, default_options);
+        });
     },
-    set_control_panel: function(control_panel) {
-        this.control_panel = control_panel;
+    /**
+     * Executed by the ControlPanel when the searchview requested by this ViewManager is loaded
+     */
+    set_search_view: function(searchview) {
+        this.searchview = searchview;
+        this.search_view_loaded.resolve();
+    },
+    /**
+     * Executed on event "search_data" thrown by the SearchView
+     */
+    search: function(domains, contexts, groupbys) {
+        var self = this,
+            controller = this.active_view.controller, // AAB: Correct view must be loaded here
+            action_context = this.action.context || {},
+            view_context = controller.get_context();
+        instance.web.pyeval.eval_domains_and_contexts({
+            domains: [this.action.domain || []].concat(domains || []),
+            contexts: [action_context, view_context].concat(contexts || []),
+            group_by_seq: groupbys || []
+        }).done(function (results) {
+            if (results.error) {
+                self.active_search.resolve();
+                throw new Error(
+                        _.str.sprintf(_t("Failed to evaluate search criterions")+": \n%s",
+                                      JSON.stringify(results.error)));
+            }
+            self.dataset._model = new instance.web.Model(
+                self.dataset.model, results.context, results.domain);
+            var groupby = results.group_by.length
+                        ? results.group_by
+                        : action_context.group_by;
+            if (_.isString(groupby)) {
+                groupby = [groupby];
+            }
+            $.when(controller.do_search(results.domain, results.context, groupby || [])).then(function() {
+                self.active_search.resolve();
+            });
+        });
     },
     get_default_view: function() {
         return this.flags.default_view || this.view_order[0].type;
@@ -1159,22 +1162,22 @@ instance.web.ViewManager = instance.web.Widget.extend({
             if (this.active_view.$container) this.active_view.$container.hide();
         }
         this.active_view = view;
-        // if (this.control_panel) this.control_panel.active_view = view;
 
         if (!view.created) {
             view.created = this.create_view.bind(this)(view, view_options);
         }
-        // Tell the ControlPanel to call do_search on its searchview
-        var active_search = $.Deferred();
-        if (this.control_panel) {
-            this.trigger("do_search", this, active_search);
-            active_search = this.control_panel.activate_search(view.created, this.active_view);
-        }
-        else {
-            active_search.resolve();
+
+        // Call do_search on the searchview
+        this.active_search = $.Deferred();
+        if (this.searchview &&
+                this.flags.auto_search &&
+                view.controller.searchable !== false) {
+            $.when(this.search_view_loaded, view.created).done(this.searchview.do_search);
+        } else {
+            this.active_search.resolve();
         }
 
-        return $.when(view.created, active_search).done(function () {
+        return $.when(view.created, this.active_search).done(function () {
             self._display_view(view_options);
             self.trigger('switch_mode', view_type, no_store, view_options);
         });
@@ -1184,7 +1187,11 @@ instance.web.ViewManager = instance.web.Widget.extend({
         this.active_view.$container.show();
         $.when(this.active_view.controller.do_show(view_options)).done(function () {
             // Tell the ControlPanel to update its elemnts
-            if (self.control_panel) self.control_panel.update(self.active_view);
+            if (self.cp_bus) {
+                var search_view_hidden = self.active_view.controller.searchable === false;
+                var breadcrumbs = self.action_manager.get_breadcrumbs()
+                self.cp_bus.trigger("update", self.active_view, search_view_hidden, breadcrumbs);
+            }
         });
     },
     create_view: function(view, view_options) {
@@ -1212,7 +1219,10 @@ instance.web.ViewManager = instance.web.Widget.extend({
             if (self.action_manager) self.action_manager.trigger('history_back');
         });
         controller.on("change:title", this, function() {
-            if (self.control_panel) self.control_panel.update_breadcrumbs();
+            if (self.cp_bus) {
+                var breadcrumbs = self.action_manager.get_breadcrumbs();
+                self.cp_bus.trigger("update_breadcrumbs", breadcrumbs);
+            }
         });
         controller.on('view_loaded', this, function () {
             view_loaded.resolve();
