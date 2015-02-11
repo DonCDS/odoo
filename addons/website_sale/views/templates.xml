@@ -412,7 +412,7 @@
 </template>
 
 <template id="variants">
-  <t t-set="attribute_value_ids" t-value="get_attribute_value_ids(product)"/>
+  <t t-set="attribute_value_ids" t-value="get_attribute_value_ids"/>
   <ul t-attf-class="list-unstyled js_add_cart_variants #{ul_class}" t-att-data-attribute_value_ids="attribute_value_ids">
     <t t-foreach="product.attribute_line_ids" t-as="variant_id">
       <li t-if="len(variant_id.value_ids) > 1">
@@ -707,6 +707,11 @@
                           </a>
                       </div>
                       <div class="text-muted" t-field="product.description_sale"/>
+                  </td>
+                  <td>
+                      <div class="pull-right">
+                          <t t-call="website_sale.variants"/>
+                      </div>
                   </td>
                   <td>
                       <t t-if="(compute_currency(product.lst_price) - product.price) &gt; 0.1">
