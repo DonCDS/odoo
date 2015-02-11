@@ -1,6 +1,6 @@
 from openerp.addons.web import http
 from openerp.addons.web.http import request
-from oauth import oauth
+from openerp.addons.website_twitter_wall.models.oauth import oauth
 from base64 import encodestring
 from urllib2 import Request, urlopen
 

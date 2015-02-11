@@ -1,4 +1,4 @@
-from json import loads, dumps
+from json import loads
 from thread import start_new_thread
 from urllib2 import urlopen, Request
 from base_stream import Stream, StreamListener
