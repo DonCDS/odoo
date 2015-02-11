@@ -1061,6 +1061,14 @@ define(['summernote/editing/Editor', 'summernote/summernote'], function (Editor)
             node = br;
         } else {
             node = dom.splitTree(last, {'node': r.sc, 'offset': r.so});
+            if(!$.trim($(node).text())) {
+                $(node).removeAttr('data-chatter-id')
+            } else {
+                var chatter_id = $(node).attr('data-chatter-id');
+                $("p[data-chatter-id='"+chatter_id+"']").removeAttr('data-chatter-id');
+                $(node).attr('data-chatter-id', chatter_id)
+            }
+
             if (!contentBefore) {
                 var cur = dom.node(dom.lastChild(node.previousSibling));
                 if (!dom.isBR(cur)) {
