@@ -26,7 +26,7 @@
         do_render: function(data) {
             var self = this;
             if ($('#discussions_wrapper').length === 0 && self.settings.content.length > 0) {
-                $('#blog_content').append($('<div id="discussions_wrapper"></div>'));
+                $('<div id="discussions_wrapper"></div>').insertAfter($('#blog_content'));
             }
             // Attach a discussion to each paragraph.
             self.discussions_handler(self.settings.content);
