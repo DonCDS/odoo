@@ -2,8 +2,8 @@
 <openerp>
     <data>
         <record id="twitter_stream" model="twitter.stream">
-            <field name="twitter_api_key">mQP4B4GIFo0bjGW4VB1wMxNJ3</field>
-            <field name="twitter_api_secret">XrRKiqONjENN55PMW8xxPx8XOL6eKitt53Ks8OS9oeEZD9aEBf</field>
+            <field name="twitter_api_key">NZHmp0a6LibvmfXAV7RhpirnQ</field>
+            <field name="twitter_api_secret">eBSK2skYQTrLFjVfAeeS6tGrUO4BaBC33Q2m6WqadeAG6gXi7Z</field>
             <field name="model">stream.agent</field>
         </record>
     </data>
