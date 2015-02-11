@@ -34,8 +34,8 @@ class TwitterStream(models.Model, StreamListener):
     agent_ids = fields.One2many('stream.agent', 'stream_id')
 
     # Start streaming on server start
-    def _auto_end(self, cr, context=None):
-        super(TwitterStream, self)._auto_end(cr, context)
+    def _register_hook(self, cr):
+        super(TwitterStream, self)._register_hook(cr)
         self.start(cr)
 
     # Start streaming
