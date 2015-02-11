@@ -14,7 +14,15 @@
             'click .install_new_apps': 'new_apps',
         },
         start:function(){
-            this.load();
+            var self = this;
+            openerp.jsonRpc('/web/dataset/call', 'call', {
+                model: 'ir.model.data',
+                method: 'xmlid_to_res_id',
+                args: ['base.view_users_form'],
+            }).then(function(res_id) {
+                self.user_form_id = res_id;
+                self.load();
+            });
         },
         load:function(){
             var self = this;
@@ -26,7 +34,9 @@
             });
         },
         new_apps:function(){
-            this.do_action('base.open_module_tree');
+            this.do_action('base.open_module_tree', { 
+                'additional_context': {'search_default_app':1,'search_default_not_installed':1}
+            });
         },
         do_reload:function(){
             this.$el.find('.col > div').children().remove();
@@ -43,13 +53,13 @@
         template: 'DashboardInvitations',
         events: {
             'click .send_invitations': 'send_invitations',
-            'click .access_rights': 'manage_access_rights',
             'click .optional_message_toggler': 'optional_message_toggler',
-            'click .resend_invitations': 'resend_invitations',
+            'click .user': 'on_user_clicked',
         },
         init: function(parent, data){
             this.data = data;
             this.parent = parent;
+            this.user_form_id = this.parent.user_form_id;
             return this._super.apply(this, arguments);
         },
         send_invitations:function(e){
@@ -80,16 +90,19 @@
             }
 
         },
-        resend_invitations:function(e){
-            var self = this;
-            $(e.currentTarget).find('i.fa-repeat').addClass('fa-spin');
-            openerp.jsonRpc("/dashboard/resend_invitation", 'call', {})
-            .then(function (data) {
-                self.parent.do_reload();
-            });
-        },
-        manage_access_rights:function(){
-            this.do_action('base.action_res_users');
+        on_user_clicked: function (event) {
+            // event.preventDefault();
+            var user_id = $(event.target).data('user-id');
+
+            var action = {
+                type:'ir.actions.act_window',
+                view_type: 'form',
+                view_mode: 'form',
+                res_model: 'res.users',
+                views: [[this.user_form_id, 'form']],
+                res_id: user_id,
+            }
+            this.do_action(action);
         },
         optional_message_toggler:function(){
             this.$el.find('.optional_message_toggler').remove();
@@ -101,7 +114,7 @@
     instance.web.dashboard.DashboardPlanner = openerp.planner.PlannerLauncher.extend({
         template: 'DashboardPlanner',
          events: {
-            'click .proress_title': 'setup',
+            'click .proress_title,.progress': 'setup',
         },
         init: function(parent, data){
             this.data = data;
@@ -197,7 +210,7 @@
                                 closeCallback();
                                 self.parent.show_loading("Checking in "+network+" servers");
                             }else{   
-                                self.do_warn(_t("Please share!! We Know you haven't shared it"),"");
+                                self.do_warn(_t("Please share Odoo's awesomeness!"),"");
                                 $('.loader').addClass("hidden");
                             }
                         }

@@ -11,8 +11,7 @@
     .title{
         color: @secondary;
         font-size: 30px;
-        margin-top: 35px;
-        margin-bottom: 35px;
+        padding:20px;
     }
 
     .title i, a {
@@ -22,12 +21,17 @@
         margin-top: 16px;
     }
     .loader{
-        font-size: 15px;
+        font-size: 13px;
         margin-right: 10px;
-        margin-top: 10px;
+        position: absolute;
+        top: 6px;
+        right: 5px;
         padding: 5px;
         background: @bg-main;
         border-radius: 10px;
+    }
+    small, .small{
+        font-size: 11px;
     }
     .col {
         margin-bottom: 10px;
@@ -63,27 +67,34 @@
                 float: right !important;
             }
         }
-        .invitation-form{
-            text-align: left;
-            textarea{
-                width: 100%;
-                border:2px solid @bg-main;
-                &:focus{
-                    outline: 0 !important;
-                    border:2px solid @primary;
+        #invitations{
+            .invitation-form{
+                text-align: left;
+                textarea{
+                    width: 100%;
+                    border:2px solid @bg-main;
+                    &:focus{
+                        outline: 0 !important;
+                        border:2px solid @primary;
+                    }
                 }
             }
-        }
-        .send_invitations i{
-            color:#fff !important;
-        }
-        .send_invitations:focus{
-            outline: 0 !important;
-        }
-        .resend_invitations{
-            position: absolute;
-            right: 20px;
-            padding: 3px;
+            .user{
+                cursor: pointer;
+                &:hover{
+                    color:@primary;
+                }
+            }
+            .send_invitations i{
+                color:#fff !important;
+            }
+            .send_invitations:focus{
+                outline: 0 !important;
+            }
+            .optional_message_toggler{
+                font-size: 11px;
+                vertical-align: top;
+            }
         }
         .compact_subtitle{
             line-height: 10px;
@@ -94,6 +105,7 @@
             background-color: lighten(@secondary,20%);
             -webkit-box-shadow:none;
             box-shadow:none;
+            cursor: pointer;
             .progress-bar{
                 background-color: @primary;
                 -webkit-box-shadow:none;
