@@ -1622,7 +1622,11 @@ class XMLExport(ExportFormat, http.Controller):
         if record.id in self.seen_ids[model]:
             return self.seen_ids[model][record.id]
 
-        self.seen_ids[model][record.id] = xml_id = record._BaseModel__export_xml_id()
+        xml_id = record._BaseModel__export_xml_id()
+        start_no_xml_id = '__export__.'
+        if xml_id.startswith(start_no_xml_id):
+            xml_id = xml_id[len(start_no_xml_id):]+'_'+re.sub('[^a-zA-Z0-9-]', '_', record.name_get()[0][1])
+        self.seen_ids[model][record.id] = xml_id
 
         record_element = etree.Element('record', model=model, id=xml_id)
 
