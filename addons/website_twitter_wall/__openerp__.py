@@ -1,15 +1,22 @@
 {
     'name': 'Twitter Wall',
     'category': 'Website',
-    'summary': 'Show tweet',
+    'summary': 'Show Tweets',
     'version': '1.0',
     'description': """
-Display tweets from users wall
-=====================================
-You can create and display as multiple walls for your concurrent sessions, management of wall is as easy is working with Twitter, You can moderate tweets just by posting or re-tweeting from and twitter apps including mobile.
+Display Tweets from Wall
+========================
+
+ * Create wall
+ * Verify with your twitter account
+ * Make storify of your event
+ * Comment on your tweet
+ * Display live tweets in different kind of view with mode
+ * You can moderate tweets just by posting or re-tweeting from twitter and twitter apps including mobile.
 """,
     'author': 'Odoo SA',
     'depends': ['website'],
+    'website': 'https://www.odoo.com',
     'data': [
         'views/twitter_wall.xml',
         'security/ir.model.access.csv',

@@ -1,8 +1,8 @@
+from base64 import encodestring
+from urllib2 import Request, urlopen
 from openerp.addons.web import http
 from openerp.addons.web.http import request
 from openerp.addons.website_twitter_wall.models.oauth import oauth
-from base64 import encodestring
-from urllib2 import Request, urlopen
 
 
 class website_twitter_wall(http.Controller):
@@ -16,7 +16,6 @@ class website_twitter_wall(http.Controller):
             'name': name,
             'description': description,
             'website_published': True if publish == 'true' else False,
-            'website_id': request.website.id,
             'user_id': request.uid
         }
         if 'http' in image or 'https' in image:
@@ -38,13 +37,13 @@ class website_twitter_wall(http.Controller):
         }
         return request.website.render("website_twitter_wall.twitter_walls", values)
 
-    @http.route(['/twitter_wall/<model("stream.agent"):wall>'], type='http', auth="public", website=True)
+    @http.route(['/twitter_wall/<model("stream.agent"):wall>'], type='http', auth="user", website=True)
     def twitter_wall(self, wall):
         if not wall.twitter_access_token:
             return False
         return request.website.render("website_twitter_wall.twitter_wall", {'wall_id': wall.id})
 
-    @http.route('/twitter_wall/pull_tweet/<model("stream.agent"):wall>', type='json', auth="public", website=True)
+    @http.route('/twitter_wall/pull_tweet/<model("stream.agent"):wall>', type='json', auth="user", website=True)
     def pull_tweet(self, wall, last_tweet=None):
         tweet = False
         domain = [('agent_id', '=', wall.id)]
@@ -68,14 +67,13 @@ class website_twitter_wall(http.Controller):
         values = {
             'wall': wall,
             'tweets': tweets,
-            'pager': pager,
-            'is_public_user': request.env.user.id == request.website.user_id.id
+            'pager': pager
         }
         if page == 1:
             wall.write({'number_view': wall.number_view + 1})
         return request.website.render("website_twitter_wall.twitter_wall_story", values)
 
-    @http.route(['/twitter_wall/authenticate/<model("stream.agent"):wall>'], type='http', auth="public", website=True)
+    @http.route(['/twitter_wall/authenticate/<model("stream.agent"):wall>'], type='http', auth="user", website=True)
     def authenticate_twitter_wall(self, wall):
         auth = oauth(wall.stream_id.twitter_api_key, wall.stream_id.twitter_api_secret)
         callback_url = "%s/%s/%s" % (request.env['ir.config_parameter'].get_param('web.base.url'), "twitter_callback", wall.id)
@@ -101,7 +99,7 @@ class website_twitter_wall(http.Controller):
         return http.local_redirect('/twitter_walls')
 
     # Delete wall
-    @http.route(['/twitter_wall/<model("stream.agent"):wall>/delete'], type='http', auth="public", website=True)
+    @http.route(['/twitter_wall/delete/<model("stream.agent"):wall>'], type='http', auth="user", website=True)
     def delete_twitter_wall(self, wall):
         wall.unlink()
         return http.local_redirect("/twitter_walls")

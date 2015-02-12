@@ -12,11 +12,12 @@ class TwitterConsumer(http.Controller):
     tweets = {}
 
     def temp(self, tweet):
-        self.tweets[str(tweet['id'])] = tweet
+        self.tweets[tweet['id_str']] = tweet
 
     @http.route('/twitter_wall/consume/<model("twitter.stream"):stream>/<token>', type='json', auth='public')
     def consume(self, stream, token):
         tweet = self.tweets[token]
+        # If two or more wall with same twitter account are verify, than tweet is store into wall which is last create
         obj = stream.agent_ids.filtered(lambda o: o.auth_user == tweet['user']['id_str']).sorted(lambda r: r.create_date, reverse=True)
         if len(obj):
             request.env['twitter.tweet']._process_tweet(obj[0], tweet)
@@ -62,7 +63,7 @@ class TwitterStream(models.Model, StreamListener):
                     user_ids.append(agent['auth_user'])
             if user_ids:
                 self.streams_objs[self.id] = stream
-                start_new_thread(func, (stream, user_ids, ))
+                start_new_thread(func, (stream, user_ids))
             return True
 
     # Stop streaming
@@ -75,11 +76,12 @@ class TwitterStream(models.Model, StreamListener):
         self.stop()
         self.start()
 
+    # Call when tweet is come
     def on_data(self, tweet):
         if 'delete' not in tweet:
             tweet = loads(tweet)
             self.tc.temp(tweet)
-            url = "%s/%s/%s/%s" % (self._context.get('base_url'), 'twitter_wall/consume', self.id, tweet['id'])
+            url = "%s/%s/%s/%s" % (self._context.get('base_url'), 'twitter_wall/consume', self.id, tweet['id_str'])
             urlopen(Request(url, '{}', {'Content-Type': 'application/json'}))
         return True
 
@@ -87,7 +89,6 @@ class TwitterStream(models.Model, StreamListener):
 class StreamAgent(models.Model):
     _name = "stream.agent"
 
-    name = fields.Char('Name')
     twitter_access_token = fields.Char('Twitter Access Token Key')
     twitter_access_token_secret = fields.Char('Twitter Access Token Secret')
     auth_user = fields.Char('Authenticated User Id')
@@ -107,17 +108,17 @@ class StreamAgent(models.Model):
 class TwitterTweet(models.Model):
     _name = "twitter.tweet"
 
-    tweet_id = fields.Char('Tweet Id', size=256)
+    tweet_id = fields.Char('Tweet Id')
     html_description = fields.Html('Tweet')
-    agent_id = fields.Many2one('stream.agent', 'Agent Id')
     comment = fields.Html("Comment on Tweet", default="<br/>")
+    agent_id = fields.Many2one('stream.agent', 'Agent Id')
 
     @api.model
     def _process_tweet(self, obj, tweet):
         card_url = "https://api.twitter.com/1/statuses/oembed.json?id=%s&omit_script=true" % (tweet.get('id'))
         cardtweet = loads(urlopen(Request(card_url, None, {'Content-Type': 'application/json'})).read())
-        self.create({
-            'html_description': cardtweet.get('html', False),
+        return self.create({
             'tweet_id': tweet.get('id'),
+            'html_description': cardtweet.get('html', False),
             'agent_id': obj.id
         })

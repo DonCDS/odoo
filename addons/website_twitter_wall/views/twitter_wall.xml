@@ -16,7 +16,14 @@
             </xpath>
         </template>
 
-        <!-- Add js, less file for twitter -->
+        <!-- Add menuitem new twitter wall in content menu -->
+        <template id="content_new_twitter_wall" inherit_id="website.user_navbar">
+            <xpath expr="//ul[@id='oe_systray']/li/ul[@class='dropdown-menu oe_content_menu']" position="inside">
+                 <li><a href="#" data-action="new_twitter_wall">New Twitter Wall</a></li>
+            </xpath>
+        </template>
+
+        <!-- Assets for twitter wall -->
         <template id="assets_frontend" inherit_id="website.assets_frontend" name="Slide">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/website_twitter_wall/static/src/js/website_twitter_wall.js" />
@@ -49,7 +56,7 @@
                                     <t class="pull-right" t-call="website.publish_management">
                                         <t t-set="object" t-value="wall" />
                                         <t t-set="publish_edit" t-value="True" />
-                                        <li><a t-attf-href="/twitter_wall/#{wall.id}/delete">Delete</a></li>
+                                        <li><a t-attf-href="/twitter_wall/delete/#{wall.id}">Delete</a></li>
                                     </t>
                                 </div>
                             </div>
@@ -150,13 +157,6 @@
                     </nav>
                 </div>
             </t>
-        </template>
-
-        <!-- Add menuitem new twitter wall in content menu -->
-        <template id="content_new_twitter_wall" inherit_id="website.user_navbar">
-            <xpath expr="//ul[@id='oe_systray']/li/ul[@class='dropdown-menu oe_content_menu']" position="inside">
-                 <li><a href="#" data-action="new_twitter_wall">New Twitter Wall</a></li>
-            </xpath>
         </template>
 
     </data>

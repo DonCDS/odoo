@@ -1,4 +1,3 @@
-from json import loads
 from urllib2 import urlopen, Request, quote
 from base64 import standard_b64encode
 from random import randint
@@ -101,10 +100,3 @@ class oauth(object):
     def set_access_token(self, Oauth_Token, Oauth_Token_Secret):
         self.Oauth_Token = Oauth_Token
         self.Oauth_Token_Secret = Oauth_Token_Secret
-
-    def get_authorise_user_id(self):
-        url = "https://api.twitter.com/1.1/account/verify_credentials.json"
-        HEADER = self._generate_header(url, 'HMAC-SHA1', '1.0', method='GET')
-        HTTP_REQUEST = Request(url + '?' + HEADER)
-        request_response = urlopen(HTTP_REQUEST).read()
-        return loads(request_response)['id_str']

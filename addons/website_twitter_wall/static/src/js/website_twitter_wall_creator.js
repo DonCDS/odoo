@@ -81,7 +81,7 @@
                     'name': wall_name,
                     'image': image,
                     'description': wall_description,
-                    'publish': !self.$el.find(e.target).hasClass("draft"),
+                    'publish': !self.$el.find(e.target).hasClass("draft")
                 },
                 success: function(data) {
                     self.$el.modal('hide');
