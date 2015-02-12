@@ -291,6 +291,11 @@ class website_sale(http.Controller):
                 context=dict(context, mail_create_nosubscribe=True))
         return werkzeug.utils.redirect(request.httprequest.referrer + "#comments")
 
+    @http.route('/shop/product/get_categories/', type='json', auth="public", website=True)
+    def get_categories(self, query):
+        Category = request.env['product.public.category']
+        return Category.search_read([('name', 'ilike', query)], ['name'], limit=20, order="name asc")
+
     @http.route(['/shop/pricelist'], type='http', auth="public", website=True)
     def pricelist(self, promo, **post):
         cr, uid, context = request.cr, request.uid, request.context

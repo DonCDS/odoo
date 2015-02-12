@@ -179,6 +179,12 @@ class website_event(http.Controller):
 
         return request.website.render(page, values)
 
+    @http.route('/event/get_categories/', type='json', auth="public", website=True)
+    def get_categories(self, query):
+        category_obj = request.registry['event.type']
+        cr, uid, context = request.cr, request.uid, request.context
+        return category_obj.search_read(cr, uid, [('name', 'ilike', query)], ['name'], limit=20, order="name asc", context=context)
+
     @http.route(['/event/<model("event.event"):event>'], type='http', auth="public", website=True)
     def event(self, event, **post):
         if event.menu_id and event.menu_id.child_id:

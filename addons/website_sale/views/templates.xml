@@ -37,7 +37,7 @@
 
 <template id="search" name="Search hidden fields">
   <t t-call="website.search_bar">
-    <t t-set="category_model">product.public.category</t>
+    <t t-set="category_route">/shop/product/get_categories</t>
     <t t-set="redirect_url">/shop/category/%s?search=%s</t>
   </t>
 </template>

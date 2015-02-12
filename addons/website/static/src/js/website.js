@@ -328,20 +328,9 @@
             allowClear: true,
             placeholder: "Select Category",
             query: function (query) {
-                var model = this.element.data('model'),
-                    term =  query.term;
-                openerp.jsonRpc("/web/dataset/call_kw", 'call', {
-                    model: model,
-                    method: 'search_read',
-                    args: [],
-                    kwargs: {
-                        domain: [['name', 'ilike', term]],
-                        fields: ['name'],
-                        order: 'name asc',
-                        limit: 20,
-                        context: website.get_context()
-                    }
-                }).then(function(data){
+                var route = this.element.data('route'),
+                    term = query.term;
+                openerp.jsonRpc(route, 'call', {'query': term}).then(function(data){
                     var categories = {results: []};
                     _.each(data, function (obj) {
                         categories.results.push({id: obj.id, text: obj.name});
@@ -370,6 +359,11 @@
             redirect_url = $.param.querystring(redirect_url, query_string, 2);
 
             window.location = redirect_url;
+        }).parents('.js_search_bar').on('keypress', function(ev){
+            var key = ev.which;
+            if(key == 13){
+                $(this).find('.js_search_redirect').click();
+            }
         });
 
         setTimeout(function () {

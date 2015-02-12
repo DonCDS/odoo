@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-sm-5">
                     <t t-call="website.search_bar">
-                        <t t-set="category_model">event.type</t>
+                        <t t-set="category_route">/event/get_categories</t>
                         <t t-set="redirect_url">/event/category/%s?query=%s</t>
                     </t>
                 </div>
