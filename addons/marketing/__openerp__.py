@@ -4,7 +4,7 @@
     'name': 'Marketing',
     'version': '1.1',
     'depends': ['base', 'base_setup'],
-    'author': 'Odoo S.A.',
+    'author': 'Odoo SA',
     'category': 'Hidden/Dependency',
     'description': """
 Menu for Marketing.
