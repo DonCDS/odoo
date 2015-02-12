@@ -22,10 +22,9 @@
 from datetime import datetime, timedelta
 import time
 import logging
-
 import openerp
+from openerp import api, fields, models
 from openerp import SUPERUSER_ID
-from openerp.osv import fields, osv
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 _logger = logging.getLogger(__name__)
@@ -38,6 +37,7 @@ DATE_RANGE_FUNCTION = {
     False: lambda interval: timedelta(0),
 }
 
+
 def get_datetime(date_str):
     '''Return a datetime from a date string or a datetime string'''
     # complete date time if date_str contains only a date
@@ -46,84 +46,87 @@ def get_datetime(date_str):
     return datetime.strptime(date_str, DEFAULT_SERVER_DATETIME_FORMAT)
 
 
-class base_action_rule(osv.osv):
+class base_action_rule(models.Model):
     """ Base Action Rules """
 
     _name = 'base.action.rule'
     _description = 'Action Rules'
     _order = 'sequence'
 
-    _columns = {
-        'name':  fields.char('Rule Name', required=True),
-        'model_id': fields.many2one('ir.model', 'Related Document Model',
-            required=True, domain=[('osv_memory', '=', False)]),
-        'model': fields.related('model_id', 'model', type="char", string='Model'),
-        'create_date': fields.datetime('Create Date', readonly=1),
-        'active': fields.boolean('Active',
-            help="When unchecked, the rule is hidden and will not be executed."),
-        'sequence': fields.integer('Sequence',
-            help="Gives the sequence order when displaying a list of rules."),
-        'kind': fields.selection(
-            [('on_create', 'On Creation'),
-             ('on_write', 'On Update'),
-             ('on_create_or_write', 'On Creation & Update'),
-             ('on_time', 'Based on Timed Condition')],
-            string='When to Run'),
-        'trg_date_id': fields.many2one('ir.model.fields', string='Trigger Date',
-            help="When should the condition be triggered. If present, will be checked by the scheduler. If empty, will be checked at creation and update.",
-            domain="[('model_id', '=', model_id), ('ttype', 'in', ('date', 'datetime'))]"),
-        'trg_date_range': fields.integer('Delay after trigger date',
-            help="Delay after the trigger date." \
-            "You can put a negative number if you need a delay before the" \
-            "trigger date, like sending a reminder 15 minutes before a meeting."),
-        'trg_date_range_type': fields.selection([('minutes', 'Minutes'), ('hour', 'Hours'),
-                                ('day', 'Days'), ('month', 'Months')], 'Delay type'),
-        'trg_date_calendar_id': fields.many2one(
-            'resource.calendar', 'Use Calendar',
-            help='When calculating a day-based timed condition, it is possible to use a calendar to compute the date based on working days.',
-            ondelete='set null',
-        ),
-        'act_user_id': fields.many2one('res.users', 'Set Responsible'),
-        'act_followers': fields.many2many("res.partner", string="Add Followers"),
-        'server_action_ids': fields.many2many('ir.actions.server', string='Server Actions',
-            domain="[('model_id', '=', model_id)]",
-            help="Examples: email reminders, call object service, etc."),
-        'filter_pre_id': fields.many2one(
-            'ir.filters', string='Before Update Filter',
-            ondelete='restrict', domain="[('model_id', '=', model_id.model)]",
-            help="If present, this condition must be satisfied before the update of the record."),
-        'filter_pre_domain': fields.char(string='Before Update Domain', help="If present, this condition must be satisfied before the update of the record."),
-        'filter_id': fields.many2one(
-            'ir.filters', string='Filter',
-            ondelete='restrict', domain="[('model_id', '=', model_id.model)]",
-            help="If present, this condition must be satisfied before executing the action rule."),
-        'filter_domain': fields.char(string='Domain', help="If present, this condition must be satisfied before executing the action rule."),
-        'last_run': fields.datetime('Last Run', readonly=1, copy=False),
-    }
+    name = fields.Char('Rule Name', required=True)
+    model_id = fields.Many2one(
+        'ir.model', string='Related Document Model',
+        required=True, domain=[('osv_memory', '=', False)])
+    model = fields.Char(string='Model', related='model_id.model')
+    create_date = fields.Datetime(string='Create Date', readonly=True)
+    active = fields.Boolean(
+        'Active', default=True,
+        help="When unchecked, the rule is hidden and will not be executed.")
+    sequence = fields.Integer('Sequence', help="Gives the sequence order when displaying a list of rules.")
+    kind = fields.Selection([
+        ('on_create', 'On Creation'),
+        ('on_write', 'On Update'),
+        ('on_create_or_write', 'On Creation & Update'),
+        ('on_time', 'Based on Timed Condition')],
+        string='When to Run')
+    trg_date_id = fields.Many2one(
+        'ir.model.fields', string='Trigger Date',
+        help="When should the condition be triggered. If present, will be checked by the scheduler. If empty, will be checked at creation and update.",
+        domain="[('model_id', '=', model_id), ('ttype', 'in', ('date', 'datetime'))]")
+    trg_date_range = fields.Integer(
+        'Delay after trigger date',
+        help="Delay after the trigger date."
+        "You can put a negative number if you need as delay before the"
+        "trigger date, like sending a reminder 15 minutes before a meeting.")
+    trg_date_range_type = fields.Selection([
+        ('minutes', 'Minutes'), ('hour', 'Hours'),
+        ('day', 'Days'), ('month', 'Months')],
+        'Delay type', default='day')
+    trg_date_calendar_id = fields.Many2one(
+        'resource.calendar', string='Use Calendar',
+        help='When calculating a day-based timed condition, it is possible to use a calendar to compute the date based on working days.',
+        ondelete='set null')
+    act_user_id = fields.Many2one('res.users', string='Set Responsible')
+    act_followers = fields.Many2many("res.partner", string="Add Followers")
+    server_action_ids = fields.Many2many(
+        'ir.actions.server', string='Server Actions',
+        domain="[('model_id', '=', model_id)]",
+        help="Examples: email reminders, call object service, etc.")
+    filter_pre_id = fields.Many2one(
+        'ir.filters', string='Before Update Filter',
+        ondelete='restrict', domain="[('model_id', '=', model_id.model)]",
+        help="If present, this condition must be satisfied before the update of the record.")
+    filter_pre_domain = fields.Char(string='Before Update Domain', help="If present, this condition must be satisfied before the update of the record.")
+    filter_id = fields.Many2one(
+        'ir.filters', string='Filter',
+        ondelete='restrict', domain="[('model_id', '=', model_id.model)]",
+        help="If present, this condition must be satisfied before executing the action rule.")
+    filter_domain = fields.Char(string='Domain', help="If present, this condition must be satisfied before executing the action rule.")
+    last_run = fields.Datetime(string='Last Run', readonly=True, copy=False)
 
-    _defaults = {
-        'active': True,
-        'trg_date_range_type': 'day',
-    }
+    @api.onchange('kind')
+    def _onchange_kind(self):
+        if self.kind in ['on_create', 'on_create_or_write']:
+            self.filter_pre_id = False
+            self.trg_date_id = False
+            self.trg_date_range = False
+            self.trg_date_range_type = False
+        elif self.kind in ['on_write', 'on_create_or_write']:
+            self.trg_date_id = False
+            self.trg_date_range = False
+            self.trg_date_range_type = False
+        elif self.kind == 'on_time':
+            self.filter_pre_id = False
 
-    def onchange_kind(self, cr, uid, ids, kind, context=None):
-        clear_fields = []
-        if kind in ['on_create', 'on_create_or_write']:
-            clear_fields = ['filter_pre_id', 'trg_date_id', 'trg_date_range', 'trg_date_range_type']
-        elif kind in ['on_write', 'on_create_or_write']:
-            clear_fields = ['trg_date_id', 'trg_date_range', 'trg_date_range_type']
-        elif kind == 'on_time':
-            clear_fields = ['filter_pre_id']
-        return {'value': dict.fromkeys(clear_fields, False)}
+    @api.onchange('filter_pre_id')
+    def _onchange_filter_pre_id(self):
+        self.filter_pre_domain = self.env['ir.filters'].browse(self.filter_pre_id.id).domain
 
-    def onchange_filter_pre_id(self, cr, uid, ids, filter_pre_id, context=None):
-        ir_filter = self.pool['ir.filters'].browse(cr, uid, filter_pre_id, context=context)
-        return {'value': {'filter_pre_domain': ir_filter.domain}}
+    @api.onchange('filter_id')
+    def _onchange_filter_id(self):
+        self.filter_domain = self.env['ir.filters'].browse(self.filter_id.id).domain
 
-    def onchange_filter_id(self, cr, uid, ids, filter_id, context=None):
-        ir_filter = self.pool['ir.filters'].browse(cr, uid, filter_id, context=context)
-        return {'value': {'filter_domain': ir_filter.domain}}
-
+    @api.v7
     def _filter(self, cr, uid, action, action_filter, record_ids, domain=False, context=None):
         """ Filter the list record_ids that satisfy the domain or the action filter. """
         if record_ids and (domain is not False or action_filter):
@@ -138,6 +141,7 @@ class base_action_rule(osv.osv):
             record_ids = self.pool[action.model].search(cr, uid, new_domain, context=ctx)
         return record_ids
 
+    @api.v7
     def _process(self, cr, uid, action, record_ids, context=None):
         """ process the given action on the records """
         model = self.pool[action.model_id.model]
@@ -164,6 +168,7 @@ class base_action_rule(osv.osv):
 
         return True
 
+    @api.v7
     def _register_hook(self, cr, ids=None):
         """ Wrap the methods `create` and `write` of the models specified by
             the rules given by `ids` (or all existing rules if `ids` is `None`.)
@@ -252,6 +257,7 @@ class base_action_rule(osv.osv):
 
         return updated
 
+    @api.v7
     def _update_cron(self, cr, uid, context=None):
         try:
             cron = self.pool['ir.model.data'].get_object(
@@ -261,6 +267,7 @@ class base_action_rule(osv.osv):
 
         return cron.toggle(model=self._name, domain=[('kind', '=', 'on_time')])
 
+    @api.v7
     def create(self, cr, uid, vals, context=None):
         res_id = super(base_action_rule, self).create(cr, uid, vals, context=context)
         if self._register_hook(cr, [res_id]):
@@ -268,6 +275,7 @@ class base_action_rule(osv.osv):
         self._update_cron(cr, uid, context=context)
         return res_id
 
+    @api.v7
     def write(self, cr, uid, ids, vals, context=None):
         if isinstance(ids, (int, long)):
             ids = [ids]
@@ -277,18 +285,20 @@ class base_action_rule(osv.osv):
         self._update_cron(cr, uid, context=context)
         return True
 
+    @api.v7
     def unlink(self, cr, uid, ids, context=None):
         res = super(base_action_rule, self).unlink(cr, uid, ids, context=context)
         self._update_cron(cr, uid, context=context)
         return res
 
-    def onchange_model_id(self, cr, uid, ids, model_id, context=None):
-        data = {'model': False, 'filter_pre_id': False, 'filter_id': False}
-        if model_id:
-            model = self.pool.get('ir.model').browse(cr, uid, model_id, context=context)
-            data.update({'model': model.model})
-        return {'value': data}
+    @api.onchange('model_id')
+    def _onchange_model_id(self):
+        if self.model_id:
+            self.model = self.env['ir.model'].browse(self.model_id.id).model
+        self.filter_pre_id = False
+        self.filter_id = False
 
+    @api.v7
     def _check_delay(self, cr, uid, action, record, record_dt, context=None):
         if action.trg_date_calendar_id and action.trg_date_range_type == 'day':
             start_dt = get_datetime(record_dt)
@@ -301,6 +311,7 @@ class base_action_rule(osv.osv):
             action_dt = get_datetime(record_dt) + delay
         return action_dt
 
+    @api.v7
     def _check(self, cr, uid, automatic=False, use_new_cursor=False, context=None):
         """ This Function is called by scheduler. """
         context = context or {}
