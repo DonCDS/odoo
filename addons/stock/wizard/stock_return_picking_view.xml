@@ -54,6 +54,10 @@
                             </tree>
                         </field>
                     </group>
+                    <group>
+                        <field name="location_id" string="Return Location" widget="selection"
+                            domain="[('usage','!=','view'),('return_location','=',True)]" groups="stock.group_locations"/>
+                    </group>
                     <footer>
                         <button name="create_returns" string="Return" type="object" class="oe_highlight"/>
                         or

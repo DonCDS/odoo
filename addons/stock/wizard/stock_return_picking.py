@@ -43,6 +43,7 @@ class stock_return_picking(osv.osv_memory):
     _columns = {
         'product_return_moves': fields.one2many('stock.return.picking.line', 'wizard_id', 'Moves'),
         'move_dest_exists': fields.boolean('Chained Move Exists', readonly=True, help="Technical field used to hide help tooltip if not needed"),
+        'location_id': fields.many2one('stock.location', 'Return Location', select=True),
     }
 
     def default_get(self, cr, uid, fields, context=None):
@@ -140,13 +141,12 @@ class stock_return_picking(osv.osv_memory):
                     'product_uos_qty': uom_obj._compute_qty(cr, uid, move.product_uom.id, new_qty, move.product_uos.id),
                     'picking_id': new_picking,
                     'state': 'draft',
-                    'location_id': move.location_dest_id.id,
+                    'location_id': self.browse(cr,uid,ids,context=context).location_id.id,
                     'location_dest_id': move.location_id.id,
                     'origin_returned_move_id': move.id,
                     'procure_method': 'make_to_stock',
                     'restrict_lot_id': data_get.lot_id.id,
                 })
-
         if not returned_lines:
             raise UserError(_("Please specify at least one non-zero quantity."))
 
