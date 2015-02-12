@@ -18,22 +18,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import openerp
 
-from openerp.osv import fields, osv
+from openerp import api, fields, models, _
 from openerp.tools.translate import _
 from openerp.exceptions import UserError
 
-class sale_configuration(osv.osv_memory):
+class sale_configuration(models.TransientModel):
     _inherit = 'sale.config.settings'
 
-    _columns = {
-        'group_template_required': fields.boolean("Mandatory use of templates.",
-            implied_group='account_analytic_analysis.group_template_required',
-            help="Allows you to set the template field as required when creating an analytic account or a contract."),
-        'time_unit': fields.many2one('product.uom', 'The default working time unit.'),
-    }
-
-    def default_get(self, cr, uid, fields, context=None):
+   
+    group_template_required = fields.Boolean(string="Mandatory use of templates.",
+        implied_group='account_analytic_analysis.group_template_required',
+        help="Allows you to set the template field as required when creating an analytic account or a contract.")
+    time_unit = fields.Many2one('product.uom', string='The default working time unit.')
+    
+    @api.model
+    def default_get(self):
         ir_model_data = self.pool.get('ir.model.data')
         res = super(sale_configuration, self).default_get(cr, uid, fields, context)
         if res.get('module_project'):
@@ -46,7 +47,8 @@ class sale_configuration(osv.osv_memory):
         res['timesheet'] = res.get('module_account_analytic_analysis')
         return res
 
-    def set_sale_defaults(self, cr, uid, ids, context=None):
+    @api.model
+    def set_sale_defaults(self):
         ir_model_data = self.pool.get('ir.model.data')
         wizard = self.browse(cr, uid, ids)[0]
 
