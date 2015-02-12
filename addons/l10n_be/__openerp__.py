@@ -62,7 +62,7 @@ Wizards provided by this module:
     ],
     'data': [
         'account_chart_template.xml',
-        #'account_financial_report.xml',
+        'account_financial_report.xml',
         'account_pcmn_belgium.xml',
         'account_tax_template.xml',
         #'wizard/l10n_be_account_vat_declaration_view.xml',
@@ -83,6 +83,6 @@ Wizards provided by this module:
     'test': ['../account/test/account_invoice_state.yml',
              '../account/test/account_bank_statement.yml',
     ],
-    'installable': True,
+    'installable': False,
     'website': 'https://www.odoo.com/page/accounting',
 }
