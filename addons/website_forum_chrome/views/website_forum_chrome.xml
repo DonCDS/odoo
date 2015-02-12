@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Layout add nav and footer -->
+        <template id="header_chrome_plugin" inherit_id="website_forum.header"
+            name="Download Plugin">
+            <xpath expr="//div[@class='alert alert-success alert-dismissable']" position="after">
+                <a t-if="is_allow_chrome_extension" t-attf-href="/forum/#{ slug(forum) }/download_plugin" >Download Plugin</a>
+            </xpath>
+        </template>
+    </data>
+</openerp>

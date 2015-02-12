@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+    <t t-name="WebsiteForumChrome">
+        <div class="container-fluid">
+            <div class="row screens">
+                <div>
+                    <h3>Forum:</h3>
+                    <select>
+                        <option selected="true" disabled="true">Choose one forum</option>
+                        <option value="http://43735-master-5a1ea0.runbot7.odoo.com/forum/help-1/ask?post_type=link">Odoo Help Forum</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="checkbox" class="o_jump_page"/>Jump to the page
+                </div>
+                <div>
+                    <button class="o_submit_link">Submit</button>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
