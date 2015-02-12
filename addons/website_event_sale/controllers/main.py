@@ -19,12 +19,11 @@
 #
 ##############################################################################
 
-from openerp import SUPERUSER_ID
+from openerp import _
 from openerp.addons.web import http
 from openerp.addons.web.http import request
 from openerp.addons.website_event.controllers.main import website_event
 from openerp.addons.website_sale.controllers.main import get_pricelist
-from openerp.tools.translate import _
 
 
 class website_event(website_event):
@@ -48,24 +47,23 @@ class website_event(website_event):
             if len(items) < 2:
                 continue
             ticket_post[int(items[1])] = int(value)
-        tickets = request.registry['event.event.ticket'].browse(request.cr, request.uid, ticket_post.keys(), request.context)
+        tickets = request.env['event.event.ticket'].browse(ticket_post.keys())
         return [{'id': ticket.id, 'name': ticket.name, 'quantity': ticket_post[ticket.id], 'price': ticket.price} for ticket in tickets if ticket_post[ticket.id]]
 
     @http.route(['/event/<model("event.event"):event>/registration/confirm'], type='http', auth="public", methods=['POST'], website=True)
     def registration_confirm(self, event, **post):
-        cr, uid, context = request.cr, request.uid, request.context
         order = request.website.sale_get_order(force_create=1)
 
         registrations = self._process_registration_details(post)
         for registration in registrations:
-            ticket = request.registry['event.event.ticket'].browse(cr, SUPERUSER_ID, int(registration['ticket_id']), context=context)
+            ticket = request.env['event.event.ticket'].sudo().browse(int(registration['ticket_id']))
             order.with_context(event_ticket_id=ticket.id)._cart_update(product_id=ticket.product_id.id, add_qty=1, registration_data=[registration])
 
         return request.redirect("/shop/checkout")
 
     def _add_event(self, event_name="New Event", context={}, **kwargs):
         try:
-            dummy, res_id = request.registry.get('ir.model.data').get_object_reference(request.cr, request.uid, 'event_sale', 'product_product_event')
+            res_id = request.env.ref('event_sale.product_product_event').id
             context['default_event_ticket_ids'] = [[0, 0, {
                 'name': _('Subscription'),
                 'product_id': res_id,

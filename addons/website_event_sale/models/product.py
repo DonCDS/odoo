@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from openerp.osv import osv, fields
+from openerp import models, fields
 
 # defined for access rules
-class product(osv.osv):
+class product(models.Model):
     _inherit = 'product.product'
-    _columns = {
-        'event_ticket_ids': fields.one2many('event.event.ticket', 'product_id', 'Event Tickets'),
-    }
+
+    event_ticket_ids = fields.One2many('event.event.ticket', 'product_id', string='Event Tickets')
