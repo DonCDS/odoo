@@ -47,3 +47,8 @@
   margin-top: 6px;
   margin-right: 8px;
 }
+
+.oe_kanban_quick_create_margin {
+ margin-left: 180px !important;
+ margin-top: 25px !important;
+}
