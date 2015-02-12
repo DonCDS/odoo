@@ -297,7 +297,7 @@
                                         <p>During a meeting, a customer asks a manager for a few modifications to a project.
                                         </p>
                                         <p>Back at the office, the manager splits the customer's demands into several tasks and delegates them to several employees.</p>
-                                        <p>Each employee will have their own simple task, while the manageer will be able to follow the global advancement through the principal task.</p>
+                                        <p>Each employee will have their own simple task, while the manager will be able to follow the global advancement through the principal task.</p>
                                         <p>Tasks are the main mechanism in Odoo and are activated by default.</p>
                                     </div>
                                 </div>
@@ -411,7 +411,7 @@
                                     <td> Don't create a Project for each of your customers - this will be too complicated to manage properly.</td>
                                 </tr>
                                 <tr>
-                                    <td> Managing long projects that span over many months and/or need Timesheets</td>
+                                    <td> Managing long projects that span over many months and/or need Timesheets.</td>
                                     <td> For the same reason, don't create a Project based on weeks or time (example: Scrum).</td>
                                 </tr>
                                 <tr>
@@ -569,7 +569,7 @@
                                 <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe017;" /></div>
                                 <div class="col-sm-11 col-md-10">
                                     <p><strong>5. Set Priorities</strong><br/>
-                                        The <i class="fa fa-star"/> is used to indicate priority: in Kanban view, priority Tasks or Issues will be displayed on top.This is especially useful if you use a Scrum methodology to indicate the tasks for the week.Similarly to Status, you can change the meaning of the Star indicator from the Project Stages tab.
+                                        The <i class="fa fa-star"/> is used to indicate priority: in Kanban view, priority Tasks or Issues will be displayed on top. This is especially useful if you use a Scrum methodology to indicate the tasks for the week. Similarly to Status, you can change the meaning of the Star indicator from the Project Stages tab.
                                     </p>
                                 </div>
                             </div>
@@ -577,7 +577,7 @@
                                 <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe001;" /></div>
                                 <div class="col-sm-11 col-md-10">
                                     <p><strong>6. Have Clear Responsibilities</strong><br/>
-                                        The person assigned to a task is responsible for its progress and their avatar is displayed in Kanban view for quick reference.Of course, responsibility for a task can change depending on its stage.
+                                        The person assigned to a task is responsible for its progress and their avatar is displayed in Kanban view for quick reference. Of course, responsibility for a task can change depending on its stage.
                                     </p>
                                 </div>
                             </div>
@@ -633,8 +633,8 @@
                                     </div>
                                     <div class="panel-body">
                                         <li>For employees, the <a t-att-href="prepare_backend_url('hr_timesheet_sheet.ir_actions_server_timsheet_sheet', 'form', 'hr_timesheet_sheet')" target="_blank">Current Timesheet </a> view of the HR module is the main tool to check, modify and confirm Timesheets.</li><br/>
-                                        <li>Alternatively, Timesheets can be added directly from Tasks by activating <strong>'Log work activities on tasks'</strong> in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a></li><br/>
-                                        <li>Or, if you are using Issues, by activating 'Invoice working time on issues', also in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a></li>
+                                        <li>Alternatively, Timesheets can be added directly from Tasks by activating <strong>'Log work activities on tasks'</strong> in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a>.</li><br/>
+                                        <li>Or, if you are using Issues, by activating 'Invoice working time on issues', also in the <a t-att-href="prepare_backend_url('project.action_config_settings')" target="_blank">Project Settings</a>.</li>
                                     </div>
                                 </div>
                             </div>
@@ -686,14 +686,14 @@
                             <h3><strong>Invoice your customers</strong> (every month)</h3>
                             <div class="col-md-12 col-xs-12">
                                 If you work on a Time &amp; Material project, you'll probably want to extract a Timesheet of the tasks and issues to invoice directly to the customer. To do that:<br/>
-                                <li> Activate 'Allow invoicing based on timesheets' from the <a t-att-href="prepare_backend_url('hr.action_human_resources_configuration', 'form', 'hr')" target="_blank">Human Resources Settings</a></li>
+                                <li> Activate 'Allow invoicing based on timesheets' from the <a t-att-href="prepare_backend_url('hr.action_human_resources_configuration', 'form', 'hr')" target="_blank">Human Resources Settings</a>.</li>
                                 <li> This will add an Invoice Tasks menu in the Project module, that can be used to select the Timesheet to invoice.</li>
                             </div>
                         </div>
                         <div class="row">
                             <h3><strong>Analyze reports</strong> (every a year)</h3>
                             <div class="col-md-12 col-xs-12">
-                                <p>It's usually a good idea to take time to analyze your tasks and issues once a year.Here are some KPIs you should take a look at. Ask yourself 'How can they be improved?'</p>
+                                <p>It's usually a good idea to take time to analyze your tasks and issues once a year. Here are some KPIs you should take a look at. Ask yourself 'How can they be improved?'</p>
                                 <p><strong>For tasks:</strong>
                                 <li>What is the number of missed deadlines?</li>
                                 <li>What is the difference between initial time estimation and final time spent?</li></p>
@@ -856,35 +856,35 @@
                                 </li>
                                 <li class="row"><span>#1</span>
                                     <div class="col-xs-12 col-md-6">
-                                        <input type="text" id="input_element_user_prj1"/>
+                                        <input type="text" id="input_element_user_prj1" readonly="readonly"/>
                                     </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#2</span>
                                     <div class="col-xs-12 col-md-6">
-                                        <input type="text" id="input_element_user_prj2"/>
+                                        <input type="text" id="input_element_user_prj2" readonly="readonly"/>
                                     </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#3</span>
                                     <div class="col-xs-12 col-md-6">
-                                        <input type="text" id="input_element_user_prj3"/>
+                                        <input type="text" id="input_element_user_prj3" readonly="readonly"/>
                                     </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#4</span>
                                     <div class="col-xs-12 col-md-6">
-                                        <input type="text" id="input_element_user_prj4"/>
+                                        <input type="text" id="input_element_user_prj4" readonly="readonly"/>
                                     </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
                                 <li class="row">
                                     <span>#5</span>
                                     <div class="col-xs-12 col-md-6">
-                                        <input type="text" id="input_element_user_prj5"/>
+                                        <input type="text" id="input_element_user_prj5" readonly="readonly"/>
                                     </div>
                                     <div class="col-xs-12 col-md-6"><i class="fa fa-user"/></div>
                                 </li>
@@ -952,7 +952,7 @@
                             <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe04a;" /></div>
                             <div class="col-xs-12 col-md-10">
                                 <p>
-                                    <strong>Rely on the Chatter</strong><br/>
+                                    <strong>Rely on the chatter</strong><br/>
                                     Below every Task and Issue (or more generally, below every Document in Odoo) is an area called Chatter.
                                 </p>
                                 <p>It's for logging every change, event or message related to the Document.</p>
