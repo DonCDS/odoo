@@ -29,6 +29,7 @@
         'views/crm_voip_tip.xml',
         'views/res_config_view.xml',
         'views/res_partner_view.xml',
+        'views/crm_phonecall_to_phonecall_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

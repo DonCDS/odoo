@@ -33,22 +33,24 @@ class crm_phonecall(osv.osv):
     _inherit = ['mail.thread']
     
     _columns = {
+        'date_action_last': fields.datetime('Last Action', readonly=1),
+        'date_action_next': fields.datetime('Next Action', readonly=1),
         'create_date': fields.datetime('Creation Date' , readonly=True),
         'section_id': fields.many2one('crm.case.section', 'Sales Team', \
                         select=True, help='Sales team to which Case belongs to.'),
         'user_id': fields.many2one('res.users', 'Responsible'),
-        'partner_id': fields.many2one('res.partner', 'Contact',ondelete='cascade', track_visibility='onchange'),
+        'partner_id': fields.many2one('res.partner', 'Contact'),
         'company_id': fields.many2one('res.company', 'Company'),
         'description': fields.text('Description'),
         'state': fields.selection(
-            [('no_answer', 'Not Held'),
+            [('open', 'Confirmed'),
              ('cancel', 'Cancelled'),
-             ('to_do', 'To Do'),
+             ('pending', 'Pending'),
              ('done', 'Held')
              ], string='Status', readonly=True, track_visibility='onchange',
-            help='The status is set to To Do, when a case is created.\n'
+            help='The status is set to Confirmed, when a case is created.\n'
                  'When the call is over, the status is set to Held.\n'
-                 'If the call is not applicable anymore, the status can be set to Cancelled.'),
+                 'If the callis not applicable anymore, the status can be set to Cancelled.'),
         'email_from': fields.char('Email', size=128, help="These people will receive email."),
         'date_open': fields.datetime('Opened', readonly=True),
         # phonecall fields
@@ -61,14 +63,20 @@ class crm_phonecall(osv.osv):
         'partner_phone': fields.char('Phone'),
         'partner_mobile': fields.char('Mobile'),
         'priority': fields.selection([('0','Low'), ('1','Normal'), ('2','High')], 'Priority'),
+        'date_closed': fields.datetime('Closed', readonly=True),
         'date': fields.datetime('Date'),
-        'opportunity_id': fields.many2one ('crm.lead', 'Lead/Opportunity',ondelete='cascade', track_visibility='onchange'),
+        'opportunity_id': fields.many2one ('crm.lead', 'Lead/Opportunity'),
     }
+
+    def _get_default_state(self, cr, uid, context=None):
+        if context and context.get('default_state'):
+            return context.get('default_state')
+        return 'open'
 
     _defaults = {
         'date': fields.datetime.now,
         'priority': '1',
-        'state':  'to_do',
+        'state':  _get_default_state,
         'user_id': lambda self, cr, uid, ctx: uid,
         'active': 1
     }
@@ -83,6 +91,17 @@ class crm_phonecall(osv.osv):
             }
         return {'value': values}
 
+    def write(self, cr, uid, ids, values, context=None):
+        """ Override to add case management: open/close dates """
+        if values.get('state'):
+            if values.get('state') == 'done':
+                values['date_closed'] = fields.datetime.now()
+                self.compute_duration(cr, uid, ids, context=context)
+            elif values.get('state') == 'open':
+                values['date_open'] = fields.datetime.now()
+                values['duration'] = 0.0
+        return super(crm_phonecall, self).write(cr, uid, ids, values, context=context)
+
     def compute_duration(self, cr, uid, ids, context=None):
         for phonecall in self.browse(cr, uid, ids, context=context):
             if phonecall.duration <= 0:
@@ -92,7 +111,10 @@ class crm_phonecall(osv.osv):
         return True
 
     def schedule_another_phonecall(self, cr, uid, ids, schedule_time, call_summary, \
-                    user_id=False, section_id=False, categ_id=False, context=None):
+                    user_id=False, section_id=False, categ_id=False, action='schedule', context=None):
+        """
+        action :('schedule','Schedule a call'), ('log','Log a call')
+        """
         model_data = self.pool.get('ir.model.data')
         phonecall_dict = {}
         if not categ_id:
@@ -102,9 +124,6 @@ class crm_phonecall(osv.osv):
             except ValueError:
                 pass
         for call in self.browse(cr, uid, ids, context=context):
-            if(call.state != "done"):
-                call.state = "cancel"
-                call.in_queue = False
             if not section_id:
                 section_id = call.section_id and call.section_id.id or False
             if not user_id:
@@ -115,7 +134,7 @@ class crm_phonecall(osv.osv):
                     'name' : call_summary,
                     'user_id' : user_id or False,
                     'categ_id' : categ_id or False,
-                    'description' : False,
+                    'description' : call.description or False,
                     'date' : schedule_time,
                     'section_id' : section_id or False,
                     'partner_id': call.partner_id and call.partner_id.id or False,
@@ -125,6 +144,8 @@ class crm_phonecall(osv.osv):
                     'opportunity_id': call.opportunity_id and call.opportunity_id.id or False,
             }
             new_id = self.create(cr, uid, vals, context=context)
+            if action == 'log':
+                self.write(cr, uid, [new_id], {'state': 'done'}, context=context)
             phonecall_dict[call.id] = new_id
         return phonecall_dict
 
@@ -168,7 +189,6 @@ class crm_phonecall(osv.osv):
         Handle partner assignation during a lead conversion.
         if action is 'create', create new partner with contact and assign lead to new partner_id.
         otherwise assign lead to specified partner_id
-
         :param list ids: phonecalls ids to process
         :param string action: what has to be done regarding partners (create it, assign an existing one, or nothing)
         :param int partner_id: partner to assign if any
@@ -234,6 +254,7 @@ class crm_phonecall(osv.osv):
             vals = {
                 'partner_id': partner_id,
                 'opportunity_id': opportunity_id,
+                'state': 'done',
             }
             self.write(cr, uid, [call.id], vals, context=context)
             opportunity_dict[call.id] = opportunity_id
@@ -255,14 +276,12 @@ class crm_phonecall(osv.osv):
             'default_user_id': uid,
             'default_email_from': phonecall.email_from,
             'default_name': phonecall.name,
-            'default_opportunity_id': phonecall.opportunity_id.id,
         }
         return res
 
     def action_button_convert2opportunity(self, cr, uid, ids, context=None):
         """
         Convert a phonecall into an opp and then redirect to the opp view.
-
         :param list ids: list of calls ids to convert (typically contains a single id)
         :return dict: containing view information
         """

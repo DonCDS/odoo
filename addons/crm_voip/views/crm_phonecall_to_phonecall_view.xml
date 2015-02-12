@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="overide_phonecall_to_phonecall_view">
+            <field name="name">crm.phonecall2phonecall</field>
+            <field name="model">crm.phonecall2phonecall</field>
+            <field name="inherit_id" ref="crm.phonecall_to_phonecall_view"/>
+            <field eval="20" name="priority"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='action']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='date']" position="replace">
+                    <field name="date" string="Planned Date"/>
+                </xpath>
+                <xpath expr="//button[@string='Schedule Call']" position="replace">
+                    <button name="action_schedule" type="object" string="Schedule Call" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@string='Log Call']" position="replace">
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

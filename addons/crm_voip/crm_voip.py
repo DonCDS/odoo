@@ -22,6 +22,97 @@ class crm_phonecall(models.Model):
     in_queue = fields.Boolean('In Call Queue', default=True)
     sequence = fields.Integer('Sequence', select=True, help="Gives the sequence order when displaying a list of Phonecalls.")
     start_time = fields.Integer("Start time")
+    state = fields.Selection([
+        ('no_answer', 'Not Held'),
+        ('cancel', 'Cancelled'),
+        ('to_do', 'To Do'),
+        ('done', 'Held')
+        ], string='Status', readonly=True, track_visibility='onchange',
+        help='The status is set to To Do, when a case is created.\n'
+             'When the call is over, the status is set to Held.\n'
+             'If the call is not applicable anymore, the status can be set to Cancelled.')
+    opportunity_id = fields.Many2one('crm.lead', 'Lead/Opportunity', ondelete='cascade', track_visibility='onchange')
+
+    _defaults = {
+        'date': fields.Datetime.now(),
+        'priority': '1',
+        'state':  'to_do',
+        'user_id': lambda self, cr, uid, ctx: uid,
+        'active': 1
+    }
+
+    def write(self, cr, uid, ids, values, context=None):
+        return super(crm_phonecall, self).write(cr, uid, ids, values, context=context)
+
+    def schedule_another_phonecall(self, cr, uid, ids, schedule_time, call_summary,
+                                   user_id=False, section_id=False, categ_id=False, context=None):
+        model_data = self.pool.get('ir.model.data')
+        phonecall_dict = {}
+        if not categ_id:
+            try:
+                res_id = model_data._get_id(cr, uid, 'crm', 'categ_phone2')
+                categ_id = model_data.browse(cr, uid, res_id, context=context).res_id
+            except ValueError:
+                pass
+        for call in self.browse(cr, uid, ids, context=context):
+            if(call.state != "done"):
+                call.state = "cancel"
+                call.in_queue = False
+            if not section_id:
+                section_id = call.section_id and call.section_id.id or False
+            if not user_id:
+                user_id = call.user_id and call.user_id.id or False
+            if not schedule_time:
+                schedule_time = call.date
+            vals = {
+                'name': call_summary,
+                'user_id': user_id or False,
+                'categ_id': categ_id or False,
+                'description': False,
+                'date': schedule_time,
+                'section_id': section_id or False,
+                'partner_id': call.partner_id and call.partner_id.id or False,
+                'partner_phone': call.partner_phone,
+                'partner_mobile': call.partner_mobile,
+                'priority': call.priority,
+                'opportunity_id': call.opportunity_id and call.opportunity_id.id or False,
+            }
+            new_id = self.create(cr, uid, vals, context=context)
+            phonecall_dict[call.id] = new_id
+        return phonecall_dict
+
+    def convert_opportunity(self, cr, uid, ids, opportunity_summary=False, partner_id=False, planned_revenue=0.0, probability=0.0, context=None):
+        partner = self.pool.get('res.partner')
+        opportunity = self.pool.get('crm.lead')
+        opportunity_dict = {}
+        default_contact = False
+        for call in self.browse(cr, uid, ids, context=context):
+            if not partner_id:
+                partner_id = call.partner_id and call.partner_id.id or False
+            if partner_id:
+                address_id = partner.address_get(cr, uid, [partner_id])['default']
+                if address_id:
+                    default_contact = partner.browse(cr, uid, address_id, context=context)
+            opportunity_id = opportunity.create(cr, uid, {
+                'name': opportunity_summary or call.name,
+                'planned_revenue': planned_revenue,
+                'probability': probability,
+                'partner_id': partner_id or False,
+                'mobile': default_contact and default_contact.mobile,
+                'section_id': call.section_id and call.section_id.id or False,
+                'description': call.description or False,
+                'priority': call.priority,
+                'type': 'opportunity',
+                'phone': call.partner_phone or False,
+                'email_from': default_contact and default_contact.email,
+            })
+            vals = {
+                'partner_id': partner_id,
+                'opportunity_id': opportunity_id,
+            }
+            self.write(cr, uid, [call.id], vals, context=context)
+            opportunity_dict[call.id] = opportunity_id
+        return opportunity_dict
 
     @api.multi
     def init_call(self):
@@ -111,6 +202,8 @@ class crm_lead(models.Model):
 
     @api.multi
     def create_custom_call_center_call(self):
+        import pudb
+        pudb.set_trace()
         phonecall = self.env['crm.phonecall'].create({
             'name': self.name,
             'duration': 0,
@@ -363,3 +456,72 @@ class res_users(models.Model):
     sip_physicalPhone = fields.Char("Physical Phone's Number")
     sip_always_transfert = fields.Boolean("Always redirect to physical phone", default=False)
     sip_ring_number = fields.Integer("Number of ringing", default=6, help="The number of ringing before cancelling the call")
+
+
+class crm_phonecall_report(models.Model):
+    _inherit = "crm.phonecall.report"
+
+    state = fields.Selection([
+        ('no_answer', 'Not Held'),
+        ('cancel', 'Cancelled'),
+        ('to_do', 'To Do'),
+        ('done', 'Held')
+    ], 'Status', readonly=True)
+
+
+class crm_phonecall2phonecall(models.TransientModel):
+    _inherit = "crm.phonecall2phonecall"
+
+    date = fields.Datetime('Date', required=True)
+
+    def action_schedule(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        phonecall = self.pool.get('crm.phonecall')
+        phonecall_ids = context and context.get('active_ids') or []
+        for this in self.browse(cr, uid, ids, context=context):
+            phocall_ids = phonecall.schedule_another_phonecall(
+                cr, uid, phonecall_ids, this.date, this.name,
+                this.user_id and this.user_id.id or False,
+                this.section_id and this.section_id.id or False,
+                this.categ_id and this.categ_id.id or False,
+                context=context)
+        if self.pool.get('ir.model.data').search(cr,uid,[('module','=','crm_voip')],context=context):
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'reload_panel',
+            }
+        else:
+            return phonecall.redirect_phonecall_view(cr, uid, phocall_ids[phonecall_ids[0]], context=context)
+
+    def default_get(self, cr, uid, fields, context=None):
+        """
+        This function gets default values
+        
+        """
+        res = super(crm_phonecall2phonecall, self).default_get(cr, uid, fields, context=context)
+        record_id = context and context.get('active_id', False) or False
+        if record_id:
+            phonecall = self.pool.get('crm.phonecall').browse(cr, uid, record_id, context=context)
+
+            categ_id = False
+            data_obj = self.pool.get('ir.model.data')
+            try:
+                res_id = data_obj._get_id(cr, uid, 'crm', 'categ_phone2')
+                categ_id = data_obj.browse(cr, uid, res_id, context=context).res_id
+            except ValueError:
+                pass
+
+            if 'name' in fields:
+                res.update({'name': phonecall.name})
+            if 'user_id' in fields:
+                res.update({'user_id': phonecall.user_id and phonecall.user_id.id or False})
+            if 'date' in fields:
+                res.update({'date': False})
+            if 'section_id' in fields:
+                res.update({'section_id': phonecall.section_id and phonecall.section_id.id or False})
+            if 'categ_id' in fields:
+                res.update({'categ_id': categ_id})
+            if 'partner_id' in fields:
+                res.update({'partner_id': phonecall.partner_id and phonecall.partner_id.id or False})
+        return res
