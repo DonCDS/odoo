@@ -25,11 +25,11 @@ instance.web.Notification =  instance.web.Widget.extend({
         if (sticky) {
             opts.expires = false;
         }
-        html = "<strong>"+title+"</strong><p>"+text+"</p>"
+        html = "<b>"+title+"</b><p>"+text+"</p>"
         return this.$el.find('.top-right').notify({ 
                 closable: true,
                 message: { html: html},
-                fadeOut: {enabled: true, delay: 300000},
+                fadeOut: {enabled: false},
                 type: 'info',
             }).show();
     },
@@ -39,7 +39,7 @@ instance.web.Notification =  instance.web.Widget.extend({
         if (sticky) {
             opts.expires = false;
         }
-        html = "<strong class='fa fa-exclamation-triangle'>"+title+"</strong><p>"+text+"</p>"
+        html = "<i class='fa fa-exclamation-triangle' /><b>"+title+"</b><p>"+text+"</p>"
         return this.$el.find('.top-right').notify({ 
             closable: true,
             message: { html: html},
