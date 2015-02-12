@@ -9,7 +9,7 @@ class Dashboard(http.Controller):
         pending = users.filtered(lambda u:u.signup_valid)
         expired = users - pending
         return (pending, expired)
-        
+
     @http.route('/dashboard/info', type='json', auth='user')
     def get_info(self, **kw):
         installed_apps = request.env['ir.module.module'].search_count([('application','=', True),('state','in',['installed', 'to upgrade', 'to remove'])])
