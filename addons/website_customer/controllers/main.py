@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import openerp
-from openerp import SUPERUSER_ID
-from openerp.addons.web import http
+from openerp import http
 from openerp.addons.website.models.website import unslug
 from openerp.tools.translate import _
-from openerp.addons.web.http import request
+from openerp.http import request
 import werkzeug.urls
 
 
@@ -27,9 +26,9 @@ class WebsiteCustomer(http.Controller):
     ], type='http', auth="public", website=True)
     def customers(self, country_id=0, page=0, country_name='', tag_id=0, **post):
         cr, uid, context = request.cr, request.uid, request.context
-        country_obj = request.registry['res.country']
-        tag_obj = request.registry['res.partner.tag']
-        partner_obj = request.registry['res.partner']
+        country = request.env['res.country']
+        tag = request.env['res.partner.tag']
+        partner = request.env['res.partner'].sudo()
         partner_name = post.get('search', '')
 
         domain = [('website_published', '=', True), ('assigned_partner_id', '!=', False)]
@@ -45,23 +44,20 @@ class WebsiteCustomer(http.Controller):
             domain += [('tag_ids', 'in', tag_id)]
 
         # group by country, based on customers found with the search(domain)
-        countries = partner_obj.read_group(
-            cr, openerp.SUPERUSER_ID, domain, ["id", "country_id"],
-            groupby="country_id", orderby="country_id", context=request.context)
-        country_count = partner_obj.search(
-            cr, openerp.SUPERUSER_ID, domain, count=True, context=request.context)
+        countries = partner.read_group(domain, ["id", "country_id"],
+            groupby="country_id", orderby="country_id")
+        country_count = partner.search_count(domain)
 
         if country_id:
             domain += [('country_id', '=', country_id)]
+            curr_country = country.browse(country_id)
             if not any(x['country_id'][0] == country_id for x in countries):
-                country = country_obj.read(cr, uid, country_id, ['name'], context)
-                if country:
+                if curr_country:
                     countries.append({
                         'country_id_count': 0,
-                        'country_id': (country_id, country['name'])
+                        'country_id': (country_id, curr_country.name)
                     })
                 countries.sort(key=lambda d: d['country_id'][1])
-            curr_country = country_obj.browse(cr, uid, country_id, context)
 
         countries.insert(0, {
             'country_id_count': country_count,
@@ -69,7 +65,7 @@ class WebsiteCustomer(http.Controller):
         })
 
         # search customers to display
-        partner_count = partner_obj.search_count(cr, openerp.SUPERUSER_ID, domain, context=request.context)
+        partner_count = partner.search_count(domain)
 
         # pager
         url = '/customers'
@@ -80,17 +76,12 @@ class WebsiteCustomer(http.Controller):
             scope=7, url_args=post
         )
 
-        partner_ids = partner_obj.search(request.cr, openerp.SUPERUSER_ID, domain,
-                                         offset=pager['offset'], limit=self._references_per_page,
-                                         context=request.context)
-        google_map_partner_ids = ','.join(map(str, partner_ids))
-        partners = partner_obj.browse(request.cr, openerp.SUPERUSER_ID, partner_ids, request.context)
+        partners = partner.search(domain, offset=pager['offset'], limit=self._references_per_page)
+        google_map_partner_ids = ','.join(map(str, partners.ids))
 
-        tag_obj = request.registry['res.partner.tag']
-        tag_ids = tag_obj.search(cr, uid, [('website_published', '=', True), ('partner_ids', 'in', partner_ids)],
-                                 order='classname, name ASC', context=context)
-        tags = tag_obj.browse(cr, uid, tag_ids, context=context)
-        tag = tag_id and tag_obj.browse(cr, uid, tag_id, context=context) or False
+        tags = tag.search([('website_published', '=', True), ('partner_ids', 'in', partners.ids)],
+                                 order='classname, name ASC')
+        tag = tag.browse(tag_id)
 
         values = {
             'countries': countries,
@@ -111,7 +102,7 @@ class WebsiteCustomer(http.Controller):
     def partners_detail(self, partner_id, **post):
         _, partner_id = unslug(partner_id)
         if partner_id:
-            partner = request.registry['res.partner'].browse(request.cr, SUPERUSER_ID, partner_id, context=request.context)
+            partner = request.env['res.partner'].sudo().browse(partner_id)
             if partner.exists() and partner.website_published:
                 values = {}
                 values['main_object'] = values['partner'] = partner
