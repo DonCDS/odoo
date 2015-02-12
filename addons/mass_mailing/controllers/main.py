@@ -85,3 +85,10 @@ class MassMailController(http.Controller):
             'redirect_url': mass_mailing_list.popup_redirect_url
             })
         return data
+
+    @http.route(["/website_mass_mailing/popup_content_designer/<int:newsletter_id>"], type='http', auth="public", website=True)
+    def popup_designer(self, newsletter_id, **post):
+        values = {
+            'mailing_list': request.env['mail.mass_mailing.list'].sudo().browse(int(newsletter_id)),
+        }
+        return request.website.render('mass_mailing.popup_design', values)
