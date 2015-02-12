@@ -181,16 +181,13 @@
                     <h1>Welcome!</h1>
                     <p><i>Congratulations on taking the leap and deciding to build your own website!</i></p>
                     <p><i>
-                        Whether you're a beginner or a pro, we have everything you need to plan, create,
+                        Whether you're a beginner or a pro, we have everything you need to plan, create, 
                         publish and grow your site, blog or online store.</i></p>
                     <p><i>
-                        This Planner will help you to think about your website and provide tips and  ideas to
-                        inspire you. There are examples and explanations to guide you  through the process of
-                        creating a top-notch, high quality site that  meets all your needs.</i></p>
+                        This Planner will help you to think about your website and provide tips and ideas to inspire you. There are examples and explanations to guide you through the process of creating a top-notch, high quality site that meets all your needs.</i></p>
                     <p><i>
                         The whole process may take a few hours, some discussions with your colleagues and
-                        several cups of coffee to go through. But don't worry, you can return to this tool at
-                        any time.</i></p>
+                        several cups of coffee to go through. But don't worry, you can return to this tool at any time.</i></p>
                     <p class="last"><i>We wish you a fun time!</i></p>
                     <div class="row fabien">
                         <div class="col-xs-12">
@@ -209,8 +206,7 @@
                 <div id="planner_page2" class="planner-page">
                     <h1>Your objectives</h1>
                     <p class="text-muted">
-                        Being clear on why you're creating your site and your goals is an essential first step
-                        to ensure your content and structure meet  business objectives.
+                        Being clear on why you're creating your site and your goals is an essential first step to ensure your content and structure meet business objectives.
                     </p>
 
                     <div class="row">
@@ -241,10 +237,7 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="text-muted">Visitors might not be interested in your products or services when
-                        they come to your site. They could want to learn something, improve their life, grow
-                        their business, find out more about you, etc. What great content can you offer your
-                        visitors? Why should they stay on your website?
+                    <p class="text-muted">Visitors might not be interested in your products or services when they come to your site. They could want to learn something, improve their life, grow their business, find out more about you, etc. What great content can you offer your visitors? Why should they stay on your website?
                     </p>
 
                     <div class="row">
@@ -290,7 +283,8 @@
                                 <li class="header">
                                     <h5><strong>Find 3 websites that you like</strong> and write down what you like about them.</h5>
                                 </li>
-                                <li class="row"><span>#1</span>
+                                <li class="row">
+                                    <span>#1</span>
                                     <input class="col-xs-12 col-sm-4" id="input_element_stage_0" type="text" value="http://www.odoo.com/"/>
                                     <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_7" type="text" placeholder="ex: interesting contents, texts and articles"/>
                                 </li>
@@ -317,9 +311,7 @@
                     <div class="alert alert-info info_icon" role="alert">
                         <span class="fa fa-lightbulb-o fa-lg"/>
                         <p>
-                            After working on this step, you may want to go back and refine your objectives or
-                            modify your visitors interests. Those 3 first steps are essentialy linked, and the
-                            more time your spend on polishing them, the better your website will be!
+                            After working on this step, you may want to go back and refine your objectives or modify your visitors interests. Those 3 first steps are essentialy linked, and the more time your spend on polishing them, the better your website will be!
                         </p>
                     </div>
                 </div>
@@ -332,7 +324,7 @@
                             <div class="col-md-6 col-xs-12">
                                 <div class="panel panel-success">
                                     <div class="panel-heading">
-                                        <span class="panel-title"><span data-icon="&#xe016;"/><strong>  1. Choose your theme</strong></span>
+                                        <span class="panel-title"><span data-icon="&#xe016;"/><strong> 1. Choose your theme</strong></span>
                                     </div>
                                     <div class="panel-body">
                                         <p>Your theme selection will define:</p>
@@ -356,7 +348,7 @@
                                             <li>Special effects and animations</li>
                                             <li>Colors palette</li>
                                             <li>Fonts</li>
-                                            <a> Customize your theme</a>
+                                            <a>Customize your theme</a>
                                         </p>
                                     </div>
                                 </div>
@@ -402,9 +394,9 @@
                                 <span class="fa fa-credit-card fa-4x"></span>
                                 <h3><strong>e-Commerce</strong></h3>
                                 <p>Boost your online sales with sleek product pages.</p>
-                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_sale')" class="btn odoo_purple btn_install"
-                                    target="_blank"
-                                    ><span class="fa fa-arrow-circle-o-down"/> Install now</a>
+                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_sale')" class="btn odoo_purple btn_install" target="_blank">
+                                    <span class="fa fa-arrow-circle-o-down"/> Install now
+                                </a>
                             </div>
 
                             <div class="clearfix visible-xs-block mb2"></div>
@@ -425,9 +417,9 @@
                                 <span class="fa fa-rss fa-4x"></span>
                                 <h3><strong>Blogs</strong></h3>
                                 <p>Attract more leads with a winning content marketing strategy.</p>
-                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_blog')"
-                                    class="btn odoo_purple btn_install" target="_blank">
-                                    <span class="fa fa-arrow-circle-o-down"/> Install now</a>
+                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_blog')" class="btn odoo_purple btn_install" target="_blank">
+                                    <span class="fa fa-arrow-circle-o-down"/> Install now
+                                </a>
                             </div>
 
                             <div class="clearfix hidden-xs mb2"></div>
@@ -436,9 +428,9 @@
                                 <span class="fa fa-file-text-o fa-4x"></span>
                                 <h3><strong>Contact form</strong></h3>
                                 <p>Integrate a contact form that automatically creates leads.</p>
-                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_crm')"
-                                    class="btn odoo_purple btn_install" target="_blank">
-                                    <span class="fa fa-arrow-circle-o-down"/> Install now</a>
+                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_crm')" class="btn odoo_purple btn_install" target="_blank">
+                                    <span class="fa fa-arrow-circle-o-down"/> Install now
+                                </a>
                             </div>
 
                             <div class="clearfix visible-xs-block mb2"></div>
@@ -447,9 +439,9 @@
                                 <span class="fa fa-male fa-4x"></span>
                                 <h3><strong>Jobs</strong></h3>
                                 <p>Organize your job board and promote your job announces easily.</p>
-                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_hr_recruitment')"
-                                    class="btn odoo_purple btn_install" target="_blank">
-                                    <span class="fa fa-arrow-circle-o-down"/> Install now</a>
+                                <a t-att-href="prepare_backend_url('base.open_module_tree', 'form', 'website_hr_recruitment')" class="btn odoo_purple btn_install" target="_blank">
+                                    <span class="fa fa-arrow-circle-o-down"/> Install now
+                                </a>
                             </div>
                         </div>
                     </section>
@@ -458,9 +450,7 @@
                 <div id="planner_page6" class="planner-page">
                     <h1>Your homepage</h1>
                     <p class="text-muted">
-                        Your homepage is the most important page of you website. This is where visitors get their 
-                        first impressions of you. An excellent hompage will encourage them to stay on your site, 
-                        guide them towards your content, reinforce your company's branding and more.
+                        Your homepage is the most important page of you website. This is where visitors get their first impressions of you. An excellent hompage will encourage them to stay on your site, guide them towards your content, reinforce your company's branding and more.<br/>
                         Here are some pointers to help you get started.
                     </p>
                     <div class="container-fluid">
@@ -468,8 +458,8 @@
                             <h4>Example of Good Homepage <a data-toggle="collapse" data-parent="#accordion" href="#homepage"><i class="fa fa-question-circle"></i></a></h4>
                             <div id="homepage" class="col-md-12 panel-collapse collapse">
                                 <div style="height:300px;width:100%; overflow:auto">
-                                <img src="website_planner/static/src/img/clean.png"></img>
-                            </div>
+                                    <img src="website_planner/static/src/img/clean.png"></img>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -478,11 +468,8 @@
                             <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe087;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Find a catchy headline</strong><br/>
-                                    Make sure anyone who visits your site understands what it’s about without
-                                    having to do a lot of reading. To do that, the visible section of your
-                                    homepage (above the fold) needs to be simple and straightforward. For
-                                    exemple, use pictures of your work, screenshots of your app, a short and
-                                    catchy hook.
+                                    Make sure anyone who visits your site understands what it’s about without having to do a lot of reading.<br/>
+                                    To do that, the visible section of your homepage (above the fold) needs to be simple and straightforward. For example, use pictures of your work, screenshots of your app, a short and catchy hook.
                                 </p>
                                 <p>The Banner or Big Picture building blocks are good choices for that.</p>
                             </div>
@@ -491,7 +478,7 @@
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Encourage to action</strong><br/>
                                     Add  one, and only one, call-to-action on your homepage. Your homepage is
-                                    the page that gets the most visitors.
+                                    the page that gets the most visitors.<br/>
                                     It's good practice to try to engage with your visitors on the homepage:
                                     Contact Us, Subscribe to Get More Information, Check the Catalog, etc.
                                 </p>
@@ -531,9 +518,9 @@
                 <div id="planner_page7" class="planner-page">
                     <h1>Navigation menu</h1>
                     <p class="text-muted">
-                        Creating you navigation menu is an important and difficult stage in building your website.
-                        It needs to be organized, so that your visitors can see all the main content you offer at a glance.
-                        It needs to be clear, so that when they click on an item, they get the content they expected.
+                        Creating you navigation menu is an important and difficult stage in building your website.<br/>
+                        It needs to be organized, so that your visitors can see all the main content you offer at a glance.<br/>
+                        It needs to be clear, so that when they click on an item, they get the content they expected.<br/>
                         In fact, you need to build your navigation menu for your visitors and not for your own purposes or objectives.
                     </p>
                     <div class="container-fluid">
@@ -547,7 +534,7 @@
                                      </div>
                                      <div class="panel-body">
                                         <p>This is the best and simplest way to start: just create a few pages and link them directly from the main menu.</p>
-                                        <p>Also, try not to go over 6 items, otherwise your main menu will be difficult to use</p>
+                                        <p>Also, try not to go over 6 items, otherwise your main menu will be difficult to use.</p>
                                         <p>As you add more pages to your website, you main menu will begin to feel overcrowded.</p>
                                         <p>You can regroup similar pages into a sub-menu, so they will appear under a unique drop-down menu.</p>
                                     </div>
@@ -565,7 +552,8 @@
                                     <li class="header">
                                         <h5><strong>1. Your main menu items</strong> and 2. Your secondary menu items (optional):</h5>
                                     </li>
-                                    <li class="row"><span>#1</span>
+                                    <li class="row">
+                                        <span>#1</span>
                                         <input class="col-xs-12 col-sm-4" id="input_element_menu_0" type="text" placeholder="ex: About us"/>
                                         <textarea class="col-xs-12 col-sm-7 col-sm-offset-1" id="input_element_stage_7" type="text" placeholder="ex: Blog, Success stories, References, Events, Jobs"/>
                                     </li>
@@ -695,8 +683,8 @@
                                 <div class="well well-lg">
                                     <strong>How to get a custom domain name ?</strong><br/>
                                     <li>Find a good domain name (see tips on the right)</li>
-                                    <li><a>Check its availability</a> or see who currently owns it</li>
-                                    <li><a>Contact a Domain Manager</a> in your country to buy it</li>
+                                    <li><a t-att-href="prepare_backend_url('account.action_account_config')" target="_blank">Check its availability</a> or see who currently owns it</li>
+                                    <li><a t-att-href="prepare_backend_url('payment.action_payment_acquirer')" target="_blank">Contact a Domain Manager</a> in your country to buy it</li>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
@@ -713,7 +701,7 @@
                         </div>
                         <div class="well well-lg footer-well">
                             <strong>You have your domain name ?</strong><br/>
-                            <li>Then simply <a>Contact us</a> and we'll configure you website and/or email for you.</li>
+                            <li>Then simply <a href="mailto:info@odoo.com?subject=Website%20customer%20domain%20request">Contact us</a> and we'll configure you website and/or email for you.</li>
                             <li>Please note that you'll need an Odoo Standard or Business subscriptions for that</li>
                         </div>
                     </div>
@@ -744,7 +732,7 @@
                                 </p>
                                 <p>
                                     To get an external assessment of your website, you can also submit it to
-                                    peek.usertesting.com for a free evalution of the usability of your homepage.
+                                    <a href="http://peek.usertesting.com">peek.usertesting.com</a> for a free evalution of the usability of your homepage.
                                 </p>
                             </div>
                             <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe037;" /></div>
@@ -759,8 +747,7 @@
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Be announced on the Odoo Twitter account</strong><br/>
                                     We like to hear from people using Odoo to build their website. Tweet us
-                                    @odoo a reference to your new website. We will retweet it (we have 30,000
-                                    followers) and feature it in our different communications.
+                                    <a href="https://twitter.com/odoo">@odoo</a> a reference to your new website. We will retweet it (we have 30,000 followers) and feature it in our different communications.
                                 </p>
                             </div>
                         </div>
@@ -785,7 +772,7 @@
 
                     <div class="container-fluid paragraphs mb2">
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe085;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe085;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Optimize your content</strong><br/>
                                     Writing content that includes frequently searched-for keywords and phrases
@@ -801,7 +788,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe031;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe031;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Add relevant keywords</strong><br/>
                                     Adding relevant keywords to a web page's meta data, including the title tag
@@ -817,7 +804,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe032;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe032;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Reference your images...</strong><br/>
                                     If you are an artist or a photographer, you can potentially bring in a lot
@@ -828,7 +815,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe036;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe036;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>... and your location too!</strong><br/>
                                     Millions of people use Google Maps everyday. Whether you are a restaurant
@@ -838,7 +825,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe060;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe060;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Start a blog</strong><br/>
                                     Google loves websites which are updated often or ones where new content is
@@ -849,7 +836,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe06b;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe06b;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Be linked by trusted websites</strong><br/>
                                     The more sites that link to your own site, the more Google trusts your site
@@ -861,7 +848,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe00d;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe00d;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Use Google Webmaster</strong><br/>
                                     This tool will help you understand your search traffic and learn how users
@@ -872,7 +859,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-1 col-md-2 icon"><span  data-icon="&#xe002;" /></div>
+                            <div class="col-sm-1 col-md-2 icon"><span data-icon="&#xe002;"/></div>
                             <div class="col-sm-11 col-md-10">
                                 <p><strong>Advertise to get the first visitors</strong><br/>
                                     If you have a small budget to allocate to advertising (around $100), you
@@ -882,8 +869,7 @@
                                     Start by looking how often people search phrases related to your business,
                                     how competitive the keywords are in AdWords, and how much it’ll cost to 
                                     advertise on each keyword. All of this information will  help you determine
-                                    which keywords you want to use in your first campaign. <a>Use Google Adword</a>to
-                                    do that (make sure the Advanced Options are set to your country and
+                                    which keywords you want to use in your first campaign. <a href="https://adwords.google.com/KeywordPlanner">Use Google Adword</a>to do that (make sure the Advanced Options are set to your country and
                                     language).
                                 </p>
                                 <p>
@@ -895,7 +881,7 @@
                                         service? Or is the person more likely to be just carrying out research
                                         with no intention of making a purchase? In other words, what is the
                                         intent of the keyword? When starting out, you’ll want to advertise on
-                                        what we call  “buying intent” keywords - that is, ones where the person
+                                        what we call “buying intent” keywords - that is, ones where the person
                                         is clearly looking to buy.</li>
                                     <li>Can I afford to advertise on the keyword?</li>
                                     If you answer yes to these 3 questions, then go ahead and position your website on these keywords.
@@ -1042,7 +1028,7 @@
                                         <p>
                                             Use the link in the footer of your website (when logged in) to add
                                             languages from the available list. Also, you can change the 
-                                            default language in <a>Settings > Website</a>
+                                            default language in <a t-att-href="prepare_backend_url('website.action_website_configuration')" target="_blank">Settings > Website</a>
                                         </p>
                                     </div>
                                 </div>
@@ -1124,11 +1110,11 @@
                                      </div>
                                      <div class="panel-body">
                                         <p>
-                                         Increase your chances to make a sale by displaying alternative products.
+                                            Increase your chances to make a sale by displaying alternative products.
                                         </p>
                                         <li>On your website, go to the product page where you want to add alternative products.</li>
                                         <li>Activate 'Alternative products' from the 'Customize' menu.</li>
-                                        <li>Go the the <a>Product detail form</a> and fill in one or more <strong>'Alternative Products'</strong>.</li>
+                                        <li>Go the the <a t-att-href="prepare_backend_url('product.product_template_action')" target="_blank">Product detail form</a> and fill in one or more <strong>'Alternative Products'</strong>.</li>
                                     </div>
                                 </div>
                             </div>
@@ -1148,7 +1134,7 @@
                                         <p>
                                             Users will buy more accessories and services if they can add them to their cart in one click.
                                         </p>
-                                        <li> From a <a>Product detail form</a>, go in the 'Sales' tab</li>
+                                        <li>From a <a t-att-href="prepare_backend_url('product.product_template_action')" target="_blank">Product detail form</a>, go in the 'Sales' tab</li>
                                         <li>Simply add one or more products as an <strong>'Accessory Product'</strong>.</li>
                                     </div>
                                 </div>
@@ -1165,7 +1151,7 @@
                                         <p>
                                             Increase your average cart amount by proposing complementary products to your visitors.
                                         </p>
-                                        <li> From a <a>Product detail form</a>, go the 'Sales' tab</li>
+                                        <li> From a <a t-att-href="prepare_backend_url('product.product_template_action')" target="_blank">Product detail form</a>, go the 'Sales' tab</li>
                                         <li>Simply add the product you want as an <strong>'Optional Product'</strong></li>
                                     </div>
                                 </div>
@@ -1261,7 +1247,7 @@
                             <a href="mailto:info@odoo.com?subject=Website%20Planner%20feeedback">send us an email</a> to describe
                             <br/> your experience or to suggest improvements !
                         </h4>
-                        <p>Happy Selling!<br/>- The Odoo Team</p>
+                        <p>- The Odoo Team</p>
                         <img src="/planner/static/src/img/odoo_logo.png"/>
                     </div>
                 </div>
