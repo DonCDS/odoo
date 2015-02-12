@@ -146,7 +146,7 @@
                   <img class="img pull-left img-rounded" t-att-src="website.image_url(user_id.partner_id, 'image_small')" style="width: 50px; margin-right: 10px;"/>
                   <div class="pull-left mb32" style="width: 75%%">
                       <textarea rows="4" name="comment" class="form-control" placeholder="Send us a note..."></textarea>
-                      <button type="submit" class="btn btn-primary mt8">Send</button>
+                      <button type="submit" data-loading-text="Sending..." onclick="$(this).button('loading')" class="btn btn-primary mt8">Send</button>
                   </div>
               </form>
           </section>
