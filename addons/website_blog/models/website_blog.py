@@ -152,19 +152,20 @@ class BlogPost(models.Model):
     def _postprocess_content(self, id, content=None):
         #(_postproces_content = _postprocess_content)
         if content is None:
-            content = self.browse(cr, uid, id, context=context).content
+            content = self.browse(id).content
         if content is False:
             return content
         content, mapping = self.html_tag_nodes(content, attribute='data-chatter-id', tags=['p'])
         if id:  # not creating
             existing = [x[0] for x in mapping if x[0]]
-            msg_ids = self.pool['mail.message'].search(cr, SUPERUSER_ID, [
+            msg_ids = self.env['mail.message'].sudo().search([
                 ('res_id', '=', id),
                 ('model', '=', self._name),
                 ('path', 'not in', existing),
                 ('path', '!=', False)
-            ], context=context)
-            self.pool['mail.message'].unlink(cr, SUPERUSER_ID, msg_ids, context=context)
+            ])
+            if msg_ids:
+                msg_ids.unlink()
 
         return content
 
@@ -188,7 +189,7 @@ class BlogPost(models.Model):
     @api.model
     def create(self, vals):
         if 'content' in vals:
-            vals['content'] = self._postprocess_content(vals['content'])
+            vals['content'] = self._postprocess_content(None, vals['content'])
         post = super(BlogPost, self.with_context(mail_create_nolog=True)).create(vals)
         post._check_for_publication(vals)
         return post
@@ -196,7 +197,7 @@ class BlogPost(models.Model):
     @api.multi
     def write(self, vals):
         if 'content' in vals:
-            vals['content'] = self._postprocess_content(ids[0], vals['content'])
+            vals['content'] = self._postprocess_content(self.id, vals['content'])
         result = super(BlogPost, self).write(vals)
         self._check_for_publication(vals)
         return result

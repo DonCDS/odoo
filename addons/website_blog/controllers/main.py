@@ -198,7 +198,7 @@ class WebsiteBlog(http.Controller):
         # Find next Post
         all_post_ids = blog_post_obj.search([('blog_id', '=', blog.id)])
         # should always return at least the current post
-        current_blog_post_index = all_post_ids.index(blog_post.id)
+        current_blog_post_index = all_post_ids.ids.index(blog_post.id)
         next_post = all_post_ids[0 if current_blog_post_index == len(all_post_ids) - 1 \
                             else current_blog_post_index + 1]
         values = {
