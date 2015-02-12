@@ -141,7 +141,7 @@ class MassMailingList(osv.Model):
                          <strong>Business Hacks</strong>
                          <span> to<br/>boost your marketing</span>
                      </div>
-                     <p class="o_message_paragraph">Join our Marketing newsletter and get <strong>this white paper instantly</strong></p>"""
+                     <p>Join our Marketing newsletter and get <strong>this white paper instantly</strong></p>"""
         return content
 
     _defaults = {
