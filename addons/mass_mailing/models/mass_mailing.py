@@ -140,7 +140,7 @@ class MassMailingList(osv.Model):
     <strong>Business Hacks</strong>
     <span> to<br/>boost your marketing</span>
 </div>
-<p>Join our Marketing newsletter and get <strong>this white paper instantly</strong></p>"""
+<p class="o_message_paragraph">Join our Marketing newsletter and get <strong>this white paper instantly</strong></p>"""
 
     _defaults = {
         'popup_content': _get_default_popup_content,
@@ -149,8 +149,6 @@ class MassMailingList(osv.Model):
     def action_edit_popup_content(self, cr, uid, ids, context=None):
         if not len(ids) == 1:
             raise ValueError('One and only one ID allowed for this action')
-        mail = self.browse(cr, uid, ids[0], context=context)
-
         return {
             'name': _('Open with Visual Editor'),
             'type': 'ir.actions.act_url',
