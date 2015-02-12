@@ -62,7 +62,7 @@ class account_move_line(models.Model):
     @api.model
     def _get_journal(self):
         """ Return journal based on the journal type """
-        context = self._context or {}
+        context = dict(self._context or {})
         journal_id = context.get('journal_id', False)
         if journal_id:
             return journal_id
@@ -375,7 +375,7 @@ class account_move_line(models.Model):
             :param target_currency: curreny you want the move line debit/credit converted into
             :param target_date: date to use for the monetary conversion
         """
-        context = self._context or {}
+        context = dict(self._context or {})
         company_currency = self.env.user.company_id.currency_id
         rml_parser = report_sxw.rml_parse(self._cr, self._uid, 'reconciliation_widget_aml', context=self._context)
         ret = []
@@ -777,7 +777,7 @@ class account_move_line(models.Model):
         self._update_check()
         result = False
         moves = self.env['account.move']
-        context = self._context or {}
+        context = dict(self._context or {})
         for line in self:
             moves += line.move_id
             context['journal_id'] = line.journal_id.id

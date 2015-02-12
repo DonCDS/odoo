@@ -579,7 +579,7 @@ class account_tax(models.Model):
         help="Check this if the price you use on the product and invoices includes this tax.")
     include_base_amount = fields.Boolean(string='Affect Subsequent Taxes', default=False,
         help="If set, taxes which are computed after this one will be computed based on the price tax included.")
-    analytic_cost = fields.Boolean(string="Analytic Cost", help="If set, the amount computed by this tax will be assigned to the same analytic account as the invoice line (if any)")
+    analytic = fields.Boolean(string="Analytic Cost", help="If set, the amount computed by this tax will be assigned to the same analytic account as the invoice line (if any)")
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(name, company_id)', 'Tax names must be unique !'),
@@ -723,7 +723,7 @@ class account_tax(models.Model):
                 'sequence': tax.sequence,
                 'account_id': tax.account_id.id,
                 'refund_account_id': tax.refund_account_id.id,
-                'analytic_cost': tax.analytic_cost,
+                'analytic': tax.analytic,
             })
 
         return {
@@ -1181,7 +1181,7 @@ class account_tax_template(models.Model):
         help="Check this if the price you use on the product and invoices includes this tax.")
     include_base_amount = fields.Boolean(string='Affect subsequent taxes', default=False,
         help="If set, taxes which are computed after this one will be computed based on the price tax included.")
-    analytic_cost = fields.Boolean(string="Analytic Cost")
+    analytic = fields.Boolean(string="Analytic Cost")
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(name, company_id)', 'Tax names must be unique !'),
@@ -1230,7 +1230,7 @@ class account_tax_template(models.Model):
                 'description': tax.description,
                 'price_include': tax.price_include,
                 'include_base_amount': tax.include_base_amount,
-                'analytic_cost': tax.analytic_cost,
+                'analytic': tax.analytic,
             }
             new_tax = self.env['account.tax'].create(vals_tax)
             tax_template_to_tax[tax.id] = new_tax.id
