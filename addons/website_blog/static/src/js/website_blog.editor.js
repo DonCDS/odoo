@@ -88,10 +88,17 @@
                 enter.call(this, event, editor, layoutInfo);
 
                 var r = $.summernote.core.range.create();
-                var node = $.summernote.core.dom.node(r.sc);
-                var $nodes = $(node).data('chatter-id') && $("p[data-chatter-id='"+$(node).data('chatter-id')+"']", layoutInfo.editable()) || $();
-                if($nodes.length > 1) {
-                    $nodes.last().removeAttr('data-chatter-id');
+                var dom = $.summernote.core.dom
+                var node = dom.node(r.sc);
+                var last = node;
+                while (node && dom.isSplitable(node) && !dom.isList(node)) {
+                    last = node;
+                    node = node.parentNode;
+                }
+                if(!$.trim($(last).text())) {
+                    $(last).removeAttr('data-chatter-id');
+                } else {
+                    $("p[data-chatter-id='"+$(last).data('chatter-id')+"']").not($(last)).removeAttr('data-chatter-id');
                 }
             };
         });
